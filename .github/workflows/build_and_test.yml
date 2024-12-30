@@ -31,11 +31,9 @@ jobs:
         mkdir build
         cmake -S . -B build
         cd build
-        make
-        cd ..
+        make sqlighter
+        make sqlighter_tests
 
     - name: Run tests
       run: |
-        ls -hla
-        cd build
-        ./bin/sqlighter_tests
+        ./build/bin/sqlighter_tests
