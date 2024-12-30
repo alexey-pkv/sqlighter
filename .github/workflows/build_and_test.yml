@@ -32,8 +32,10 @@ jobs:
         cmake -S . -B build
         cd build
         make
+        cd ..
 
     - name: Run tests
       run: |
+        ls -hla
         cd build
         ./bin/sqlighter_tests
