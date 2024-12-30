@@ -1,0 +1,39 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up CMake
+      uses: jwlawson/actions-setup-cmake@v1
+      with:
+        cmake-version: '3.30'
+
+    - name: Set up C++ 20
+      run: sudo apt-get install g++-10
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgtest-dev sqlite3
+
+    - name: Build project
+      run: |
+        mkdir build
+        cmake -S . -B build
+        cd build
+        make
+
+    - name: Run tests
+      run: |
+        cd build
+        ./bin/sqlighter_tests
