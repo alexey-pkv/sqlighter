@@ -5,17 +5,8 @@
 #include <string_view>
 
 #include "ICMD.h"
+#include "connector_utils.h"
 #include "consts/OrderBy.h"
-
-
-#define SQLIGHTER_EXPRESSION_CLAUSE(name, protected_name)																			\
-	protected:																														\
-		virtual void protected_name(std::string_view exp, std::span<const BindValue> span) = 0;										\
-	public:																															\
-		inline void name(std::string_view exp)											{ protected_name(exp, {}); };				\
-		inline void name(std::string_view exp, BindValue value)							{ protected_name(exp, { &value, 1 }); };	\
-		inline void name(std::string_view exp, std::initializer_list<BindValue> values)	{ protected_name(exp, values); };			\
-		inline void name(std::string_view exp, std::span<const BindValue> values)		{ protected_name(exp, values); };
 
 
 namespace sqlighter
@@ -63,18 +54,17 @@ namespace sqlighter
 		
 		
 	public:
-		SQLIGHTER_EXPRESSION_CLAUSE(column_exp,	append_column_exp);
-		SQLIGHTER_EXPRESSION_CLAUSE(where,		append_where);
-		SQLIGHTER_EXPRESSION_CLAUSE(group_by,	append_group_by);
-		SQLIGHTER_EXPRESSION_CLAUSE(having,		append_having);
-		SQLIGHTER_EXPRESSION_CLAUSE(order_by,	append_order_by);
-		
-		
-	public:
 		inline void page(int page, int page_size) { limit(page * page_size, page_size); };
 		
 		virtual void limit_by(int count) = 0;
 		virtual void limit(int offset, int count) = 0;
 		
+		
+	public:
+		SQLIGHTER_EXPRESSION_CLAUSE(column_exp,	append_column_exp);
+		SQLIGHTER_EXPRESSION_CLAUSE(where,		append_where);
+		SQLIGHTER_EXPRESSION_CLAUSE(group_by,	append_group_by);
+		SQLIGHTER_EXPRESSION_CLAUSE(having,		append_having);
+		SQLIGHTER_EXPRESSION_CLAUSE(order_by,	append_order_by);
 	};
 }

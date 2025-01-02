@@ -15,7 +15,7 @@ class connection_override : public IConnection
 public:
 	Stmt execute(const std::string& query, const std::vector<BindValue>& values) override
 	{
-		return Stmt();
+		return Stmt(nullptr);
 	}
 };
 
@@ -333,7 +333,7 @@ TEST(CMDSelect, column_exp)
 	
 	cmd.column_exp("COUNT(*)");
 	cmd.column_exp("SUM(amount)");
-	cmd.column_exp("IF (status = ?, ?, ?)", { "active", 1, 0 });
+	cmd.column_exp("IF (status = ?, ?, ?)", std::initializer_list<BindValue> { "active", 1, 0 });
 	cmd.column_exp("CASE WHEN type = ? THEN ? ELSE ? END", std::vector<BindValue>{ "A", 100, 200 });
 	
 	

@@ -62,9 +62,9 @@ namespace sqlighter
 		[[nodiscard]] inline const std::string& get_str_value() const noexcept	{ return m_strValue; }
 		[[nodiscard]] inline type get_type() const noexcept						{ return m_type; }
 		
-		inline void set_value(value v) noexcept				{ m_value = v; }
-		inline void set_str_value(const std::string& str)	{ m_strValue = str; }
-		inline void set_type(type t) noexcept				{ m_type = t; }
+		inline void set_value(value v) noexcept					{ m_value = v; }
+		inline void set_str_value(const std::string_view & str)	{ m_strValue = str; }
+		inline void set_type(type t) noexcept					{ m_type = t; }
 		
 		
 	public:

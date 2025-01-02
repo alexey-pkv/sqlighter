@@ -5,8 +5,8 @@
 #include <sstream>
 #include <memory>
 
-#include "../core/BindValue.h"
-#include "../base/connectors/ICMDSelect.h"
+#include "connectors/Clause.h"
+#include "base/connectors/ICMDSelect.h"
 
 
 namespace sqlighter
@@ -27,36 +27,24 @@ namespace sqlighter
 		int m_limitOffset = 0;
 		int m_limitCount = 0;
 		
-		bool m_hasColumns	= false;
-		bool m_hasWhere		= false;
-		bool m_hasGroupBy	= false;
-		bool m_hasHaving	= false;
-		bool m_hasOrderBy	= false;
-		
 		std::string m_from = {};
 		
-		std::stringstream	m_columns	= {};
-		std::stringstream	m_where		= {};
-		std::stringstream	m_groupBy	= {};
-		std::stringstream	m_having	= {};
-		std::stringstream	m_orderBy	= {};
-		
-		std::vector<BindValue>	m_columnValues	= {};
-		std::vector<BindValue>	m_whereValues	= {};
-		std::vector<BindValue>	m_groupByValues	= {};
-		std::vector<BindValue>	m_havingValues	= {};
-		std::vector<BindValue>	m_orderByValues	= {};
+		Clause m_columns	{ ", " };
+		Clause m_where		{ " AND " };
+		Clause m_groupBy	{ ", " };
+		Clause m_having		{ " AND " };
+		Clause m_orderBy	{ ", " };
 		
 		
 	public:
 		~CMDSelect() override = default;
 		CMDSelect(CMDSelect&&) noexcept = default;
+		CMDSelect(const CMDSelect&) = default;
+		CMDSelect& operator=(const CMDSelect&) = default;
 		CMDSelect& operator=(CMDSelect&&) = default;
 		
 		CMDSelect() = delete;
 		
-		CMDSelect(const CMDSelect&);
-		CMDSelect& operator=(const CMDSelect&);
 		explicit CMDSelect(const std::shared_ptr<IConnection>& connection);
 		
 		
