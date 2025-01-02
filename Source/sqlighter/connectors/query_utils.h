@@ -23,7 +23,7 @@ namespace sqlighter
 		
 		
 	public:
-		explicit col(std::string_view);
+		constexpr explicit col(std::string_view c) : column(c) {};
 	};
 	
 	struct col_as
@@ -34,7 +34,7 @@ namespace sqlighter
 		
 		
 	public:
-		col_as(std::string_view c, std::string_view a);
+		constexpr col_as(std::string_view c, std::string_view a) : column(c), as(a) {};
 	};
 }
 

@@ -7,18 +7,6 @@
 using namespace sqlighter;
 
 
-col::col(std::string_view c) : column(c) 
-{	
-}
-
-
-col_as::col_as(std::string_view c, std::string_view as) :
-	column(c),
-	as(as)
-{	
-}
-
-
 std::string sqlighter::wrap_element(std::string_view element, std::string_view as)
 {
 	std::stringstream ss;
