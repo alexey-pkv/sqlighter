@@ -1,6 +1,9 @@
 #pragma once
 
 
+#include <span>
+#include <string_view>
+
 #include "core/BindValue.h"
 
 
@@ -12,5 +15,7 @@
 		inline void name(std::string_view exp, BindValue value)							{ protected_name(exp, { &value, 1 }); };	\
 		inline void name(std::string_view exp, std::initializer_list<BindValue> values)	{ protected_name(exp, values); };			\
 		inline void name(std::string_view exp, std::span<const BindValue> values)		{ protected_name(exp, values); };
+
+
 
 

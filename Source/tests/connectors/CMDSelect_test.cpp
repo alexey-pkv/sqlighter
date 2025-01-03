@@ -13,7 +13,7 @@ using namespace sqlighter;
 class connection_override : public IConnection
 {
 public:
-	Stmt execute(const std::string& query, const std::vector<BindValue>& values) override
+	Stmt execute(std::string_view query, const std::vector<BindValue>& values) override
 	{
 		return Stmt(nullptr);
 	}

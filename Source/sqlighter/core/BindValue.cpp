@@ -1,7 +1,8 @@
 #include "BindValue.h"
 
 
-#include <utility>
+#include "exceptions/sqlighter_exceptions.h"
+
 #include <sqlite3.h>
 
 
@@ -62,30 +63,38 @@ BindValue::BindValue(const char* val) :
 
 void BindValue::bind(sqlite3_stmt* stmt, int offset) const
 {
+	int res = SQLITE_OK;
+	
 	switch (m_type)
 	{
 		case type::INT_32:
-			sqlite3_bind_int(stmt, offset, m_value.i32);
+			res = sqlite3_bind_int(stmt, offset, m_value.i32);
 			break;
 			
 		case type::INT_64:
-			sqlite3_bind_int64(stmt, offset, m_value.i64);
+			res = sqlite3_bind_int64(stmt, offset, m_value.i64);
 			break;
 			
 		case type::DOUBLE:
-			sqlite3_bind_double(stmt, offset, m_value.dbl);
+			res = sqlite3_bind_double(stmt, offset, m_value.dbl);
 			break;
 		
-		case type::NULL_VAL:
-			sqlite3_bind_null(stmt, offset);
+		[[unlikely]] case type::NULL_VAL:
+			res = sqlite3_bind_null(stmt, offset);
 			break;
 		
-		case type::TEXT:
-			sqlite3_bind_text(stmt, offset, m_strValue.c_str(), -1, SQLITE_TRANSIENT);
+		[[likely]] case type::TEXT:
+			res = sqlite3_bind_text(stmt, offset, m_strValue.c_str(), -1, SQLITE_TRANSIENT);
 			break;
 			
 		case type::TEXT_16:
 		case type::TEXT_64:
+			// TODO: implement
 			break;
+	}
+	
+	if (res != SQLITE_OK)
+	{
+		throw SQLighterException();
 	}
 }

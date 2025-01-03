@@ -26,6 +26,7 @@ set_target_properties(sqlighter_tests PROPERTIES
 ### Include Headers
 target_include_directories(sqlighter_tests PRIVATE ${GTEST_INCLUDE_DIRS})
 target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/Source/sqlighter)
+target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/Source/tests/test_core)
 
 
 ### Link libraries
@@ -36,3 +37,4 @@ target_link_libraries(sqlighter_tests ${GTEST_LIBRARIES} pthread)
 ### Add Coverage config
 target_compile_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage)
 target_link_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage)
+

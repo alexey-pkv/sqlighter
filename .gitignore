@@ -1,2 +1,11 @@
-build/*
 .idea
+
+# Build resources
+build/*
+
+# Coverage resources
+*.info
+*.gcov
+
+# Test resources
+Source/tests/core/.db/*

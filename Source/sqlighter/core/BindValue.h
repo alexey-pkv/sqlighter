@@ -2,6 +2,8 @@
 #define SQLIGHTER_BINDVALUE_H
 
 
+#include <span>
+#include <vector>
 #include <string>
 #include <cstdint>
 
@@ -70,6 +72,13 @@ namespace sqlighter
 	public:
 		void bind(sqlite3_stmt* stmt, int offset) const;
 	};
+	
+	
+	template <typename T>
+    requires (std::is_constructible_v<BindValue, T>)
+	inline BindValue bind(const T& t) { return BindValue(t); }
+	
+	inline auto bind(std::initializer_list<BindValue> values) { return std::vector<BindValue> { values }; }
 }
 
 

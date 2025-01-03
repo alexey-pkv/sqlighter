@@ -1,9 +1,6 @@
 #pragma once
 
 
-#include <span>
-#include <string_view>
-
 #include "ICMD.h"
 #include "connector_utils.h"
 #include "consts/OrderBy.h"
