@@ -525,8 +525,3 @@ TEST(CMDSelect, order_by)
 	ASSERT_EQ("bbb",	binds[4].get_str_value());
 }
 
-
-
-
-
-

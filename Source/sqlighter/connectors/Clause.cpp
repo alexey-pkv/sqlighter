@@ -61,6 +61,9 @@ void Clause::append(std::string_view str)
 
 void Clause::append_directly(std::string_view str)
 {
+	if (str.empty())
+		return;
+	
 	m_stream << str;
 	
 	if (m_delimiter != nullptr && m_isEmpty)
@@ -69,12 +72,17 @@ void Clause::append_directly(std::string_view str)
 	}
 }
 
-void Clause::append(const BindValue& bind)
+void Clause::append_bind(const BindValue& bind)
 {
 	m_binds.emplace_back(bind);
 }
 
-void Clause::append(std::span<const BindValue> binds)
+void Clause::append_binds(std::span<const BindValue> binds)
+{
+	m_binds.insert(m_binds.end(), binds.begin(), binds.end());
+}
+
+void Clause::append_binds(std::initializer_list<BindValue> binds)
 {
 	m_binds.insert(m_binds.end(), binds.begin(), binds.end());
 }
@@ -82,13 +90,19 @@ void Clause::append(std::span<const BindValue> binds)
 void Clause::append(std::string_view str, std::span<const BindValue> binds)
 {
 	append(str);
-	append(binds);
+	append_binds(binds);
+}
+
+void Clause::append_directly(std::string_view str, std::initializer_list<BindValue> binds)
+{
+	append_directly(str);
+	append_binds(binds);
 }
 
 void Clause::append_directly(std::string_view str, std::span<const BindValue> binds)
 {
 	append_directly(str);
-	append(binds);
+	append_binds(binds);
 }
 
 int Clause::bind(sqlite3_stmt* to, int offset) const

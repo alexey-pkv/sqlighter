@@ -114,7 +114,7 @@ void CMDSelect::by_field(std::string_view column, BindValue value)
 {
 	m_where << col(column) << " = ?";
 	
-	m_where.append({ &value, 1 });
+	m_where.append_bind(value);
 }
 
 void CMDSelect::group_by_field(std::string_view by)

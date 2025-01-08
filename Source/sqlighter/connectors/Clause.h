@@ -52,10 +52,12 @@ namespace sqlighter
 		
 	public:
 		void append(std::string_view str);
-		void append(const BindValue& bind);
-		void append(std::span<const BindValue> binds);
+		void append_bind(const BindValue& bind);
+		void append_binds(std::span<const BindValue> binds);
+		void append_binds(std::initializer_list<BindValue> binds);
 		void append_directly(std::string_view str);
 		void append(std::string_view str, std::span<const BindValue> binds);
+		void append_directly(std::string_view str, std::initializer_list<BindValue> binds);
 		void append_directly(std::string_view str, std::span<const BindValue> binds);
 		
 		int bind(sqlite3_stmt* to, int offset) const;

@@ -8,4 +8,4 @@ build/*
 *.gcov
 
 # Test resources
-Source/tests/core/.db/*
+Source/tests/*/.db/*
