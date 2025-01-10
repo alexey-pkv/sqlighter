@@ -4,22 +4,28 @@
 #include <string>
 #include <cstdint>
 #include <sqlite3.h>
+#include <memory>
 
 
 namespace sqlighter
 {
+	class DB;
+	
 	class Stmt
 	{
 	private:
-		sqlite3_stmt*	m_stmt		= nullptr;
-		int 			m_lastCode	= SQLITE_ERROR;
+		std::shared_ptr<DB>	m_db		= nullptr;
+		sqlite3_stmt*		m_stmt		= nullptr;
+		int 				m_lastCode	= SQLITE_ERROR;
 		
 		
 	public:
 		~Stmt();
 		
 		Stmt() = default;
+		explicit Stmt(std::shared_ptr<DB> db);
 		explicit Stmt(sqlite3_stmt* stmt);
+		Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db);
 		
 		Stmt(const Stmt&) = delete;
 		Stmt& operator=(const Stmt&) = delete;
@@ -31,6 +37,9 @@ namespace sqlighter
 	public:
 		inline sqlite3_stmt** stmt_p() { return &m_stmt; }
 		inline int code() const { return m_lastCode; }
+		
+		inline std::shared_ptr<const DB> db() const { return m_db; }
+		inline std::shared_ptr<DB> db() { return m_db; }
 		
 		inline int is_done() const	{ return m_lastCode == SQLITE_DONE;		}
 		inline int is_ok() const	{ return m_lastCode == SQLITE_OK;		}
@@ -69,6 +78,24 @@ namespace sqlighter
 		
 		int column_type(int at) const;
 		int column_count() const;
+		
+		
+	public:
+		template <typename T>
+		requires
+			std::same_as<T, bool>			||
+			std::is_integral_v<T>			||
+			std::is_floating_point_v<T>		||
+			std::same_as<T, std::string>
+		T column(int at) const;
+		
+		template <typename T>
+		requires
+			std::same_as<T, bool>			||
+			std::is_integral_v<T>			||
+			std::is_floating_point_v<T>		||
+			std::same_as<T, std::string>
+		bool column_n(int at, T& into) const;
 	};
 }
 

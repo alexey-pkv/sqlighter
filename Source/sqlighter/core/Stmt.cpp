@@ -14,8 +14,21 @@ Stmt::~Stmt()
 	close();
 }
 
-Stmt::Stmt(sqlite3_stmt* stmt)
-	: m_stmt(stmt)
+Stmt::Stmt(std::shared_ptr<DB> db) : 
+	m_db(db ? std::move(db) : nullptr)
+{
+	
+}
+
+Stmt::Stmt(sqlite3_stmt* stmt) :
+	m_stmt(stmt)
+{
+	
+}
+
+Stmt::Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db) : 
+	m_stmt(stmt),
+	m_db(db ? std::move(db) : nullptr)
 {
 	
 }
@@ -49,7 +62,7 @@ int Stmt::step()
 		m_lastCode != SQLITE_DONE && 
 		m_lastCode != SQLITE_ROW)
 	{
-		throw SQLighterException(SQLIGHTER_ERR_STEP, m_lastCode);
+		throw SQLighterException(SQLIGHTER_ERR_STEP, m_lastCode, m_db);
 	}
 	
 	return m_lastCode;
@@ -64,6 +77,7 @@ int Stmt::close()
 	auto res = sqlite3_finalize(m_stmt);
 	
 	m_stmt = nullptr;
+	// TODO: Fail on error
 	
 	return res;
 }
@@ -220,4 +234,84 @@ int Stmt::column_count() const
 {
 	require_row();
 	return sqlite3_column_count(m_stmt);
+}
+
+
+template <>
+int Stmt::column<int>(int at) const
+{
+    return column_int(at);
+}
+
+template <>
+int64_t Stmt::column<int64_t>(int at) const
+{
+    return column_int64(at);
+}
+
+template <>
+bool Stmt::column<bool>(int at) const
+{
+    return column_bool(at);
+}
+
+template <>
+float Stmt::column<float>(int at) const
+{
+    return column_double(at);
+}
+
+template <>
+double Stmt::column<double>(int at) const
+{
+    return column_double(at);
+}
+
+template <>
+std::string Stmt::column<std::string>(int at) const
+{
+    return column_string(at);
+}
+
+
+
+template <>
+bool Stmt::column_n<int>(int at, int& i) const
+{
+    return column_int_n(at, i);
+}
+
+template <>
+bool Stmt::column_n<int64_t>(int at, int64_t& i) const
+{
+    return column_int64_n(at, i);
+}
+
+template <>
+bool Stmt::column_n<bool>(int at, bool& i) const
+{
+    return column_bool_n(at, i);
+}
+
+template <>
+bool Stmt::column_n<float>(int at, float& i) const
+{
+	double d;
+    bool res = column_double_n(at, d);
+	
+	i = (float)d;
+	
+	return res;
+}
+
+template <>
+bool Stmt::column_n<double>(int at, double& i) const
+{
+    return column_double_n(at, i);
+}
+
+template <>
+bool Stmt::column_n<std::string>(int at, std::string& i) const
+{
+    return column_string_n(at, i);
 }

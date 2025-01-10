@@ -34,7 +34,7 @@ Connection::Connection(std::string_view db_path) :
 
 Stmt Connection::execute(std::string_view query, const std::vector<BindValue>& values)
 {
-	Stmt stmt {};
+	Stmt stmt { m_db };
 	
 	m_db->open();
 	
