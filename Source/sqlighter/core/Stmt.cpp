@@ -139,6 +139,77 @@ bool Stmt::column_is_null(int at) const
 	return column_type(at) == SQLITE_NULL;
 }
 
+bool Stmt::column_int_n(int at, int& into) const
+{
+	if (!column_is_null(at))
+	{
+		into = column_int(at);
+		return true;
+	}
+	else
+	{
+		into = 0;
+		return false;
+	}
+}
+
+bool Stmt::column_int64_n(int at, int64_t& into) const
+{
+	if (!column_is_null(at))
+	{
+		into = column_int64(at);
+		return true;
+	}
+	else
+	{
+		into = 0;
+		return false;
+	}
+}
+
+bool Stmt::column_bool_n(int at, bool& into) const
+{
+	if (!column_is_null(at))
+	{
+		into = column_bool(at);
+		return true;
+	}
+	else
+	{
+		into = false;
+		return false;
+	}
+}
+
+bool Stmt::column_double_n(int at, double& into) const
+{
+	if (!column_is_null(at))
+	{
+		into = column_double(at);
+		return true;
+	}
+	else
+	{
+		into = 0.0;
+		return false;
+	}
+}
+
+bool Stmt::column_string_n(int at, std::string& into) const
+{
+	if (!column_is_null(at))
+	{
+		into = column_string(at);
+		return true;
+	}
+	else
+	{
+		into.clear();
+		return false;
+	}
+}
+
+
 int Stmt::column_type(int at) const
 {
 	require_row();

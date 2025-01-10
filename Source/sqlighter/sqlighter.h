@@ -33,6 +33,10 @@ namespace sqlighter
 		std::shared_ptr<ICMDSelect> select() const;
 		std::shared_ptr<ICMDDirect> direct() const;
 		
+		Stmt execute(std::string_view query) const;
+		Stmt execute(std::string_view query, const BindValue& values) const;
+		Stmt execute(std::string_view query, std::initializer_list<const BindValue> values) const;
+		
 		
 	public:
 		const std::string& path() const;

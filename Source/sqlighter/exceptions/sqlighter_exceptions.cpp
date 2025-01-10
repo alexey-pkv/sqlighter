@@ -44,6 +44,14 @@ SQLighterException::SQLighterException(int code, const std::shared_ptr<const DB>
 	
 }
 
+SQLighterException::SQLighterException(int code, int sqlite_code, const std::shared_ptr<const DB>& db) : 
+	m_lighter_code(code),
+	m_sqlite_code(sqlite_code),
+	m_message(db->error_message())
+{
+	
+}
+
 
 const std::string& SQLighterException::message() const noexcept
 {
@@ -72,10 +80,10 @@ const std::string& SQLighterException::what_str() const
 		ss << error_message(m_lighter_code);
 		
 		if (!m_message.empty())
-			ss << std::endl << "    " << m_message;
+			ss << std::endl << "    > " << m_message;
 		
 		if (m_sqlite_code)
-			ss << std::endl << "    sqlite: " << what_sqlite3();
+			ss << std::endl << "    > " << what_sqlite3();
 		
 		m_what = ss.str();
 	}

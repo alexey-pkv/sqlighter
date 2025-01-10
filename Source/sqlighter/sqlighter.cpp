@@ -41,6 +41,30 @@ std::shared_ptr<ICMDDirect> SQLighter::direct() const
 	return std::make_shared<CMDDirect>(m_connection);
 }
 
+Stmt SQLighter::execute(std::string_view query) const
+{
+	auto d_create = direct();
+	
+	d_create->append(query);
+	
+	return d_create->execute();
+}
+
+Stmt SQLighter::execute(std::string_view query, const BindValue& values) const
+{
+	return execute(query, { values });
+}
+
+Stmt SQLighter::execute(std::string_view query, std::initializer_list<const BindValue> values) const
+{
+	auto d_create = direct();
+	
+	d_create->append(query);
+	d_create->append(values);
+	
+	return d_create->execute();
+}
+
 
 const std::string& SQLighter::path() const
 {

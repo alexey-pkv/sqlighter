@@ -39,6 +39,7 @@ namespace sqlighter
 		SQLighterException(int code, int sqlite_code, std::string_view message);
 		SQLighterException(int code, std::string_view message);
 		SQLighterException(int code, const std::shared_ptr<const DB>& db);
+		SQLighterException(int code, int sqlite_code, const std::shared_ptr<const DB>& db);
 		
 		
 	public:

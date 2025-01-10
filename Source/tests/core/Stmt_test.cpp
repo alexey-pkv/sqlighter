@@ -11,10 +11,10 @@
 using namespace sqlighter;
 
 
-Stmt stmt__select_mock(const SQLighter& sql)
+Stmt stmt__select_mock(const SQLighter& sql, std::string_view table = "mock_table")
 {
 	auto select = sql.select();
-	select->from("mock_table");
+	select->from(table);
 	
 	return select->execute();
 }
@@ -92,4 +92,155 @@ TEST(Stmt, column_type)
 	ASSERT_EQ(SQLITE_INTEGER,	stmt.column_type(1));
 	ASSERT_EQ(SQLITE_FLOAT,		stmt.column_type(2));
 	ASSERT_EQ(SQLITE_TEXT,		stmt.column_type(3));
+}
+
+
+TEST(Stmt, column_bool_n)
+{
+	SQLighter sql { setup_db("test_mock_n.db") };
+	
+	sql.execute(
+		"CREATE TABLE test_mock ("
+			"c_null BOOL NULL,"
+			"c_true BOOL NULL,"
+			"c_false BOOL NULL"
+		")");
+	
+	sql.execute(
+		"INSERT INTO test_mock (c_null, c_true, c_false) VALUES (NULL, ?, ?)",
+		{ true, false }
+	);
+	
+	
+	auto stmt = stmt__select_mock(sql, "test_mock");
+	bool value;
+	
+	
+	value = true;
+	ASSERT_FALSE(stmt.column_bool_n(0, value));
+	ASSERT_FALSE(value);
+	
+	value = false;
+	ASSERT_TRUE(stmt.column_bool_n(1, value));
+	ASSERT_TRUE(value);
+	
+	value = true;
+	ASSERT_TRUE(stmt.column_bool_n(2, value));
+	ASSERT_FALSE(value);
+}
+
+TEST(Stmt, column_int_n)
+{
+	SQLighter sql { setup_db("test_mock_n.db") };
+	
+	sql.execute(
+		"CREATE TABLE test_mock ("
+			"c_null INT NULL,"
+			"c_value INT NULL"
+		")");
+	
+	sql.execute(
+		"INSERT INTO test_mock (c_null, c_value) VALUES (NULL, ?)",
+		{ 123 }
+	);
+	
+	
+	auto stmt = stmt__select_mock(sql, "test_mock");
+	int value;
+	
+	
+	value = 11;
+	ASSERT_FALSE(stmt.column_int_n(0, value));
+	ASSERT_EQ(0, value);
+	
+	value = 0;
+	ASSERT_TRUE(stmt.column_int_n(1, value));
+	ASSERT_EQ(123, value);
+}
+
+TEST(Stmt, column_int64_n)
+{
+	SQLighter sql { setup_db("test_mock_n.db") };
+	
+	sql.execute(
+		"CREATE TABLE test_mock ("
+			"c_null INT NULL,"
+			"c_value INT NULL"
+		")");
+	
+	sql.execute(
+		"INSERT INTO test_mock (c_null, c_value) VALUES (NULL, ?)",
+		{ INT64_MAX }
+	);
+	
+	
+	auto stmt = stmt__select_mock(sql, "test_mock");
+	int64_t value;
+	
+	
+	value = 11;
+	ASSERT_FALSE(stmt.column_int64_n(0, value));
+	ASSERT_EQ(0, value);
+	
+	value = 0;
+	ASSERT_TRUE(stmt.column_int64_n(1, value));
+	ASSERT_EQ(INT64_MAX, value);
+}
+
+TEST(Stmt, column_double_n)
+{
+	SQLighter sql { setup_db("test_mock_n.db") };
+	
+	sql.execute(
+		"CREATE TABLE test_mock ("
+			"c_null REAL NULL,"
+			"c_value REAL NULL"
+		")");
+	
+	sql.execute(
+		"INSERT INTO test_mock (c_null, c_value) VALUES (NULL, ?)",
+		{ 123.321 }
+	);
+	
+	
+	auto stmt = stmt__select_mock(sql, "test_mock");
+	double value;
+	
+	
+	value = 11;
+	ASSERT_FALSE(stmt.column_double_n(0, value));
+	ASSERT_EQ(0, value);
+	
+	value = 0;
+	ASSERT_TRUE(stmt.column_double_n(1, value));
+	ASSERT_EQ(123.321, value);
+}
+
+TEST(Stmt, column_string_n)
+{
+	SQLighter sql { setup_db("test_mock_n.db") };
+	
+	sql.execute(
+		"CREATE TABLE test_mock ("
+			"c_null TEXT NULL,"
+			"c_value TEXT NULL"
+		")");
+	
+	sql.execute(
+		"INSERT INTO test_mock (c_null, c_value) VALUES (NULL, ?)",
+		{ "hello world" }
+	);
+	
+	
+	auto stmt = stmt__select_mock(sql, "test_mock");
+	std::string value;
+	
+	
+	value = "dummy value";
+	ASSERT_FALSE(stmt.column_string_n(0, value));
+	ASSERT_TRUE(value.empty());
+	
+	value = "dummy value";
+	ASSERT_TRUE(stmt.column_string_n(1, value));
+	ASSERT_EQ("hello world", value);
 }
