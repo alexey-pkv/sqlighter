@@ -30,7 +30,7 @@ void DB::close()
 	
 	if (res != SQLITE_OK)
 	{
-		throw SQLighterException();
+		throw SQLighterException(SQLIGHTER_ERR_FAILED_TO_CLOSE_DB, res);
 	}
 }
 
@@ -40,7 +40,7 @@ void DB::open()
 		return;
 	
 	if (m_path.empty())
-		throw SQLighterException();
+		throw SQLighterException(SQLIGHTER_ERR_FAILED_TO_OPEN_DB, "Path for database not provided");
 	
 	auto res = sqlite3_open_v2(
 		m_path.c_str(),
@@ -50,8 +50,13 @@ void DB::open()
 	
 	if (res != SQLITE_OK)
 	{
-		m_db = nullptr;
-		throw SQLighterException();
+		if (m_db)
+		{
+			sqlite3_close_v2(m_db);
+			m_db = nullptr;
+		}
+		
+		throw SQLighterException(SQLIGHTER_ERR_FAILED_TO_OPEN_DB, res);
 	}
 }
 
@@ -64,4 +69,9 @@ void DB::open(std::string_view path)
 	m_path = path;
 	
 	open();
+}
+
+const char* DB::error_message() const
+{
+	 return sqlite3_errmsg(m_db);
 }

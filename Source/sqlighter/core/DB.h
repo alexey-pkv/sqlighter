@@ -38,5 +38,7 @@ namespace sqlighter
 		void close();
 		void open();
 		void open(std::string_view path);
+		
+		[[nodiscard]] const char* error_message() const;
 	};
 }

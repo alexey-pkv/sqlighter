@@ -80,7 +80,8 @@ namespace sqlighter
 		
 		inline std::stringstream& operator<<(const col& c)
 		{
-			return next_section() << c;
+			auto& ss = next_section();
+			return ss << c;
 		}
 		
 		inline std::stringstream& operator<<(const col_as& c)
@@ -88,6 +89,4 @@ namespace sqlighter
 			return next_section() << c;
 		}
 	};
-	
 }
-

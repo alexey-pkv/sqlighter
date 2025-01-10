@@ -2,6 +2,7 @@
 
 
 #include <memory>
+#include <filesystem>
 
 #include "base/connection/IConnection.h"
 
@@ -24,6 +25,8 @@ namespace sqlighter
 		Connection& operator=(const Connection&) = delete;
 		Connection& operator=(Connection&&) = delete;
 		
+		explicit Connection(const std::filesystem::path& db_path);
+		explicit Connection(std::string_view db_path);
 		explicit Connection(const std::shared_ptr<DB>& db);
 		
 		

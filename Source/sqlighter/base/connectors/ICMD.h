@@ -4,10 +4,11 @@
 #include <string>
 #include <vector>
 
+#include "core/Stmt.h"
+
 
 namespace sqlighter
 {
-	class Stmt;
 	class BindValue;
 	
 	

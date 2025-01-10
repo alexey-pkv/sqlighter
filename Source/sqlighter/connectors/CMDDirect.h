@@ -41,5 +41,9 @@ namespace sqlighter
 		[[nodiscard]] std::vector<BindValue> bind() const override;
 		
 		Stmt execute() const override;
+		
+		
+	public:
+		void execute_direct() const override;
 	};
 }

@@ -36,17 +36,17 @@ namespace sqlighter
 	public:
 		constexpr col_as(std::string_view c, std::string_view a) : column(c), as(a) {};
 	};
-}
-
-
-inline std::stringstream& operator<<(std::stringstream& s, const sqlighter::col& c)
-{
-	sqlighter::wrap_element(s, c.column);
-	return s;
-}
-
-inline std::stringstream& operator<<(std::stringstream& s, const sqlighter::col_as& c)
-{
-	sqlighter::wrap_element(s, c.column, c.as);
-	return s;
+	
+	
+	inline std::stringstream& operator<<(std::stringstream& s, const sqlighter::col& c)
+	{
+		sqlighter::wrap_element(s, c.column);
+		return s;
+	}
+	
+	inline std::stringstream& operator<<(std::stringstream& s, const sqlighter::col_as& c)
+	{
+		sqlighter::wrap_element(s, c.column, c.as);
+		return s;
+	}
 }

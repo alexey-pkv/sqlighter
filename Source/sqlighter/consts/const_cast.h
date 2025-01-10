@@ -7,4 +7,7 @@
 #include <sstream>
 
 
-std::ostream& operator<<(std::ostream& os, sqlighter::OrderBy order);
+namespace sqlighter
+{
+	std::ostream& operator<<(std::ostream& os, sqlighter::OrderBy order);
+}

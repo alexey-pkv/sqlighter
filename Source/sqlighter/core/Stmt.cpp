@@ -24,7 +24,7 @@ Stmt::Stmt(sqlite3_stmt* stmt)
 sqlite3_stmt* Stmt::stmt()
 {
 	if (m_stmt == nullptr)
-		throw StmtFinalizedException();
+		throw SQLighterException(SQLIGHTER_ERR_STMT_FINALIZED);
 	
 	return m_stmt;
 }
@@ -32,7 +32,7 @@ sqlite3_stmt* Stmt::stmt()
 const sqlite3_stmt* Stmt::stmt() const
 {
 	if (m_stmt == nullptr)
-		throw StmtFinalizedException();
+		throw SQLighterException(SQLIGHTER_ERR_STMT_FINALIZED);
 	
 	return m_stmt;
 }
@@ -41,7 +41,7 @@ const sqlite3_stmt* Stmt::stmt() const
 int Stmt::step()
 {
 	if (m_stmt == nullptr)
-		throw SQLighterException();
+		throw SQLighterException(SQLIGHTER_ERR_STMT_FINALIZED, "When calling step()");
 	
 	m_lastCode = sqlite3_step(m_stmt);
 	
@@ -49,7 +49,7 @@ int Stmt::step()
 		m_lastCode != SQLITE_DONE && 
 		m_lastCode != SQLITE_ROW)
 	{
-		throw SQLighterStatementException(std::move(*this));
+		throw SQLighterException(SQLIGHTER_ERR_STEP, m_lastCode);
 	}
 	
 	return m_lastCode;
@@ -72,7 +72,7 @@ void Stmt::require_row() const
 {
 	if (!hsa_row())
 	{
-		throw SQLighterNorRowToRead();
+		throw SQLighterException(SQLIGHTER_ERR_NO_ROWS);
 	}
 }
 
@@ -134,6 +134,10 @@ size_t Stmt::column_blob(int at, void** into) const
 	return size;
 }
 
+bool Stmt::column_is_null(int at) const
+{
+	return column_type(at) == SQLITE_NULL;
+}
 
 int Stmt::column_type(int at) const
 {
@@ -141,7 +145,7 @@ int Stmt::column_type(int at) const
 	return sqlite3_column_type(m_stmt, at);
 }
 
-int Stmt::column_count(int at) const
+int Stmt::column_count() const
 {
 	require_row();
 	return sqlite3_column_count(m_stmt);

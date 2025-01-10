@@ -95,6 +95,11 @@ void BindValue::bind(sqlite3_stmt* stmt, int offset) const
 	
 	if (res != SQLITE_OK)
 	{
-		throw SQLighterException();
+		throw SQLighterException::failed_to_bind(res, offset, *this);
 	}
+}
+
+void BindValue::to_error_message(std::ostringstream& stream) const
+{
+	
 }

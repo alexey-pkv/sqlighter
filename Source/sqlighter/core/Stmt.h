@@ -59,9 +59,10 @@ namespace sqlighter
 		double column_double(int at) const;
 		std::string column_string(int at) const;
 		size_t column_blob(int at, void** into) const;
+		bool column_is_null(int at) const;
 		
 		int column_type(int at) const;
-		int column_count(int at) const;
+		int column_count() const;
 	};
 }
 
