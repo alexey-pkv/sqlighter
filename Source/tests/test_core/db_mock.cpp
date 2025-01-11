@@ -80,7 +80,7 @@ SQLighter create_mock_table(
 			"	" << txt_column_name	<< " TEXT NOT NULL"
 			")";
 		
-		d_create->execute_direct();
+		d_create.execute_direct();
 	}
 	
 	{
@@ -95,8 +95,8 @@ SQLighter create_mock_table(
 			")"
 			"VALUES (NULL, ?, ?, ?)";
 		
-		d_insert->append({ int_value, dbl_value, text_value });
-		d_insert->execute_direct();
+		d_insert.append({ int_value, dbl_value, text_value });
+		d_insert.execute_direct();
 	}
 	
 	return sql;

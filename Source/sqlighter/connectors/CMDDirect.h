@@ -31,7 +31,7 @@ namespace sqlighter
 		
 		
 	protected:
-		void do_append(std::string_view exp, std::span<const BindValue> span) override;
+		ICMDDirect& do_append(std::string_view exp, std::span<const BindValue> span) override;
 		
 		
 	public:

@@ -35,11 +35,13 @@ CMDDirect& CMDDirect::operator=(const CMDDirect& c)
 }
 
 
-void CMDDirect::do_append(std::string_view exp, std::span<const BindValue> span)
+ICMDDirect& CMDDirect::do_append(std::string_view exp, std::span<const BindValue> span)
 {
 	m_stream << exp;
 	
 	m_binds.insert(m_binds.end(), span.begin(), span.end());
+	
+	return *this;
 }
 
 

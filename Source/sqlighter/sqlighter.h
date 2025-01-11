@@ -2,8 +2,8 @@
 
 
 #include "connection/Connection.h"
-#include "base/connectors/ICMDSelect.h"
-#include "base/connectors/ICMDDirect.h"
+#include "connectors/CMDSelect.h"
+#include "connectors/CMDDirect.h"
 
 
 namespace sqlighter
@@ -30,11 +30,11 @@ namespace sqlighter
 		
 		
 	public:
-		std::shared_ptr<ICMDSelect> select() const;
-		std::shared_ptr<ICMDDirect> direct() const;
+		CMDSelect select() const;
+		CMDDirect direct() const;
 		
 		Stmt execute(std::string_view query) const;
-		Stmt execute(std::string_view query, const BindValue& values) const;
+		Stmt execute(std::string_view query, const BindValue& value) const;
 		Stmt execute(std::string_view query, std::initializer_list<const BindValue> values) const;
 		
 		

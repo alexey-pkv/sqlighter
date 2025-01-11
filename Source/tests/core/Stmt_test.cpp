@@ -17,10 +17,10 @@ using namespace sqlighter;
 
 Stmt stmt__select_mock(const SQLighter& sql, std::string_view table = "mock_table")
 {
-	auto select = sql.select();
-	select->from(table);
-	
-	return select->execute();
+	return sql
+		.select()
+		.from(table)
+		.execute();
 }
 
 

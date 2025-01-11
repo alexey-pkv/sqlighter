@@ -21,113 +21,135 @@ CMDSelect::CMDSelect(const std::shared_ptr<IConnection>& connection) :
 }
 
 
-void CMDSelect::append_column_exp(std::string_view exp, std::span<const BindValue> span)
+ICMDSelect& CMDSelect::append_column_exp(std::string_view exp, std::span<const BindValue> span)
 {
 	m_columns.append(exp, span);
+	return *this;
 }
 
-void CMDSelect::append_where(std::string_view exp, std::span<const BindValue> span)
+ICMDSelect& CMDSelect::append_where(std::string_view exp, std::span<const BindValue> span)
 {
 	m_where.append(exp, span);
+	return *this;
 }
 
-void CMDSelect::append_group_by(std::string_view exp, std::span<const BindValue> span)
+ICMDSelect& CMDSelect::append_group_by(std::string_view exp, std::span<const BindValue> span)
 {
 	m_groupBy.append(exp, span);
+	return *this;
 }
 
-void CMDSelect::append_having(std::string_view exp, std::span<const BindValue> span)
+ICMDSelect& CMDSelect::append_having(std::string_view exp, std::span<const BindValue> span)
 {
 	m_having.append(exp, span);
+	return *this;
 }
 
-void CMDSelect::append_order_by(std::string_view exp, std::span<const BindValue> span)
+ICMDSelect& CMDSelect::append_order_by(std::string_view exp, std::span<const BindValue> span)
 {
 	m_orderBy.append(exp, span);
+	return *this;
 }
 
 
-void CMDSelect::distinct()
+ICMDSelect& CMDSelect::distinct()
 {
 	m_distinct = true;
+	return *this;
 }
 
 
-void CMDSelect::column(std::string_view column)
+ICMDSelect& CMDSelect::column(std::string_view column)
 {
 	m_columns << col(column);
+	return *this;
 }
 
-void CMDSelect::column_as(std::string_view column, std::string_view as)
+ICMDSelect& CMDSelect::column_as(std::string_view column, std::string_view as)
 {
 	m_columns << col_as(column, as);
+	return *this;
 }
 
-void CMDSelect::column_as(std::string_view column, char as)
+ICMDSelect& CMDSelect::column_as(std::string_view column, char as)
 {
 	m_columns << col_as(column, { &as, 1 });
+	return *this;
 }
 
-void CMDSelect::columns(const std::vector<std::string_view>& columns)
+ICMDSelect& CMDSelect::columns(const std::vector<std::string_view>& columns)
 {
 	for (const auto& c : columns)
 	{
 		m_columns << col(c);
 	}
+	
+	return *this;
 }
 
-void CMDSelect::columns(std::initializer_list<std::string_view> columns)
+ICMDSelect& CMDSelect::columns(std::initializer_list<std::string_view> columns)
 {
 	for (const auto& c : columns)
 	{
 		m_columns << col(c);
 	}
+	
+	return *this;
 }
 
 
-void CMDSelect::from(std::string_view table)
+ICMDSelect& CMDSelect::from(std::string_view table)
 {
 	m_from = wrap_element(table);
+	return *this;
 }
 
-void CMDSelect::from(std::string_view table, char alias)
+ICMDSelect& CMDSelect::from(std::string_view table, char alias)
 {
 	m_from = wrap_element(table, { &alias, 1 });
+	return *this;
 }
 
-void CMDSelect::from(std::string_view table, std::string_view alias)
+ICMDSelect& CMDSelect::from(std::string_view table, std::string_view alias)
 {
 	m_from = wrap_element(table, alias);
+	return *this;
 }
 
-void CMDSelect::where_null(std::string_view column)
+ICMDSelect& CMDSelect::where_null(std::string_view column)
 {
 	m_where << col(column) << " IS NULL";
+	return *this;
 }
 
-void CMDSelect::where_not_null(std::string_view column)
+ICMDSelect& CMDSelect::where_not_null(std::string_view column)
 {
 	m_where << col(column) << " IS NOT NULL";
+	return *this;
 }
 
-void CMDSelect::by_field(std::string_view column, BindValue value)
+ICMDSelect& CMDSelect::by_field(std::string_view column, BindValue value)
 {
 	m_where << col(column) << " = ?";
 	
 	m_where.append_bind(value);
+	
+	return *this;
 }
 
-void CMDSelect::group_by_field(std::string_view by)
+ICMDSelect& CMDSelect::group_by_field(std::string_view by)
 {
 	m_groupBy << col(by);
+	return *this;
 }
 
-void CMDSelect::order_by_field(std::string_view by)
+ICMDSelect& CMDSelect::order_by_field(std::string_view by)
 {
 	m_orderBy << col(by);
+	return *this;
 }
 
-void CMDSelect::order_by_field(std::string_view by, OrderBy order)
+ICMDSelect& CMDSelect::order_by_field(std::string_view by, OrderBy order)
 {
 	m_orderBy << col(by);
 	
@@ -135,23 +157,29 @@ void CMDSelect::order_by_field(std::string_view by, OrderBy order)
 	{
 		m_orderBy.direct() << ' ' << order;
 	}
+	
+	return *this;
 }
 
 
-void CMDSelect::limit_by(int count)
+ICMDSelect& CMDSelect::limit_by(int count)
 {
 	m_hasLimit = true;
 	
 	m_limitCount = count;
 	m_limitOffset = 0;
+	
+	return *this;
 }
 
-void CMDSelect::limit(int offset, int count)
+ICMDSelect& CMDSelect::limit(int offset, int count)
 {
 	m_hasLimit = true;
 	
 	m_limitCount = count;
 	m_limitOffset = offset;
+	
+	return *this;
 }
 
 

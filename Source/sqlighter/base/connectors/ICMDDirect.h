@@ -16,9 +16,9 @@ namespace sqlighter
 		
 		
 	public:
-		SQLIGHTER_EXPRESSION_CLAUSE(append,	do_append);
+		SQLIGHTER_EXPRESSION_CLAUSE(append,	do_append, ICMDDirect);
 		
-		inline void append(std::initializer_list<const BindValue> values) { do_append({}, values); };
+		inline ICMDDirect& append(std::initializer_list<const BindValue> values) { return do_append({}, values); };
 		
 		
 	public:

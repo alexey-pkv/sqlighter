@@ -49,49 +49,49 @@ namespace sqlighter
 		
 		
 	protected:
-		void append_column_exp(std::string_view exp, std::span<const BindValue> span) override;
-		void append_where(std::string_view exp, std::span<const BindValue> span) override;
-		void append_order_by(std::string_view exp, std::span<const BindValue> span) override;
-		void append_group_by(std::string_view exp, std::span<const BindValue> span) override;
-		void append_having(std::string_view exp, std::span<const BindValue> span) override;
+		ICMDSelect& append_column_exp(std::string_view exp, std::span<const BindValue> span) override;
+		ICMDSelect& append_where(std::string_view exp, std::span<const BindValue> span) override;
+		ICMDSelect& append_order_by(std::string_view exp, std::span<const BindValue> span) override;
+		ICMDSelect& append_group_by(std::string_view exp, std::span<const BindValue> span) override;
+		ICMDSelect& append_having(std::string_view exp, std::span<const BindValue> span) override;
 	
 	
 	public:
-		void distinct() override;
+		ICMDSelect& distinct() override;
 		
 		
 	public:
-		void column(std::string_view column) override;
-		void column_as(std::string_view column, std::string_view as) override;
-		void column_as(std::string_view column, char as) override;
-		void columns(const std::vector<std::string_view>& columns) override;
-		void columns(std::initializer_list<std::string_view> columns) override;
+		ICMDSelect& column(std::string_view column) override;
+		ICMDSelect& column_as(std::string_view column, std::string_view as) override;
+		ICMDSelect& column_as(std::string_view column, char as) override;
+		ICMDSelect& columns(const std::vector<std::string_view>& columns) override;
+		ICMDSelect& columns(std::initializer_list<std::string_view> columns) override;
 		
 		
 	public:
-		void from(std::string_view table) override;
-		void from(std::string_view table, char alias) override;
-		void from(std::string_view table, std::string_view alias) override;
+		ICMDSelect& from(std::string_view table) override;
+		ICMDSelect& from(std::string_view table, char alias) override;
+		ICMDSelect& from(std::string_view table, std::string_view alias) override;
 		
 		
 	public:
-		void where_null(std::string_view column) override;
-		void where_not_null(std::string_view column) override;
-		void by_field(std::string_view column, BindValue value) override;
+		ICMDSelect& where_null(std::string_view column) override;
+		ICMDSelect& where_not_null(std::string_view column) override;
+		ICMDSelect& by_field(std::string_view column, BindValue value) override;
 		
 		
 	public:
-		void group_by_field(std::string_view by) override;
+		ICMDSelect& group_by_field(std::string_view by) override;
 		
 		
 	public:
-		void order_by_field(std::string_view by, OrderBy order) override;
-		void order_by_field(std::string_view by) override;
+		ICMDSelect& order_by_field(std::string_view by, OrderBy order) override;
+		ICMDSelect& order_by_field(std::string_view by) override;
 		
 		
 	public:
-		void limit_by(int count) override;
-		void limit(int offset, int count) override;
+		ICMDSelect& limit_by(int count) override;
+		ICMDSelect& limit(int offset, int count) override;
 		
 		
 	public:

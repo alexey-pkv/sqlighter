@@ -1,8 +1,11 @@
 #include "connectors/CMDSelect.h"
 
 
-#include "base/connection/IConnection.h"
 #include "core/Stmt.h"
+#include "base/connection/IConnection.h"
+
+#include "db_mock.h"
+#include "sqlighter.h"
 
 #include <gtest/gtest.h>
 
@@ -538,3 +541,39 @@ TEST(CMDSelect, order_by)
 	ASSERT_EQ("bbb",	binds[4].get_str_value());
 }
 
+
+TEST(CMDSelect, query_sanity)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	ID				INTEGER PRIMARY KEY,         		"
+		"	Name			TEXT NOT NULL,     				    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
+		"	CreatedAt		DATETIME DEFAULT CURRENT_TIMESTAMP,	"
+		"	NullableField	BLOB	                 			"
+		")"
+	);	
+	
+	sql.execute(
+		"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
+		"	('Alice',	30,		2500.50,	1, NULL),   	"
+		"	('Bob',		NULL,	1500.00,	0, X'ABCD'),	"
+		"	('Charlie',	25,		0.00,		1, X'EF01'),	"
+		"	('Diana',	45,		10000.75,	1, NULL),   	"
+		"	('Eve',		35,		500.00,		0, X'1234'),	"
+		"	('Frank',	NULL,	NULL,		1, NULL),   	"
+		"	('Grace',	40,		700.00,		0, X'5678'),	"
+		"	('Hank',	20,		100.00,		1, NULL),   	"
+		"	('Ivy',		50,		150.00,		0, X'9ABC'),	"
+		"	('Jack',	60,		NULL,		1, X'DEF0') 	"
+	);
+	
+	
+	{
+		// sql.select()->from("ExampleTable")
+	}
+}
