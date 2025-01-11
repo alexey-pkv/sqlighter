@@ -43,7 +43,7 @@ void CMDDirect::do_append(std::string_view exp, std::span<const BindValue> span)
 }
 
 
-void CMDDirect::assemble(std::stringstream& ss) const
+void CMDDirect::assemble(std::ostringstream& ss) const
 {
 	ss << m_stream.str();
 }

@@ -12,8 +12,8 @@ namespace sqlighter
 	std::string wrap_element(std::string_view element, std::string_view as);
 	std::string wrap_element(std::string_view);
 	
-	void wrap_element(std::stringstream& ss, std::string_view element, std::string_view as);
-	void wrap_element(std::stringstream& ss, std::string_view element);
+	void wrap_element(std::ostringstream& ss, std::string_view element, std::string_view as);
+	void wrap_element(std::ostringstream& ss, std::string_view element);
 	
 	
 	struct col
@@ -38,13 +38,13 @@ namespace sqlighter
 	};
 	
 	
-	inline std::stringstream& operator<<(std::stringstream& s, const sqlighter::col& c)
+	inline std::ostringstream& operator<<(std::ostringstream& s, const sqlighter::col& c)
 	{
 		sqlighter::wrap_element(s, c.column);
 		return s;
 	}
 	
-	inline std::stringstream& operator<<(std::stringstream& s, const sqlighter::col_as& c)
+	inline std::ostringstream& operator<<(std::ostringstream& s, const sqlighter::col_as& c)
 	{
 		sqlighter::wrap_element(s, c.column, c.as);
 		return s;

@@ -19,7 +19,7 @@ namespace sqlighter
 		
 		
 	public:
-		virtual void assemble(std::stringstream& ss) const = 0;
+		virtual void assemble(std::ostringstream& ss) const = 0;
 		[[nodiscard]] virtual std::string assemble() const = 0;
 		[[nodiscard]] virtual std::vector<BindValue> bind() const = 0;
 		

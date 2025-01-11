@@ -88,9 +88,11 @@ void BindValue::bind(sqlite3_stmt* stmt, int offset) const
 			break;
 			
 		case type::TEXT_16:
-		case type::TEXT_64:
-			// TODO: implement
+			res = sqlite3_bind_text16(stmt, offset, m_strValue.c_str(), -1, SQLITE_TRANSIENT);
 			break;
+			
+		case type::TEXT_64:
+			throw std::logic_error("TEXT_64 bind is not implemented");
 	}
 	
 	if (res != SQLITE_OK)

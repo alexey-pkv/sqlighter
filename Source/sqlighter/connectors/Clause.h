@@ -20,7 +20,7 @@ namespace sqlighter
 	private:
 		const char*				m_delimiter = nullptr;
 		bool					m_isEmpty	= true;
-		std::stringstream		m_stream;
+		std::ostringstream		m_stream;
 		std::vector<BindValue>	m_binds;
 		
 		
@@ -46,7 +46,7 @@ namespace sqlighter
 		[[nodiscard]] inline std::string get_clause_string() const { return m_stream.str(); }
 		
 		[[nodiscard]] inline const std::vector<BindValue>& binds() const noexcept { return m_binds; }
-		[[nodiscard]] inline const std::stringstream& clause() const noexcept { return m_stream; }
+		[[nodiscard]] inline const std::ostringstream& clause() const noexcept { return m_stream; }
 		[[nodiscard]] inline size_t binds_size() const noexcept { return m_binds.size(); }
 		
 		
@@ -62,29 +62,29 @@ namespace sqlighter
 		
 		int bind(sqlite3_stmt* to, int offset) const;
 		
-		void append_to(std::stringstream& to) const;
+		void append_to(std::ostringstream& to) const;
 		void append_to(std::vector<BindValue>& to) const;
 		
 		
 	public:
-		inline std::stringstream& next_section()
+		inline std::ostringstream& next_section()
 		{
 			append_delimiter();
 			return m_stream;
 		}
 		
-		inline std::stringstream& direct()
+		inline std::ostringstream& direct()
 		{
 			return m_stream;
 		}
 		
-		inline std::stringstream& operator<<(const col& c)
+		inline std::ostringstream& operator<<(const col& c)
 		{
 			auto& ss = next_section();
 			return ss << c;
 		}
 		
-		inline std::stringstream& operator<<(const col_as& c)
+		inline std::ostringstream& operator<<(const col_as& c)
 		{
 			return next_section() << c;
 		}

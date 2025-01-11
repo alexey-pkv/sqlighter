@@ -73,5 +73,8 @@ void DB::open(std::string_view path)
 
 const char* DB::error_message() const
 {
-	 return sqlite3_errmsg(m_db);
+	if (!m_db)
+		return "";
+	
+	return sqlite3_errmsg(m_db);
 }

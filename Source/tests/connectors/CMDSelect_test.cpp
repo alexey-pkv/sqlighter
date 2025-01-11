@@ -20,6 +20,19 @@ public:
 };
 
 
+TEST(CMDSelect, constructor__connection_is_null__exception_thrown)
+{
+	try
+	{
+		CMDSelect select(nullptr);
+		FAIL();
+	}
+	catch (const std::runtime_error& e)
+	{
+		ASSERT_EQ("connection should not be null!", std::string(e.what()));
+	}
+}
+
 TEST(CMDSelect, sanity)
 {
 	CMDSelect cmd(std::make_shared<connection_override>());

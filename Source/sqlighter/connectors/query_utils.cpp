@@ -9,25 +9,27 @@ using namespace sqlighter;
 
 std::string sqlighter::wrap_element(std::string_view element, std::string_view as)
 {
-	std::stringstream ss;
+	std::ostringstream ss;
 	wrap_element(ss, element, as);
 	return ss.str();
 }
 
-void sqlighter::wrap_element(std::stringstream& ss, std::string_view element, std::string_view as)
+void sqlighter::wrap_element(std::ostringstream& ss, std::string_view element, std::string_view as)
 {
 	ss << '`' << element << "` as `" << as << '`';
 }
 
 
+
 std::string sqlighter::wrap_element(std::string_view element)
 {
-	std::stringstream ss;
+	std::ostringstream ss;
 	wrap_element(ss, element);
 	return ss.str();
 }
 
-void sqlighter::wrap_element(std::stringstream& ss, std::string_view element)
+void sqlighter::wrap_element(std::ostringstream& ss, std::string_view element)
 {
 	ss << '`' << element << '`';
 }
+

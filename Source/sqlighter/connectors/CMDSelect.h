@@ -95,7 +95,7 @@ namespace sqlighter
 		
 		
 	public:
-		void assemble(std::stringstream& ss) const override;
+		void assemble(std::ostringstream& ss) const override;
 		[[nodiscard]] std::string assemble() const override;
 		[[nodiscard]] std::vector<BindValue> bind() const override;
 		

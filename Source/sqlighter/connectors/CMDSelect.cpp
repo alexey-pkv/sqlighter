@@ -155,7 +155,7 @@ void CMDSelect::limit(int offset, int count)
 }
 
 
-void CMDSelect::assemble(std::stringstream& ss) const
+void CMDSelect::assemble(std::ostringstream& ss) const
 {
 	ss << "SELECT";
 	
@@ -218,7 +218,7 @@ void CMDSelect::assemble(std::stringstream& ss) const
 
 std::string CMDSelect::assemble() const
 {
-	std::stringstream ss;
+	std::ostringstream ss;
 	
 	assemble(ss);
 	

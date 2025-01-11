@@ -188,7 +188,7 @@ TEST(CMDDirect, append)
 TEST(CMDDirect, assemble__with_stringstream)
 {
 	CMDDirect cmd(std::make_shared<connection_override>());
-	std::stringstream ss;
+	std::ostringstream ss;
 	
 	cmd << "hello world";
 	cmd << " 123" << "456";

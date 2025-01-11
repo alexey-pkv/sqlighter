@@ -14,7 +14,7 @@ namespace sqlighter
 	private:
 		std::shared_ptr<IConnection>	m_connection;
 		
-		std::stringstream		m_stream;
+		std::ostringstream		m_stream;
 		std::vector<BindValue>	m_binds;
 		
 		
@@ -35,7 +35,7 @@ namespace sqlighter
 		
 		
 	public:
-		void assemble(std::stringstream& ss) const override;
+		void assemble(std::ostringstream& ss) const override;
 		
 		[[nodiscard]] std::string assemble() const override;
 		[[nodiscard]] std::vector<BindValue> bind() const override;

@@ -40,5 +40,9 @@ namespace sqlighter
 		
 	public:
 		const std::string& path() const;
+		
+		
+	public:
+		inline const std::shared_ptr<DB>& db() { return m_db; }
 	};
 }
