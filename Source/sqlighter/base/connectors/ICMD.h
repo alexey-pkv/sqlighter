@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "core/Stmt.h"
+#include "connector_utils.h"
 
 
 namespace sqlighter

@@ -44,7 +44,7 @@ namespace sqlighter
 		inline int is_done() const	{ return m_lastCode == SQLITE_DONE;		}
 		inline int is_ok() const	{ return m_lastCode == SQLITE_OK;		}
 		inline int is_error() const	{ return m_lastCode == SQLITE_ERROR;	}
-		inline int hsa_row() const	{ return m_lastCode == SQLITE_ROW;		}
+		inline int has_row() const	{ return m_lastCode == SQLITE_ROW;		}
 		
 		
 	public:
@@ -79,6 +79,8 @@ namespace sqlighter
 		int column_type(int at) const;
 		int column_count() const;
 		
+		void require_one_column() const;
+		void require_done() const;
 		
 	public:
 		template <typename T>

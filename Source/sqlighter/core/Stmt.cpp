@@ -84,7 +84,7 @@ int Stmt::close()
 
 void Stmt::require_row() const
 {
-	if (!hsa_row())
+	if (!has_row())
 	{
 		throw SQLighterException(SQLIGHTER_ERR_NO_ROWS);
 	}
@@ -234,6 +234,26 @@ int Stmt::column_count() const
 {
 	require_row();
 	return sqlite3_column_count(m_stmt);
+}
+
+void Stmt::require_one_column() const
+{
+	if (!has_row())
+	{
+		
+	}
+	else if (column_count() != 1)
+	{
+		
+	}
+}
+
+void Stmt::require_done() const
+{
+	if (!is_done())
+	{
+		
+	}
 }
 
 

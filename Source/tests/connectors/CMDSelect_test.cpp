@@ -556,24 +556,74 @@ TEST(CMDSelect, query_sanity)
 		"	CreatedAt		DATETIME DEFAULT CURRENT_TIMESTAMP,	"
 		"	NullableField	BLOB	                 			"
 		")"
-	);	
-	
-	sql.execute(
-		"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
-		"	('Alice',	30,		2500.50,	1, NULL),   	"
-		"	('Bob',		NULL,	1500.00,	0, X'ABCD'),	"
-		"	('Charlie',	25,		0.00,		1, X'EF01'),	"
-		"	('Diana',	45,		10000.75,	1, NULL),   	"
-		"	('Eve',		35,		500.00,		0, X'1234'),	"
-		"	('Frank',	NULL,	NULL,		1, NULL),   	"
-		"	('Grace',	40,		700.00,		0, X'5678'),	"
-		"	('Hank',	20,		100.00,		1, NULL),   	"
-		"	('Ivy',		50,		150.00,		0, X'9ABC'),	"
-		"	('Jack',	60,		NULL,		1, X'DEF0') 	"
 	);
 	
+	{
+		auto stmt = sql.execute(
+			"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
+			"	('Alice',	30,		2500.50,	1, NULL),   	"
+			"	('Bob',		NULL,	1500.00,	0, X'ABCD'),	"
+			"	('Charlie',	25,		0.00,		1, X'EF01'),	"
+			"	('Diana',	45,		10000.75,	1, NULL),   	"
+			"	('Eve',		35,		500.00,		0, X'1234'),	"
+			"	('Frank',	NULL,	NULL,		1, NULL),   	"
+			"	('Grace',	40,		700.00,		0, X'5678'),	"
+			"	('Hank',	20,		100.00,		1, NULL),   	"
+			"	('Ivy',		50,		150.00,		0, X'9ABC'),	"
+			"	('Jack',	60,		NULL,		1, X'DEF0') 	"
+		);
+		
+		ASSERT_TRUE(stmt.is_done());
+		ASSERT_FALSE(stmt.is_ok());
+		ASSERT_FALSE(stmt.has_row());
+		ASSERT_FALSE(stmt.is_error());
+	}
 	
 	{
-		// sql.select()->from("ExampleTable")
+		auto stmt = sql.select()
+			.from("ExampleTable")
+			.by_field("Name", "Not Found")
+			.execute();
+		
+		ASSERT_TRUE(stmt.is_done());
+		ASSERT_FALSE(stmt.is_ok());
+		ASSERT_FALSE(stmt.has_row());
+		ASSERT_FALSE(stmt.is_error());
+	}
+	
+	{
+		auto stmt = sql.select()
+			.from("ExampleTable")
+			.where("Age > ?", 20)
+			.where("Age < ?", 35)
+			.execute();
+		
+		int count = 0;
+		
+		while (stmt.has_row())
+		{
+			ASSERT_FALSE(stmt.is_done());
+			ASSERT_FALSE(stmt.is_error());
+			
+			count++;
+			
+			stmt.step();
+		}
+		
+		ASSERT_EQ(2, count);
+		ASSERT_TRUE(stmt.is_done());
+		ASSERT_FALSE(stmt.is_error());
+		ASSERT_FALSE(stmt.has_row());
+	}
+	
+	{
+		auto s = sql.select();
+		s
+			.column_exp("COUNT(*)")
+			.from("ExampleTable")
+			.where("Age > ?", 20)
+			.where("Age < ?", 35);
+		
+		ASSERT_EQ(2, s.query_int());
 	}
 }

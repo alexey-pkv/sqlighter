@@ -5,8 +5,9 @@
 #include <sstream>
 #include <memory>
 
+#include "base/connectors/ICMD.h"
+#include "consts/OrderBy.h"
 #include "connectors/Clause.h"
-#include "base/connectors/ICMDSelect.h"
 
 
 namespace sqlighter
@@ -14,7 +15,7 @@ namespace sqlighter
 	class IConnection;
 	
 	
-	class CMDSelect : public ICMDSelect
+	class CMDSelect : public ICMD
 	{
 	private:
 		std::shared_ptr<IConnection>	m_connection;
@@ -37,7 +38,7 @@ namespace sqlighter
 		
 		
 	public:
-		~CMDSelect() override = default;
+		~CMDSelect() = default;
 		CMDSelect(CMDSelect&&) noexcept = default;
 		CMDSelect(const CMDSelect&) = default;
 		CMDSelect& operator=(const CMDSelect&) = default;
@@ -49,59 +50,73 @@ namespace sqlighter
 		
 		
 	protected:
-		ICMDSelect& append_column_exp(std::string_view exp, std::span<const BindValue> span) override;
-		ICMDSelect& append_where(std::string_view exp, std::span<const BindValue> span) override;
-		ICMDSelect& append_order_by(std::string_view exp, std::span<const BindValue> span) override;
-		ICMDSelect& append_group_by(std::string_view exp, std::span<const BindValue> span) override;
-		ICMDSelect& append_having(std::string_view exp, std::span<const BindValue> span) override;
+		CMDSelect& append_column_exp(std::string_view exp, std::span<const BindValue> span);
+		CMDSelect& append_where(std::string_view exp, std::span<const BindValue> span);
+		CMDSelect& append_order_by(std::string_view exp, std::span<const BindValue> span);
+		CMDSelect& append_group_by(std::string_view exp, std::span<const BindValue> span);
+		CMDSelect& append_having(std::string_view exp, std::span<const BindValue> span);
+		
+		
+	public:
+		SQLIGHTER_INLINE_CLAUSE(column_exp,	append_column_exp,	CMDSelect);
+		SQLIGHTER_INLINE_CLAUSE(where,		append_where,	 	CMDSelect);
+		SQLIGHTER_INLINE_CLAUSE(group_by,	append_group_by,	CMDSelect);
+		SQLIGHTER_INLINE_CLAUSE(having,		append_having,		CMDSelect);
+		SQLIGHTER_INLINE_CLAUSE(order_by,	append_order_by,	CMDSelect);
 	
 	
 	public:
-		ICMDSelect& distinct() override;
+		CMDSelect& distinct();
 		
 		
 	public:
-		ICMDSelect& column(std::string_view column) override;
-		ICMDSelect& column_as(std::string_view column, std::string_view as) override;
-		ICMDSelect& column_as(std::string_view column, char as) override;
-		ICMDSelect& columns(const std::vector<std::string_view>& columns) override;
-		ICMDSelect& columns(std::initializer_list<std::string_view> columns) override;
+		CMDSelect& column(std::string_view column);
+		CMDSelect& column_as(std::string_view column, std::string_view as);
+		CMDSelect& column_as(std::string_view column, char as);
+		CMDSelect& columns(const std::vector<std::string_view>& columns);
+		CMDSelect& columns(std::initializer_list<std::string_view> columns);
 		
 		
 	public:
-		ICMDSelect& from(std::string_view table) override;
-		ICMDSelect& from(std::string_view table, char alias) override;
-		ICMDSelect& from(std::string_view table, std::string_view alias) override;
+		CMDSelect& from(std::string_view table);
+		CMDSelect& from(std::string_view table, char alias);
+		CMDSelect& from(std::string_view table, std::string_view alias);
 		
 		
 	public:
-		ICMDSelect& where_null(std::string_view column) override;
-		ICMDSelect& where_not_null(std::string_view column) override;
-		ICMDSelect& by_field(std::string_view column, BindValue value) override;
+		CMDSelect& where_null(std::string_view column);
+		CMDSelect& where_not_null(std::string_view column);
+		CMDSelect& by_field(std::string_view column, BindValue value);
 		
 		
 	public:
-		ICMDSelect& group_by_field(std::string_view by) override;
+		CMDSelect& group_by_field(std::string_view by);
 		
 		
 	public:
-		ICMDSelect& order_by_field(std::string_view by, OrderBy order) override;
-		ICMDSelect& order_by_field(std::string_view by) override;
+		CMDSelect& order_by_field(std::string_view by, OrderBy order);
+		CMDSelect& order_by_field(std::string_view by);
+		
+		inline CMDSelect& order_by_field_asc(std::string_view by)	{ return order_by_field(by, OrderBy::ASC); };
+		inline CMDSelect& order_by_field_desc(std::string_view by)	{ return order_by_field(by, OrderBy::DESC); };
 		
 		
 	public:
-		ICMDSelect& limit_by(int count) override;
-		ICMDSelect& limit(int offset, int count) override;
+		CMDSelect& limit_by(int count);
+		CMDSelect& limit(int offset, int count);
+		
+		inline CMDSelect& page(int page, int page_size) { return limit(page * page_size, page_size); };
 		
 		
 	public:
 		void assemble(std::ostringstream& ss) const override;
 		[[nodiscard]] std::string assemble() const override;
 		[[nodiscard]] std::vector<BindValue> bind() const override;
+		Stmt execute() const override;
 		
 		
 	public:
-		Stmt execute() const override;
+		int query_int();
 	};
 }
 
