@@ -116,7 +116,8 @@ namespace sqlighter
 		
 		
 	public:
-		int query_int();
+		int query_int() const;
+		int query_count() const;
 	};
 }
 

@@ -4,6 +4,8 @@
 #include <string>
 #include <cstdint>
 #include <sqlite3.h>
+#include <vector>
+#include <map>
 #include <memory>
 
 
@@ -14,8 +16,13 @@ namespace sqlighter
 	class Stmt
 	{
 	private:
-		std::shared_ptr<DB>	m_db		= nullptr;
-		sqlite3_stmt*		m_stmt		= nullptr;
+		sqlite3_stmt*						m_stmt		= nullptr;
+		
+		mutable std::vector<std::string> 	m_columns		= {};
+		mutable std::map<std::string, int>	m_columnIndex	= {};
+		
+		std::string 		m_query		= {};
+		std::shared_ptr<DB> m_db		= nullptr;
 		int 				m_lastCode	= SQLITE_ERROR;
 		
 		
@@ -25,7 +32,9 @@ namespace sqlighter
 		Stmt() = default;
 		explicit Stmt(std::shared_ptr<DB> db);
 		explicit Stmt(sqlite3_stmt* stmt);
+		
 		Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db);
+		Stmt(std::shared_ptr<DB> db, std::string_view query);
 		
 		Stmt(const Stmt&) = delete;
 		Stmt& operator=(const Stmt&) = delete;
@@ -46,6 +55,8 @@ namespace sqlighter
 		inline int is_error() const	{ return m_lastCode == SQLITE_ERROR;	}
 		inline int has_row() const	{ return m_lastCode == SQLITE_ROW;		}
 		
+		inline const std::string& query() const { return m_query; }
+		
 		
 	public:
 		int step();
@@ -59,6 +70,11 @@ namespace sqlighter
 		 * Throw an exception if there is no current row to read form.
 		 */
 		void require_row() const;
+		
+		/**
+		 * Ensure column given at position exists.  
+		 */
+		void require_column(int at) const;
 		
 		
 	public:
@@ -76,8 +92,13 @@ namespace sqlighter
 		bool column_double_n(int at, double& into) const;
 		bool column_string_n(int at, std::string& into) const;
 		
+		const char* column_name(int at) const;
+		const std::string& column_name_str(int at) const;
+		const std::vector<std::string>& column_names() const;
 		int column_type(int at) const;
 		int column_count() const;
+		int column_index(std::string_view name) const;
+		bool has_column(std::string_view name) const;
 		
 		void require_one_column() const;
 		void require_done() const;

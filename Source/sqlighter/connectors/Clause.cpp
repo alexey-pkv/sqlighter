@@ -17,9 +17,10 @@ Clause::Clause(const Clause& c) :
 	m_isEmpty(c.m_isEmpty),
 	m_binds(c.m_binds)
 {
+	m_stream.str("");
 	m_stream.clear();
 	
-	m_stream << c.m_stream.rdbuf();
+	m_stream << c.m_stream.str();
 }
 
 Clause& Clause::operator=(const Clause& c)
@@ -138,4 +139,14 @@ void Clause::append_delimiter()
 	{
 		m_stream << m_delimiter;
 	}
+}
+
+void Clause::clear()
+{
+	m_isEmpty = true;
+	
+	m_stream.str("");
+	m_stream.clear();
+	
+	m_binds.clear();
 }

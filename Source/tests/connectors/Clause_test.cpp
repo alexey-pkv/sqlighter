@@ -84,3 +84,18 @@ TEST(Clause, append_directly__first_string_is_empty__delimiter_skipped)
 	
 	ASSERT_EQ("b", c.get_clause_string());
 }
+
+TEST(Clause, clear)
+{
+	Clause c(", ");
+	
+	c.append("hello");
+	c.append("world");
+	c.append_bind(123);
+	
+	c.clear();
+	
+	ASSERT_TRUE(c.empty_clause());
+	ASSERT_TRUE(!c.has_binds());
+	ASSERT_TRUE(c.get_clause_string().empty());
+}

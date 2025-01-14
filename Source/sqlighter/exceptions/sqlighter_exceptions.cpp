@@ -37,21 +37,6 @@ SQLighterException::SQLighterException(int code, std::string_view message) :
 	
 }
 
-SQLighterException::SQLighterException(int code, const std::shared_ptr<const DB>& db) : 
-	m_lighter_code(code),
-	m_message(db->error_message())
-{
-	
-}
-
-SQLighterException::SQLighterException(int code, int sqlite_code, const std::shared_ptr<const DB>& db) : 
-	m_lighter_code(code),
-	m_sqlite_code(sqlite_code),
-	m_message(db->error_message())
-{
-	
-}
-
 
 const std::string& SQLighterException::message() const noexcept
 {
@@ -106,4 +91,17 @@ SQLighterException SQLighterException::failed_to_bind(int sqlite_code, int offse
 	bv.to_error_message(err);
 	
 	return SQLighterException(SQLIGHTER_ERR_BIND, sqlite_code, err.str());
+}
+
+SQLighterException SQLighterException::no_column(int at, int count)
+{
+	std::ostringstream err;
+	
+	err << "Requested column at position " 
+		<< at 
+		<< ", but statement has only " 
+		<< count 
+		<< " columns";
+	
+	return SQLighterException(SQLIGHTER_ERR_NO_COLUMN, err.str());
 }

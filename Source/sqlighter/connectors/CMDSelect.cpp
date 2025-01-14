@@ -287,7 +287,7 @@ Stmt CMDSelect::execute() const
 	);
 }
 
-int CMDSelect::query_int()
+int CMDSelect::query_int() const
 {
 	auto stmt = execute();
 	int value;
@@ -300,4 +300,14 @@ int CMDSelect::query_int()
 	stmt.require_done();
 	
 	return value;
+}
+
+int CMDSelect::query_count() const
+{
+	CMDSelect countSelect { *this };
+	
+	countSelect.m_columns.clear();
+	countSelect.column_exp("COUNT(*)");
+	
+	return countSelect.query_int();
 }

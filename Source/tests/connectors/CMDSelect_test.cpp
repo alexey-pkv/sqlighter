@@ -617,13 +617,31 @@ TEST(CMDSelect, query_sanity)
 	}
 	
 	{
-		auto s = sql.select();
-		s
+		auto res = sql.select()
 			.column_exp("COUNT(*)")
 			.from("ExampleTable")
 			.where("Age > ?", 20)
-			.where("Age < ?", 35);
+			.where("Age < ?", 35)
+			.query_int();
 		
-		ASSERT_EQ(2, s.query_int());
+		ASSERT_EQ(2, res);
+	}
+	
+	{
+		auto res = sql.select()
+			.from("ExampleTable")
+			.where("Age > ?", 20)
+			.where("Age < ?", 35)
+			.query_count();
+		
+		ASSERT_EQ(2, res);
+	}
+	
+	{
+		auto res = sql.select()
+			.from("ExampleTable")
+			.query_count();
+		
+		ASSERT_EQ(10, res);
 	}
 }

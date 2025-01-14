@@ -33,6 +33,13 @@ Stmt::Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db) :
 	
 }
 
+Stmt::Stmt(std::shared_ptr<DB> db, std::string_view query) : 
+	m_db(db ? std::move(db) : nullptr),
+	m_query(query)
+{
+	
+}
+
 
 sqlite3_stmt* Stmt::stmt()
 {
@@ -62,7 +69,12 @@ int Stmt::step()
 		m_lastCode != SQLITE_DONE && 
 		m_lastCode != SQLITE_ROW)
 	{
-		throw SQLighterException(SQLIGHTER_ERR_STEP, m_lastCode, m_db);
+		auto e = SQLighterException(SQLIGHTER_ERR_STEP)
+			.sqlite_error(m_lastCode)
+			.query(m_query)
+			.db_msg(m_db);
+		
+		throw e;
 	}
 	
 	return m_lastCode;
@@ -90,40 +102,54 @@ void Stmt::require_row() const
 	}
 }
 
+void Stmt::require_column(int at) const
+{
+	require_row();
+	
+	if (at < 0)
+	{
+		throw SQLighterException(SQLIGHTER_ERR_INVALID_COLUMN, "Got: " + std::to_string(at));
+	}
+	else if (column_count() <= at)
+	{
+		throw SQLighterException::no_column(at, column_count());
+	}
+}
+
 
 int Stmt::column_int(int at) const
 {
-	require_row();
+	require_column(at);
 	return sqlite3_column_int(m_stmt, at);
 }
 
 int64_t Stmt::column_int64(int at) const
 {
-	require_row();
+	require_column(at);
 	return sqlite3_column_int64(m_stmt, at);
 }
 
 bool Stmt::column_bool(int at) const
 {
-	require_row();
+	require_column(at);
 	return sqlite3_column_int(m_stmt, at) != 0;
 }
 
 double Stmt::column_double(int at) const
 {
-	require_row();
+	require_column(at);
 	return sqlite3_column_double(m_stmt, at);
 }
 
 std::string Stmt::column_string(int at) const
 {
-	require_row();
+	require_column(at);
 	return reinterpret_cast<const char*>(sqlite3_column_text(m_stmt, at));
 }
 
 size_t Stmt::column_blob(int at, void** into) const
 {
-	require_row();
+	require_column(at);
 	
 	*into = nullptr;
 	
@@ -140,7 +166,7 @@ size_t Stmt::column_blob(int at, void** into) const
 	
 	if (!*into)
 	{
-		throw std::bad_alloc();
+		throw std::bad_alloc(); // LCOV_EXCL_LINE
 	}
 	
 	memcpy(*into, data, size);
@@ -226,25 +252,73 @@ bool Stmt::column_string_n(int at, std::string& into) const
 
 int Stmt::column_type(int at) const
 {
-	require_row();
+	require_column(at);
 	return sqlite3_column_type(m_stmt, at);
 }
 
 int Stmt::column_count() const
 {
-	require_row();
 	return sqlite3_column_count(m_stmt);
+}
+
+const char* Stmt::column_name(int at) const
+{
+	if (at < 0)
+	{
+		auto e = SQLighterException(SQLIGHTER_ERR_INVALID_COLUMN)
+			.msg("Got: " + std::to_string(at))
+			.query(m_query);
+		
+		throw e;
+	}
+	else if (sqlite3_column_count(m_stmt) <= at)
+	{
+		throw SQLighterException::no_column(at, column_count());
+	}
+		
+	return sqlite3_column_name(m_stmt, at);
+}
+
+const std::string& Stmt::column_name_str(int at) const
+{
+	column_names();
+	
+	require_column(at);
+	
+	return m_columns[at];
+}
+
+const std::vector<std::string>& Stmt::column_names() const
+{
+	if (!m_columns.empty())
+		return m_columns;
+	
+	auto cc = sqlite3_column_count(m_stmt);
+	
+	m_columns.reserve(cc);
+	
+	for (int i = 0; i < cc; i++)
+	{
+		std::string name { column_name(i) };
+		
+		if (m_columnIndex.find(name) == m_columnIndex.end())
+		{
+			m_columnIndex[name] = i;
+		}
+		
+		m_columns.emplace_back(std::move(name));
+	}
+	
+	return m_columns;
 }
 
 void Stmt::require_one_column() const
 {
-	if (!has_row())
+	require_row();
+	
+	if (column_count() != 1)
 	{
-		
-	}
-	else if (column_count() != 1)
-	{
-		
+		throw SQLighterException(SQLIGHTER_ERR_MULT_COLUMNS);
 	}
 }
 
@@ -252,10 +326,25 @@ void Stmt::require_done() const
 {
 	if (!is_done())
 	{
-		
+		// TODO: 
 	}
 }
 
+int Stmt::column_index(std::string_view name) const
+{
+	column_names();
+	
+	auto kvp = m_columnIndex.find(std::string { name });
+	
+	return kvp == m_columnIndex.end() ? -1 : kvp->second;
+}
+
+bool Stmt::has_column(std::string_view name) const
+{
+	column_names();
+	
+	return m_columnIndex.find(std::string { name }) != m_columnIndex.end();
+}
 
 template <>
 int Stmt::column<int>(int at) const
@@ -292,7 +381,6 @@ std::string Stmt::column<std::string>(int at) const
 {
     return column_string(at);
 }
-
 
 
 template <>

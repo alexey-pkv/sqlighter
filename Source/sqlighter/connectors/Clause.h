@@ -65,6 +65,8 @@ namespace sqlighter
 		void append_to(std::ostringstream& to) const;
 		void append_to(std::vector<BindValue>& to) const;
 		
+		void clear();
+		
 		
 	public:
 		inline std::ostringstream& next_section()
@@ -80,8 +82,7 @@ namespace sqlighter
 		
 		inline std::ostringstream& operator<<(const col& c)
 		{
-			auto& ss = next_section();
-			return ss << c;
+			return next_section() << c;
 		}
 		
 		inline std::ostringstream& operator<<(const col_as& c)

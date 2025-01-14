@@ -12,14 +12,6 @@
 
 using namespace sqlighter;
 
-/*
-SQLighterException(int code);
-		SQLighterException(int code, int sqlite_code);
-		SQLighterException(int code, int sqlite_code, std::string_view message);
-		SQLighterException(int code, std::string_view message);
-		SQLighterException(int code, const std::shared_ptr<const DB>& db);
-		SQLighterException(int code, int sqlite_code, const std::shared_ptr<const DB>& db);*/
-
 
 TEST(SQLighterException, constructor__int)
 {
@@ -68,7 +60,9 @@ TEST(SQLighterException, constructor__int_db)
 	try { sql.execute("abc"); } catch (const std::exception& e){}
 	
 	
-	SQLighterException e(123, sql.db());
+	SQLighterException e(123);
+	e.db_msg(sql.db());
+	
 	
 	ASSERT_EQ(123,	e.code());
 	ASSERT_EQ(-1,	e.sqlite_code());
@@ -82,7 +76,8 @@ TEST(SQLighterException, constructor__int_int_db)
 	try { sql.execute("abc"); } catch (const std::exception& e){}
 	
 	
-	SQLighterException e(123, 12, sql.db());
+	SQLighterException e(123, 12);
+	e.db_msg(sql.db());
 	
 	
 	ASSERT_EQ(123,	e.code());
@@ -105,7 +100,8 @@ TEST(SQLighterException, what__sanity)
 	SQLighter sql { setup_db("test_mock_n.db") };
 	try { sql.execute("abc"); } catch (const std::exception& e){}
 	
-	SQLighterException e(SQLIGHTER_ERR_STEP, SQLITE_NOTFOUND, sql.db());
+	SQLighterException e(SQLIGHTER_ERR_STEP, SQLITE_NOTFOUND);
+	e.db_msg(sql.db());
 	
 	
 	std::string str = e.what();
