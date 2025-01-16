@@ -86,7 +86,7 @@ ScalarValue Stmt::to_value(int at) const
 int Stmt::step()
 {
 	if (m_stmt == nullptr)
-		throw SQLighterException(SQLIGHTER_ERR_STMT_FINALIZED, "When calling step()");
+		throw SQLighterException(SQLIGHTER_ERR_STMT_FINALIZED, "When calling step()").query(m_query);
 	
 	m_lastCode = sqlite3_step(m_stmt);
 	
@@ -133,11 +133,11 @@ void Stmt::require_column(int at) const
 	
 	if (at < 0)
 	{
-		throw SQLighterException(SQLIGHTER_ERR_INVALID_COLUMN, "Got: " + std::to_string(at));
+		throw SQLighterException(SQLIGHTER_ERR_INVALID_COLUMN, "Got: " + std::to_string(at)).query(m_query);
 	}
 	else if (column_count() <= at)
 	{
-		throw SQLighterException::no_column(at, column_count());
+		throw SQLighterException::no_column(at, column_count(), m_query);
 	}
 }
 
@@ -307,6 +307,25 @@ bool Stmt::column_string_n(int at, std::string& into) const
 	}
 }
 
+std::vector<ScalarValue> Stmt::row() const
+{
+	require_row();
+	
+	auto c = column_count();
+	std::vector<ScalarValue> res {};
+	
+	if (c == 0)
+		return {};
+	
+	res.reserve(c);
+	
+	for (int i = 0; i < c; i++)
+	{
+		res.emplace_back(column_value(i));
+	}
+	
+	return res;
+}
 
 int Stmt::column_type(int at) const
 {
@@ -331,7 +350,7 @@ const char* Stmt::column_name(int at) const
 	}
 	else if (sqlite3_column_count(m_stmt) <= at)
 	{
-		throw SQLighterException::no_column(at, column_count());
+		throw SQLighterException::no_column(at, column_count(), m_query);
 	}
 		
 	return sqlite3_column_name(m_stmt, at);
@@ -372,11 +391,9 @@ const std::vector<std::string>& Stmt::column_names() const
 
 void Stmt::require_one_column() const
 {
-	require_row();
-	
 	if (column_count() != 1)
 	{
-		throw SQLighterException(SQLIGHTER_ERR_MULT_COLUMNS);
+		throw SQLighterException(SQLIGHTER_ERR_MULT_COLUMNS).query(m_query);
 	}
 }
 

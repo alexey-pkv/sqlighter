@@ -38,7 +38,6 @@ namespace sqlighter
 		
 		
 	public:
-		~CMDSelect() = default;
 		CMDSelect(CMDSelect&&) noexcept = default;
 		CMDSelect(const CMDSelect&) = default;
 		CMDSelect& operator=(const CMDSelect&) = default;
@@ -117,6 +116,9 @@ namespace sqlighter
 		
 	public:
 		ScalarValue query_scalar() const;
+		std::vector<ScalarValue> query_column() const;
+		std::vector<ScalarValue> query_row(bool expect_one) const;
+		std::vector<std::vector<ScalarValue>> query_all(int failsafeLimit = 10000) const;
 		
 		int64_t query_int() const;
 		double query_double() const;

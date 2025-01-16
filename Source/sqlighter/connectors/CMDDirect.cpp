@@ -70,10 +70,5 @@ Stmt CMDDirect::execute() const
 
 void CMDDirect::execute_direct() const
 {
-	auto s = execute();
-	
-	if (!s.is_done())
-	{
-		throw std::runtime_error("Implement correct error");
-	}
+	execute().require_done();
 }

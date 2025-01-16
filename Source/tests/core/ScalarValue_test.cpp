@@ -293,10 +293,10 @@ TEST(ScalarValue, get_null_value)
 	ASSERT_EQ(24, n.get<int64_t>(24));
 	
 	ASSERT_TRUE(n.get_str().empty());
-	ASSERT_TRUE(n.get<std::string>().empty());
+	ASSERT_TRUE(n.get<const std::string&>().empty());
 	
 	ASSERT_TRUE(n.get_blob().empty());
-	ASSERT_TRUE(n.get<blob_t>().empty());
+	ASSERT_TRUE(n.get<const blob_t&>().empty());
 }
 
 TEST(ScalarValue, try_get__different_type)

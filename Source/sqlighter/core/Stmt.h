@@ -105,6 +105,8 @@ namespace sqlighter
 		bool column_double_n(int at, double& into) const;
 		bool column_string_n(int at, std::string& into) const;
 		
+		std::vector<ScalarValue> row() const;
+		
 		const char* column_name(int at) const;
 		const std::string& column_name_str(int at) const;
 		const std::vector<std::string>& column_names() const;

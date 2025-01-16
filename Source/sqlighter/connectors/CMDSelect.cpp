@@ -3,9 +3,10 @@
 
 #include "query_utils.h"
 
-#include "consts/const_cast.h"
 #include "core/Stmt.h"
 #include "base/connection/IConnection.h"
+#include "consts/const_cast.h"
+#include "exceptions/sqlighter_exceptions.h"
 
 
 using namespace sqlighter;
@@ -16,7 +17,7 @@ CMDSelect::CMDSelect(const std::shared_ptr<IConnection>& connection) :
 {
 	if (connection == nullptr)
 	{
-		throw std::runtime_error("connection should not be null!");
+		throw SQLighterException(SQLIGHTER_ERR_UNEXPECTED, "connection should not be null!");
 	}
 }
 
@@ -341,3 +342,67 @@ int64_t CMDSelect::query_count() const
 	
 	return countSelect.query_int();
 }
+
+std::vector<ScalarValue> CMDSelect::query_column() const
+{
+	std::vector<ScalarValue> data {};
+	auto stmt = execute();
+	
+	stmt.require_one_column();
+	
+	while (stmt.has_row())
+	{
+		data.emplace_back(stmt.column_value(0));
+		stmt.step();
+	}
+	
+	stmt.require_done();
+	
+	return data;
+}
+
+std::vector<ScalarValue> CMDSelect::query_row(bool expect_one) const
+{
+	auto stmt = execute();
+	
+	if (!expect_one && !stmt.has_row())
+	{
+		return {};
+	}
+	
+	auto res = stmt.row();
+	
+	if (expect_one)
+	{
+		stmt.step();
+		
+		if (!stmt.is_done())
+		{
+			throw SQLighterException(SQLIGHTER_ERR_MULT_ROWS).query(assemble());
+		}
+	}
+	
+	return res;
+}
+
+std::vector<std::vector<ScalarValue>> CMDSelect::query_all(int failsafeLimit) const
+{
+	auto stmt = execute();
+	
+	if (!stmt.has_row())
+		return {};
+	
+	std::vector<std::vector<ScalarValue>> data = {};
+	
+	while (stmt.has_row())
+	{
+		if (data.size() >= failsafeLimit)
+			throw SQLighterException(SQLIGHTER_ERR_ROWS_OVERFLOW).query(assemble());
+		
+		data.emplace_back(stmt.row());
+		stmt.step();
+	}
+	
+	return data;
+}
+

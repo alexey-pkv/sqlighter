@@ -6,6 +6,7 @@
 
 #include "db_mock.h"
 #include "sqlighter.h"
+#include "exceptions/sqlighter_exceptions.h"
 
 #include <gtest/gtest.h>
 
@@ -30,10 +31,41 @@ TEST(CMDSelect, constructor__connection_is_null__exception_thrown)
 		CMDSelect select(nullptr);
 		FAIL();
 	}
-	catch (const std::runtime_error& e)
+	catch (const SQLighterException& e)
 	{
-		ASSERT_EQ("connection should not be null!", std::string(e.what()));
+		ASSERT_TRUE(std::string(e.what()).find("connection should not be null!") != std::string::npos);
 	}
+}
+
+TEST(CMDSelect, constructor__move)
+{
+	CMDSelect cmd(std::make_shared<connection_override>());
+	
+	cmd
+		.from("hello")
+		.column("age")
+		.column("name")
+		.where("compare = ?", 1)
+		.by_field("field", "value")
+		.limit_by(23)
+		.order_by("something");
+	
+	auto binds = cmd.bind();
+	auto query = cmd.assemble();
+	
+	
+	CMDSelect cmd2(std::move(cmd));
+	auto binds2 = cmd2.bind();
+	
+	
+	ASSERT_EQ(query, cmd2.assemble());
+	ASSERT_EQ(binds.size(), binds2.size());
+	ASSERT_EQ(2, binds2.size());
+	ASSERT_EQ(binds[0].get_type(), binds2[0].get_type());
+	ASSERT_EQ(binds[1].get_type(), binds2[1].get_type());
+	
+	ASSERT_EQ(binds[0].get_value().i32, binds2[0].get_value().i32);
+	ASSERT_EQ(binds[1].get_str_value(), binds2[1].get_str_value());
 }
 
 TEST(CMDSelect, sanity)
@@ -811,5 +843,292 @@ TEST(CMDSelect, query__scalars__nullable)
 		auto res = query.query_blob();
 		
 		ASSERT_TRUE(res.empty());
+	}
+}
+
+
+TEST(CMDSelect, query_column)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	ID				INTEGER PRIMARY KEY,         		"
+		"	Name			TEXT NOT NULL,     				    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
+		"	CreatedAt		DATETIME DEFAULT CURRENT_TIMESTAMP,	"
+		"	NullableField	BLOB	                 			"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
+		"	('Alice',	30,		2500.50,	1, NULL),   	"
+		"	('Bob',		NULL,	1500.00,	0, X'ABCD'),	"
+		"	('Charlie',	25,		0.00,		1, X'EF01'),	"
+		"	('Diana',	45,		10000.75,	1, NULL),   	"
+		"	('Eve',		35,		500.00,		0, X'1234'),	"
+		"	('Frank',	NULL,	NULL,		1, NULL),   	"
+		"	('Grace',	40,		700.00,		0, X'5678'),	"
+		"	('Hank',	20,		100.00,		1, NULL),   	"
+		"	('Ivy',		50,		150.00,		0, X'9ABC'),	"
+		"	('Jack',	60,		NULL,		1, X'DEF0') 	"
+	);
+	
+	{
+		auto res = sql.select()
+			.column("Age")
+			.from("ExampleTable")
+			.by_field("Name", "Not Found")
+			.query_column();
+		
+		ASSERT_TRUE(res.empty());
+	}
+	
+	{
+		auto res = sql.select()
+			.column("Age")
+			.from("ExampleTable")
+			.order_by("Age")
+			.query_column();
+		
+		ASSERT_FALSE(res.empty());
+		
+		ASSERT_EQ(sql.count_rows("ExampleTable"), res.size());
+		
+		ASSERT_TRUE(res[0].is_null());
+		ASSERT_TRUE(res[1].is_null());
+		
+		ASSERT_EQ(20, res[2].get<int32_t>());
+		ASSERT_EQ(25, res[3].get<int32_t>());
+		ASSERT_EQ(30, res[4].get<int32_t>());
+		ASSERT_EQ(35, res[5].get<int32_t>());
+		ASSERT_EQ(40, res[6].get<int32_t>());
+		ASSERT_EQ(45, res[7].get<int32_t>());
+		ASSERT_EQ(50, res[8].get<int32_t>());
+		ASSERT_EQ(60, res[9].get<int32_t>());
+	}
+}
+
+
+TEST(CMDSelect, query_row__expect_any_number_of_rows)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	Name			TEXT NOT NULL PRIMARY KEY,		    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
+		"	NullableField	BLOB	                 			"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
+		"	('Alice',	30,		2500.50,	1, NULL),   	"
+		"	('Bob',		NULL,	1500.00,	0, X'ABCD')		"
+	);
+	
+	{
+		auto res = sql.select()
+			.from("ExampleTable")
+			.by_field("Name", "Not Found")
+			.query_row(false);
+		
+		ASSERT_TRUE(res.empty());
+	}
+	
+	{
+		auto res = sql.select()
+			.from("ExampleTable")
+			.order_by("Name")
+			.query_row(false);
+		
+		ASSERT_FALSE(res.empty());
+		ASSERT_EQ(5, res.size());
+		
+		ASSERT_EQ("Alice",	res[0].get_str());
+		ASSERT_EQ(30,		res[1].get<int32_t>());
+		ASSERT_EQ(2500.5,	res[2].get<double>());
+		ASSERT_EQ(true,		res[3].get<bool>());
+		
+		ASSERT_TRUE(res[4].is_null());
+	}
+}
+
+TEST(CMDSelect, query_row__expect_one)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	Name			TEXT NOT NULL PRIMARY KEY,		    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
+		"	NullableField	BLOB	                 			"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
+		"	('Alice',	30,		2500.50,	1, NULL),   	"
+		"	('Bob',		NULL,	1500.00,	0, X'ABCD')		"
+	);
+	
+	
+	try
+	{
+		auto res = sql.select()
+			.from("ExampleTable")
+			.by_field("Name", "Not Found")
+			.query_row(true);
+		
+		FAIL();
+	}
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_NO_ROWS, e.code());
+	}
+	
+	try
+	{
+		auto res = sql.select()
+			.from("ExampleTable")
+			.order_by("Name")
+			.query_row(true);
+		
+		FAIL();
+	}
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_MULT_ROWS, e.code());
+	}
+	
+	
+	auto res = sql.select()
+		.from("ExampleTable")
+		.order_by("Name")
+		.limit_by(1)
+		.query_row(true);
+	
+	ASSERT_FALSE(res.empty());
+	ASSERT_EQ(5, res.size());
+	
+	ASSERT_EQ("Alice",	res[0].get_str());
+	ASSERT_EQ(30,		res[1].get<int32_t>());
+	ASSERT_EQ(2500.5,	res[2].get<double>());
+	ASSERT_EQ(true,		res[3].get<bool>());
+	
+	ASSERT_TRUE(res[4].is_null());
+}
+
+TEST(CMDSelect, query_all__empty)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	Name			TEXT NOT NULL PRIMARY KEY,		    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
+		"	NullableField	BLOB	                 			"
+		")"
+	);
+	
+	
+	ASSERT_TRUE(sql.query_all("ExampleTable").empty());
+}
+
+TEST(CMDSelect, query_all__too_many_rows__exception_thrown)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	Name			TEXT NOT NULL PRIMARY KEY,		    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
+		"	NullableField	BLOB	                 			"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
+		"	('Alice',	30,		2500.50,	1, NULL),   	"
+		"	('Bob',		NULL,	1500.00,	0, X'ABCD')		"
+	);
+	
+	
+	try
+	{
+		sql.query_all("ExampleTable", 1);
+		FAIL();
+	}
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_ROWS_OVERFLOW, e.code());
+	}
+}
+
+TEST(CMDSelect, query_all)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	Name			TEXT NOT NULL PRIMARY KEY,		    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
+		"	NullableField	BLOB	                 			"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
+		"	('Alice',	30,		2500.50,	1, NULL),   	"
+		"	('Bob',		NULL,	1500.00,	0, X'ABCD')		"
+	);
+	
+	
+	auto data = sql
+		.select()
+		.from("ExampleTable")
+		.order_by("Name")
+		.query_all(2);
+	
+	
+	ASSERT_EQ(2, data.size());
+	
+	ASSERT_EQ(5, data[0].size());
+	ASSERT_EQ(5, data[1].size());
+	
+	ASSERT_EQ("Alice",	data[0][0].get_str());
+	ASSERT_EQ(30,		data[0][1].get<int32_t>());
+	ASSERT_EQ(2500.5,	data[0][2].get<double>());
+	ASSERT_EQ(true,		data[0][3].get<bool>());
+	ASSERT_EQ(true,		data[0][4].is_null());
+	
+	ASSERT_EQ("Bob",	data[1][0].get_str());
+	ASSERT_EQ(true,		data[1][1].is_null());
+	ASSERT_EQ(1500.0,	data[1][2].get<double>());
+	ASSERT_EQ(false,	data[1][3].get<bool>());
+	ASSERT_EQ(2,		data[1][4].get_blob().size());
+	{
+		ASSERT_EQ(0xAB,		data[1][4].get_blob()[0]);
+		ASSERT_EQ(0xCD,		data[1][4].get_blob()[1]);
 	}
 }

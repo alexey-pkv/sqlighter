@@ -88,25 +88,24 @@ namespace sqlighter
 		
 		
 	public:
-		template <typename T>
-		inline T get(T def) const = delete;
-		
-		template <typename T>
-		inline const T& get() const = delete;
-		
-		template <typename T>
-		inline bool try_get(T& t) const = delete;
+		template <typename T> inline T get() const = delete;
+		template <typename T> inline T get(T def) const = delete;
+		template <typename T> inline bool try_get(T& t) const = delete;
 		
 		
 	public:
 		static inline ScalarValue null() noexcept { return ScalarValue(type::NULL_VAL); };
 	};
-		
-	template<> inline int32_t ScalarValue::get(int32_t def) const			{ return get_int32(def); }
-	template<> inline int64_t ScalarValue::get(int64_t def) const			{ return get_int64(def); }
-	template<> inline double ScalarValue::get(double def) const				{ return get_double(def); }
-	template<> inline const std::string& ScalarValue::get() const			{ return get_str(); }
-	template<> inline const blob_t& ScalarValue::get() const				{ return get_blob(); }
+	
+	template<> inline bool ScalarValue::get() const						{ return get_int64(0) != 0; }
+	template<> inline int32_t ScalarValue::get() const					{ return get_int32(0); }
+	template<> inline int64_t ScalarValue::get() const					{ return get_int64(0); }
+	template<> inline double ScalarValue::get() const					{ return get_double(0); }
+	template<> inline int32_t ScalarValue::get(int32_t def) const		{ return get_int32(def); }
+	template<> inline int64_t ScalarValue::get(int64_t def) const		{ return get_int64(def); }
+	template<> inline double ScalarValue::get(double def) const			{ return get_double(def); }
+	template<> inline const std::string& ScalarValue::get() const		{ return get_str(); }
+	template<> inline const blob_t& ScalarValue::get() const			{ return get_blob(); }
 	
 	template<> inline bool ScalarValue::try_get(int32_t& v) const		{ return try_get_int32(v); }
 	template<> inline bool ScalarValue::try_get(int64_t& v) const		{ return try_get_int64(v); }

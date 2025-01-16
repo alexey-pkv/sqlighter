@@ -16,8 +16,10 @@ std::string sqlighter::error_message(int sqlighter_code)
 		case SQLIGHTER_ERR_STEP:			return "Failed to execute step";
 		case SQLIGHTER_ERR_PREPARE:			return "Error when preparing statement";
 		case SQLIGHTER_ERR_NO_ROWS:			return "A row is required for this operation. The current statement does not hold a row";
-		case SQLIGHTER_ERR_NO_COLUMN:		return "Requested column exceeds the available columns count in the query result";
+		case SQLIGHTER_ERR_NO_COLUMN:		return "Requested column exceeds the available columns count_rows in the query result";
 		case SQLIGHTER_ERR_MULT_COLUMNS:	return "More than one column selected, but only one expected";
+		case SQLIGHTER_ERR_MULT_ROWS:		return "More than one row selected, but only one expected";
+		case SQLIGHTER_ERR_ROWS_OVERFLOW:	return "Number of selected rows exceeds maximum expected limit";
 		case SQLIGHTER_ERR_INVALID_COLUMN:	return "Invalid column index";
 		case SQLIGHTER_ERR_BIND:			return "Failed to bind a value";
 		case SQLIGHTER_ERR_VALUE:			return "Incorrect value type";

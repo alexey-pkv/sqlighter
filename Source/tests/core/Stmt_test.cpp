@@ -234,13 +234,22 @@ TEST(Stmt, require_one_column__has_column__no_errors)
 	stmt.require_one_column();
 }
 
-TEST(Stmt, require_one_column__no_row__exception_thrown)
+TEST(Stmt, require_one_column__no_row__no_error)
+{
+	SQLighter sql { setup_db("test_mock_n.db") };
+	Stmt stmt = sql.execute("SELECT 1 WHERE FALSE");
+	
+	
+	stmt.require_one_column();
+}
+
+TEST(Stmt, require_one_column__no_row_but_multple_columns__exception_thrown)
 {
 	SQLighter sql { setup_db("test_mock_n.db") };
 	
 	try
 	{
-		Stmt stmt = sql.execute("SELECT 1, 2, 3 WHERE FALSE");
+		Stmt stmt = sql.execute("SELECT 1, 2 WHERE FALSE");
 		
 		stmt.require_one_column();
 		
@@ -248,7 +257,7 @@ TEST(Stmt, require_one_column__no_row__exception_thrown)
 	}
 	catch (const SQLighterException& e)
 	{
-		ASSERT_EQ(SQLIGHTER_ERR_NO_ROWS, e.code());
+		ASSERT_EQ(SQLIGHTER_ERR_MULT_COLUMNS, e.code());
 	}
 }
 

@@ -68,6 +68,6 @@ namespace sqlighter
 	public:
 		static SQLighterException invalid_enum(const char* enum_name, int value);
 		static SQLighterException failed_to_bind(int sqlite_code, int offset, const BindValue& bv);
-		static SQLighterException no_column(int at, int count);
+		static SQLighterException no_column(int at, int count, std::string_view query);
 	};
 }

@@ -96,7 +96,7 @@ SQLighterException SQLighterException::failed_to_bind(int sqlite_code, int offse
 	return SQLighterException(SQLIGHTER_ERR_BIND, sqlite_code, err.str());
 }
 
-SQLighterException SQLighterException::no_column(int at, int count)
+SQLighterException SQLighterException::no_column(int at, int count, std::string_view query)
 {
 	std::ostringstream err;
 	
@@ -106,5 +106,5 @@ SQLighterException SQLighterException::no_column(int at, int count)
 		<< count 
 		<< " columns";
 	
-	return SQLighterException(SQLIGHTER_ERR_NO_COLUMN, err.str());
+	return SQLighterException(SQLIGHTER_ERR_NO_COLUMN, err.str()).query(query);
 }

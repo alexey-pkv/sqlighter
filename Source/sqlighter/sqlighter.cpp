@@ -41,6 +41,11 @@ CMDDirect SQLighter::direct() const
 	return CMDDirect { m_connection };
 }
 
+CMDCreateTable SQLighter::create() const
+{
+	return CMDCreateTable { m_connection };
+}
+
 Stmt SQLighter::execute(std::string_view query) const
 {
 	return direct()
@@ -62,6 +67,15 @@ Stmt SQLighter::execute(std::string_view query, std::initializer_list<const Bind
 		.execute();
 }
 
+int SQLighter::count_rows(std::string_view table) const
+{
+	return select().from(table).query_count();
+}
+
+std::vector<std::vector<ScalarValue>> SQLighter::query_all(std::string_view table, int failsafeLimit) const
+{
+	return select().from(table).query_all(failsafeLimit);
+}
 
 const std::string& SQLighter::path() const
 {
