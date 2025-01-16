@@ -287,22 +287,47 @@ Stmt CMDSelect::execute() const
 	);
 }
 
-int CMDSelect::query_int() const
+ScalarValue CMDSelect::query_scalar() const
 {
+	ScalarValue v {};
 	auto stmt = execute();
-	int value;
 	
 	stmt.require_one_column();
 	
-	value = stmt.column_int(0);
+	v = stmt.column_value(0);
 	
 	stmt.step();
 	stmt.require_done();
 	
-	return value;
+	return v;
 }
 
-int CMDSelect::query_count() const
+int64_t CMDSelect::query_int() const
+{
+	return query_scalar().get_int64();
+}
+
+double CMDSelect::query_double() const
+{
+	return query_scalar().get_double();
+}
+
+bool CMDSelect::query_bool() const
+{
+	return query_scalar().get_int64() != 0;
+}
+
+std::string CMDSelect::query_str() const
+{
+	return query_scalar().get_str();
+}
+
+blob_t CMDSelect::query_blob() const
+{
+	return query_scalar().get_blob();
+}
+
+int64_t CMDSelect::query_count() const
 {
 	CMDSelect countSelect { *this };
 	

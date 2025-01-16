@@ -465,6 +465,51 @@ TEST(CMDSelect, query_blob)
 	ASSERT_EQ(blob, nullptr);
 }
 
+TEST(CMDSelect, query_blob__vector)
+{
+	SQLighter sql { setup_db("test_blob.db") };
+	
+	sql.execute(
+		"CREATE TABLE MockTable (			"
+		"   ID		INTEGER PRIMARY KEY,	"
+		"   Name	TEXT NOT NULL,			"
+		"   Data	BLOB					"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO MockTable (Name, Data) VALUES "
+		"   ('Alice',	X'ABCD'),	"
+		"   ('Bob',		X'1234'),   "
+		"   ('Charlie',	NULL)   	"
+	);
+	
+	auto stmt = sql.select()
+		.column("Data")
+		.from("MockTable")
+		.execute();
+	
+	auto blob = stmt.column_blob(0);
+	
+	ASSERT_EQ(2, blob.size());
+	ASSERT_EQ(blob[0], 0xAB);
+	ASSERT_EQ(blob[1], 0xCD);
+	
+	stmt.step();
+	
+	blob = stmt.column_blob(0);
+	
+	ASSERT_EQ(2, blob.size());
+	ASSERT_EQ(blob[0], 0x12);
+	ASSERT_EQ(blob[1], 0x34);
+	
+	stmt.step();
+	
+	blob = stmt.column_blob(0);
+	
+	ASSERT_TRUE(blob.empty());
+}
+
 TEST(Stmt, column_count)
 {
 	SQLighter sql { create_mock_table("mock_table", "c_null", "c_int", 1, "c_dlb", 1, "c_str", "hello world") };
@@ -725,4 +770,56 @@ TEST(Stmt, check)
 	auto stmt = sql.execute("SELECT 1, 2 WHERE FALSE");
 	
 	auto a = stmt.column_names();
+}
+
+
+TEST(CMDSelect, column_value__blob)
+{
+	SQLighter sql { setup_db("test_blob.db") };
+	
+	sql.execute(
+		"CREATE TABLE MockTable (			"
+		"   ID		INTEGER PRIMARY KEY,	"
+		"   Name	TEXT NOT NULL,			"
+		"   Data	BLOB					"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO MockTable (Name, Data) VALUES "
+		"   ('Alice',	X'ABCD')	"
+	);
+	
+	auto stmt = sql.select()
+		.column("Data")
+		.from("MockTable")
+		.execute();
+	
+	auto val = stmt.column_value(0);
+	
+	ASSERT_EQ(ScalarValue::type::BLOB, val.get_type());
+	ASSERT_EQ(val.get_blob()[0], 0xAB);
+	ASSERT_EQ(val.get_blob()[1], 0xCD);
+}
+
+
+TEST(Stmt, column_value)
+{
+	SQLighter sql { create_mock_table("mock_table", "c_null", "c_int", 2, "c_dlb", 1.1, "c_str", "hello world") };
+	auto stmt = stmt__select_mock(sql);
+	
+	auto n = stmt.column_value(0);
+	auto i = stmt.column_value(1);
+	auto d = stmt.column_value(2);
+	auto s = stmt.column_value(3);
+	
+	ASSERT_TRUE(n.is_null());
+	ASSERT_EQ(ScalarValue::type::INT,		i.get_type());
+	ASSERT_EQ(ScalarValue::type::DOUBLE,	d.get_type());
+	ASSERT_EQ(ScalarValue::type::TEXT,		s.get_type());
+	
+	
+	ASSERT_EQ(2,				i.get_int64());
+	ASSERT_EQ(1.1,				d.get_double());
+	ASSERT_EQ("hello world",	s.get_str());
 }

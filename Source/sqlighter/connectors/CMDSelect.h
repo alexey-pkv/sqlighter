@@ -116,8 +116,14 @@ namespace sqlighter
 		
 		
 	public:
-		int query_int() const;
-		int query_count() const;
+		ScalarValue query_scalar() const;
+		
+		int64_t query_int() const;
+		double query_double() const;
+		bool query_bool() const;
+		std::string query_str() const;
+		blob_t query_blob() const;
+		int64_t query_count() const;
 	};
 }
 

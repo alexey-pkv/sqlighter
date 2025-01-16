@@ -618,17 +618,6 @@ TEST(CMDSelect, query_sanity)
 	
 	{
 		auto res = sql.select()
-			.column_exp("COUNT(*)")
-			.from("ExampleTable")
-			.where("Age > ?", 20)
-			.where("Age < ?", 35)
-			.query_int();
-		
-		ASSERT_EQ(2, res);
-	}
-	
-	{
-		auto res = sql.select()
 			.from("ExampleTable")
 			.where("Age > ?", 20)
 			.where("Age < ?", 35)
@@ -643,5 +632,98 @@ TEST(CMDSelect, query_sanity)
 			.query_count();
 		
 		ASSERT_EQ(10, res);
+	}
+}
+
+
+
+TEST(CMDSelect, query__scalars)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	ID				INTEGER PRIMARY KEY,         		"
+		"	Name			TEXT NOT NULL,     				    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
+		"	CreatedAt		DATETIME DEFAULT CURRENT_TIMESTAMP,	"
+		"	NullableField	BLOB	                 			"
+		")"
+	);
+	
+	{
+		auto stmt = sql.execute(
+			"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
+			"	('Alice',	30,		2500.50,	1, NULL),   	"
+			"	('Bob',		NULL,	1500.00,	0, X'ABCD')	"
+		);
+		
+		ASSERT_TRUE(stmt.is_done());
+		ASSERT_FALSE(stmt.is_ok());
+		ASSERT_FALSE(stmt.has_row());
+		ASSERT_FALSE(stmt.is_error());
+	}
+	
+	
+	{
+		auto query = sql.select()
+			.column("Name")
+			.from("ExampleTable")
+			.order_by("Name")
+			.limit_by(1);
+		
+		ASSERT_EQ("Alice", query.query_str());
+	}
+	
+	{
+		auto query = sql.select()
+			.column("Age")
+			.from("ExampleTable")
+			.order_by("Name")
+			.limit_by(1);
+		
+		ASSERT_EQ(30, query.query_int());
+	}
+	
+	{
+		auto query = sql.select()
+			.column("Balance")
+			.from("ExampleTable")
+			.order_by("Name")
+			.limit_by(1);
+		
+		ASSERT_EQ(2500.5, query.query_double());
+	}
+	
+	{
+		auto query = sql.select()
+			.column("IsActive")
+			.from("ExampleTable")
+			.by_field("Name", "Bob");
+		
+		ASSERT_FALSE(query.query_bool());
+		
+		query = sql.select()
+			.column("IsActive")
+			.from("ExampleTable")
+			.order_by("Name")
+			.limit_by(1);
+		
+		ASSERT_TRUE(query.query_bool());
+	}
+	
+	{
+		auto query = sql.select()
+			.column("NullableField")
+			.from("ExampleTable")
+			.by_field("Name", "Bob");
+		
+		auto res = query.query_blob();
+		
+		ASSERT_EQ(2, res.size());
+		ASSERT_EQ(0xAB, res[0]);
+		ASSERT_EQ(0xCD, res[1]);
 	}
 }

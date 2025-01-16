@@ -49,6 +49,7 @@ Stmt Connection::execute(std::string_view query, const std::vector<BindValue>& v
 	{
 		auto e = SQLighterException(SQLIGHTER_ERR_PREPARE)
 			.sqlite_error(res)
+			.query(query)
 			.db_msg(m_db);
 		
 		throw e;

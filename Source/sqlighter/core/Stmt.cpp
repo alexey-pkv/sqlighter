@@ -57,6 +57,31 @@ const sqlite3_stmt* Stmt::stmt() const
 	return m_stmt;
 }
 
+ScalarValue Stmt::to_value(int at) const
+{
+	switch (column_type(at))
+	{
+		case SQLITE_NULL:
+			return ScalarValue::null();
+		
+		case SQLITE_INTEGER:
+			return ScalarValue(column_int64(at));
+			
+		case SQLITE_FLOAT:
+			return ScalarValue(column_double(at));
+			
+		case SQLITE_BLOB:
+			return ScalarValue(column_blob(at));
+			
+		case SQLITE_TEXT:
+			return ScalarValue(column_string(at));
+			
+		default:
+			throw SQLighterException(SQLIGHTER_ERR_UNEXPECTED)
+				.msg("Got unexpected column type: " + std::to_string(column_type(at)))
+				.query(m_query);
+	}
+}
 
 int Stmt::step()
 {
@@ -98,7 +123,7 @@ void Stmt::require_row() const
 {
 	if (!has_row())
 	{
-		throw SQLighterException(SQLIGHTER_ERR_NO_ROWS);
+		throw SQLighterException(SQLIGHTER_ERR_NO_ROWS).query(m_query);
 	}
 }
 
@@ -113,6 +138,18 @@ void Stmt::require_column(int at) const
 	else if (column_count() <= at)
 	{
 		throw SQLighterException::no_column(at, column_count());
+	}
+}
+
+void Stmt::require_column_type(int at, int type) const
+{
+	if (type != column_type(at))
+	{
+		throw SQLighterException(SQLIGHTER_ERR_VALUE)
+			.msg(
+				"Expected column of type " + std::to_string(type) +
+				" but got " + std::to_string(column_type(at)))
+			.query(m_query);
 	}
 }
 
@@ -172,6 +209,27 @@ size_t Stmt::column_blob(int at, void** into) const
 	memcpy(*into, data, size);
 
 	return size;
+}
+
+blob_t Stmt::column_blob(int at) const
+{
+	if (column_type(at) == SQLITE_NULL)
+		return {};
+	
+	require_column_type(at, SQLITE_BLOB);
+		
+	const void* data = sqlite3_column_blob(m_stmt, at);
+	auto size = sqlite3_column_bytes(m_stmt, at);
+	
+	if (!data || size <= 0)
+	{
+		return {};
+	}
+	
+	return {
+		static_cast<const uint8_t*>(data), 
+		static_cast<const uint8_t*>(data) + size
+	};
 }
 
 bool Stmt::column_is_null(int at) const
@@ -326,8 +384,14 @@ void Stmt::require_done() const
 {
 	if (!is_done())
 	{
-		// TODO: 
+		throw SQLighterException(SQLIGHTER_ERR_GENERIC, "Query is not in done state")
+			.query(m_query);
 	}
+}
+
+ScalarValue Stmt::column_value(int at) const
+{
+	return to_value(at);
 }
 
 int Stmt::column_index(std::string_view name) const
@@ -349,63 +413,63 @@ bool Stmt::has_column(std::string_view name) const
 template <>
 int Stmt::column<int>(int at) const
 {
-    return column_int(at);
+	return column_int(at);
 }
 
 template <>
 int64_t Stmt::column<int64_t>(int at) const
 {
-    return column_int64(at);
+	return column_int64(at);
 }
 
 template <>
 bool Stmt::column<bool>(int at) const
 {
-    return column_bool(at);
+	return column_bool(at);
 }
 
 template <>
 float Stmt::column<float>(int at) const
 {
-    return column_double(at);
+	return column_double(at);
 }
 
 template <>
 double Stmt::column<double>(int at) const
 {
-    return column_double(at);
+	return column_double(at);
 }
 
 template <>
 std::string Stmt::column<std::string>(int at) const
 {
-    return column_string(at);
+	return column_string(at);
 }
 
 
 template <>
 bool Stmt::column_n<int>(int at, int& i) const
 {
-    return column_int_n(at, i);
+	return column_int_n(at, i);
 }
 
 template <>
 bool Stmt::column_n<int64_t>(int at, int64_t& i) const
 {
-    return column_int64_n(at, i);
+	return column_int64_n(at, i);
 }
 
 template <>
 bool Stmt::column_n<bool>(int at, bool& i) const
 {
-    return column_bool_n(at, i);
+	return column_bool_n(at, i);
 }
 
 template <>
 bool Stmt::column_n<float>(int at, float& i) const
 {
 	double d;
-    bool res = column_double_n(at, d);
+	bool res = column_double_n(at, d);
 	
 	i = (float)d;
 	
@@ -415,11 +479,11 @@ bool Stmt::column_n<float>(int at, float& i) const
 template <>
 bool Stmt::column_n<double>(int at, double& i) const
 {
-    return column_double_n(at, i);
+	return column_double_n(at, i);
 }
 
 template <>
 bool Stmt::column_n<std::string>(int at, std::string& i) const
 {
-    return column_string_n(at, i);
+	return column_string_n(at, i);
 }

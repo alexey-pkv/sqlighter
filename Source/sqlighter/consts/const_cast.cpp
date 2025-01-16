@@ -20,3 +20,21 @@ std::ostream& sqlighter::operator<<(std::ostream& os, OrderBy order)
 	
 	return os;
 }
+
+
+std::ostream& sqlighter::operator<<(std::ostream& os, ScalarValue::type t)
+{
+	switch (t)
+	{
+		case ScalarValue::type::INT:		os << "INT_64";		break;
+		case ScalarValue::type::DOUBLE:		os << "DOUBLE";		break;
+		case ScalarValue::type::NULL_VAL:	os << "NULL_VAL";	break;
+		case ScalarValue::type::TEXT:		os << "TEXT";		break;
+		case ScalarValue::type::BLOB:		os << "BLOB";		break;
+		
+		default:
+			throw SQLighterException::invalid_enum("ScalarValue::type", (int)t);
+	}
+	
+	return os;
+}

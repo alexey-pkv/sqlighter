@@ -9,6 +9,9 @@
 #include <memory>
 
 
+#include "ScalarValue.h"
+
+
 namespace sqlighter
 {
 	class DB;
@@ -24,6 +27,10 @@ namespace sqlighter
 		std::string 		m_query		= {};
 		std::shared_ptr<DB> m_db		= nullptr;
 		int 				m_lastCode	= SQLITE_ERROR;
+		
+		
+	private:
+		ScalarValue to_value(int at) const;
 		
 		
 	public:
@@ -76,6 +83,11 @@ namespace sqlighter
 		 */
 		void require_column(int at) const;
 		
+		/**
+		 * Ensure column given at position exists.  
+		 */
+		void require_column_type(int at, int type) const;
+		
 		
 	public:
 		int column_int(int at) const;
@@ -84,6 +96,7 @@ namespace sqlighter
 		double column_double(int at) const;
 		std::string column_string(int at) const;
 		size_t column_blob(int at, void** into) const;
+		blob_t column_blob(int at) const;
 		bool column_is_null(int at) const;
 		
 		bool column_int_n(int at, int& into) const;
@@ -102,6 +115,11 @@ namespace sqlighter
 		
 		void require_one_column() const;
 		void require_done() const;
+		
+		
+	public:
+		ScalarValue column_value(int at) const;
+		
 		
 	public:
 		template <typename T>

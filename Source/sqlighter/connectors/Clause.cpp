@@ -6,21 +6,24 @@
 using namespace sqlighter;
 
 
+void reset_stream(const std::ostringstream& source, std::ostringstream& target)
+{
+	target.str("");
+	target.clear();
+	
+	target << source.str();
+}
+
+
 Clause::Clause(const char* delimiter) : 
 	m_delimiter(delimiter)
 {
 	
 }
 
-Clause::Clause(const Clause& c) : 
-	m_delimiter(c.m_delimiter),
-	m_isEmpty(c.m_isEmpty),
-	m_binds(c.m_binds)
+Clause::Clause(const Clause& c)
 {
-	m_stream.str("");
-	m_stream.clear();
-	
-	m_stream << c.m_stream.str();
+	*this = c;
 }
 
 Clause& Clause::operator=(const Clause& c)
@@ -32,9 +35,7 @@ Clause& Clause::operator=(const Clause& c)
 	m_isEmpty	= c.m_isEmpty;
 	m_binds		= c.m_binds;
 	
-	m_stream.clear();
-	
-	m_stream << c.m_stream.rdbuf();
+	reset_stream(c.m_stream, m_stream);
 	
 	return *this;
 }

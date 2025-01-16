@@ -70,6 +70,9 @@ const std::string& SQLighterException::what_str() const
 		if (!m_message.empty())
 			ss << std::endl << "    > " << m_message;
 		
+		if (!m_query.empty())
+			ss << std::endl << "    > query: " << m_query;
+		
 		m_what = ss.str();
 	}
 	
