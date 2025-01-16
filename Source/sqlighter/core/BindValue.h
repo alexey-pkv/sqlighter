@@ -2,7 +2,6 @@
 #define SQLIGHTER_BINDVALUE_H
 
 
-#include <span>
 #include <vector>
 #include <string>
 #include <cstdint>
@@ -75,8 +74,7 @@ namespace sqlighter
 	};
 	
 	
-	template <typename T>
-    requires (std::is_constructible_v<BindValue, T>)
+	template <typename T, typename = std::enable_if_t<std::is_constructible<BindValue, T>::value>>
 	inline BindValue bind(const T& t) { return BindValue(t); }
 	
 	inline auto bind(std::initializer_list<BindValue> values) { return std::vector<BindValue> { values }; }

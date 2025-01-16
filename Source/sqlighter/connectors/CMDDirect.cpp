@@ -35,7 +35,7 @@ CMDDirect& CMDDirect::operator=(const CMDDirect& c)
 }
 
 
-CMDDirect& CMDDirect::do_append(std::string_view exp, std::span<const BindValue> span)
+CMDDirect& CMDDirect::do_append(std::string_view exp, const std::vector<BindValue>& span)
 {
 	m_stream << exp;
 	

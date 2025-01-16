@@ -92,7 +92,7 @@ void BindValue::bind(sqlite3_stmt* stmt, int offset) const
 			break;
 			
 		case type::TEXT_64:
-			throw std::logic_error("TEXT_64 bind is not implemented");
+			throw SQLighterException(SQLIGHTER_ERR_GENERIC, "TEXT_64 bind is not implemented");
 	}
 	
 	if (res != SQLITE_OK)

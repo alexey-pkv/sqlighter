@@ -60,7 +60,7 @@ Stmt SQLighter::execute(std::string_view query, const BindValue& value) const
 		.execute();
 }
 
-Stmt SQLighter::execute(std::string_view query, std::initializer_list<const BindValue> values) const
+Stmt SQLighter::execute(std::string_view query, std::initializer_list<BindValue> values) const
 {
 	return direct()
 		.append(query, values)

@@ -79,7 +79,7 @@ void Clause::append_bind(const BindValue& bind)
 	m_binds.emplace_back(bind);
 }
 
-void Clause::append_binds(std::span<const BindValue> binds)
+void Clause::append_binds(const std::vector<BindValue>& binds)
 {
 	m_binds.insert(m_binds.end(), binds.begin(), binds.end());
 }
@@ -89,7 +89,7 @@ void Clause::append_binds(std::initializer_list<BindValue> binds)
 	m_binds.insert(m_binds.end(), binds.begin(), binds.end());
 }
 
-void Clause::append(std::string_view str, std::span<const BindValue> binds)
+void Clause::append(std::string_view str, const std::vector<BindValue>& binds)
 {
 	append(str);
 	append_binds(binds);
@@ -101,7 +101,7 @@ void Clause::append_directly(std::string_view str, std::initializer_list<BindVal
 	append_binds(binds);
 }
 
-void Clause::append_directly(std::string_view str, std::span<const BindValue> binds)
+void Clause::append_directly(std::string_view str, const std::vector<BindValue>& binds)
 {
 	append_directly(str);
 	append_binds(binds);

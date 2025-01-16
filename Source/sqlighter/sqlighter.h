@@ -37,7 +37,7 @@ namespace sqlighter
 		
 		Stmt execute(std::string_view query) const;
 		Stmt execute(std::string_view query, const BindValue& value) const;
-		Stmt execute(std::string_view query, std::initializer_list<const BindValue> values) const;
+		Stmt execute(std::string_view query, std::initializer_list<BindValue> values) const;
 		
 		int count_rows(std::string_view table) const;
 		std::vector<std::vector<ScalarValue>> query_all(std::string_view table, int failsafeLimit = 10000) const;

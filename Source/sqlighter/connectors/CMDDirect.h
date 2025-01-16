@@ -1,7 +1,6 @@
 #pragma once
 
 
-#include <span>
 #include <sstream>
 
 #include "base/connectors/ICMD.h"
@@ -32,19 +31,18 @@ namespace sqlighter
 		
 		
 	protected:
-		CMDDirect& do_append(std::string_view exp, std::span<const BindValue> span);
+		CMDDirect& do_append(std::string_view exp, const std::vector<BindValue>& span);
 		
 		
 	public:
 		SQLIGHTER_INLINE_CLAUSE(append, do_append, CMDDirect);
 		
-		inline CMDDirect& append(std::initializer_list<const BindValue> values) { return do_append({}, values); };
+		inline CMDDirect& append(std::initializer_list<BindValue> values) { return do_append({}, { values }); };
 		inline CMDDirect& operator<<(std::string_view exp) { do_append(exp, {}); return *this; }
-		inline CMDDirect& operator<<(std::span<const BindValue> binds) { do_append({}, binds); return *this; }
+		inline CMDDirect& operator<<(const std::vector<BindValue>& binds) { do_append({}, binds); return *this; }
 		
-		template<class T>
-		requires std::same_as<T, BindValue>
-		inline CMDDirect& operator<<(T bind) { do_append({}, { &bind, 1 }); return *this; }
+		template<class T, typename = std::enable_if_t<std::is_same<T, BindValue>::value>>
+		inline CMDDirect& operator<<(T bind) { do_append({}, { bind }); return *this; }
 		
 		
 	public:

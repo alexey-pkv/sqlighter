@@ -22,33 +22,33 @@ CMDSelect::CMDSelect(const std::shared_ptr<IConnection>& connection) :
 }
 
 
-CMDSelect& CMDSelect::append_column_exp(std::string_view exp, std::span<const BindValue> span)
+CMDSelect& CMDSelect::append_column_exp(std::string_view exp, const std::vector<BindValue>& bind)
 {
-	m_columns.append(exp, span);
+	m_columns.append(exp, bind);
 	return *this;
 }
 
-CMDSelect& CMDSelect::append_where(std::string_view exp, std::span<const BindValue> span)
+CMDSelect& CMDSelect::append_where(std::string_view exp, const std::vector<BindValue>& bind)
 {
-	m_where.append(exp, span);
+	m_where.append(exp, bind);
 	return *this;
 }
 
-CMDSelect& CMDSelect::append_group_by(std::string_view exp, std::span<const BindValue> span)
+CMDSelect& CMDSelect::append_group_by(std::string_view exp, const std::vector<BindValue>& bind)
 {
-	m_groupBy.append(exp, span);
+	m_groupBy.append(exp, bind);
 	return *this;
 }
 
-CMDSelect& CMDSelect::append_having(std::string_view exp, std::span<const BindValue> span)
+CMDSelect& CMDSelect::append_having(std::string_view exp, const std::vector<BindValue>& bind)
 {
-	m_having.append(exp, span);
+	m_having.append(exp, bind);
 	return *this;
 }
 
-CMDSelect& CMDSelect::append_order_by(std::string_view exp, std::span<const BindValue> span)
+CMDSelect& CMDSelect::append_order_by(std::string_view exp, const std::vector<BindValue>& bind)
 {
-	m_orderBy.append(exp, span);
+	m_orderBy.append(exp, bind);
 	return *this;
 }
 

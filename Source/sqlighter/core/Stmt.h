@@ -124,20 +124,20 @@ namespace sqlighter
 		
 		
 	public:
-		template <typename T>
-		requires
-			std::same_as<T, bool>			||
-			std::is_integral_v<T>			||
-			std::is_floating_point_v<T>		||
-			std::same_as<T, std::string>
+		template <typename T, typename = std::enable_if_t<
+			std::is_same<T, bool>::value ||
+			std::is_integral<T>::value ||
+			std::is_floating_point<T>::value ||
+			std::is_same<T, std::string>::value
+		>>
 		T column(int at) const;
 		
-		template <typename T>
-		requires
-			std::same_as<T, bool>			||
-			std::is_integral_v<T>			||
-			std::is_floating_point_v<T>		||
-			std::same_as<T, std::string>
+		template <typename T, typename = std::enable_if_t<
+			std::is_same<T, bool>::value ||
+			std::is_integral<T>::value ||
+			std::is_floating_point<T>::value ||
+			std::is_same<T, std::string>::value
+		>>
 		bool column_n(int at, T& into) const;
 	};
 }

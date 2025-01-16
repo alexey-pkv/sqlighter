@@ -1,5 +1,4 @@
-#ifndef SQLIGHTER_CMDSELECT_H
-#define SQLIGHTER_CMDSELECT_H
+#pragma once
 
 
 #include <sstream>
@@ -49,11 +48,11 @@ namespace sqlighter
 		
 		
 	protected:
-		CMDSelect& append_column_exp(std::string_view exp, std::span<const BindValue> span);
-		CMDSelect& append_where(std::string_view exp, std::span<const BindValue> span);
-		CMDSelect& append_order_by(std::string_view exp, std::span<const BindValue> span);
-		CMDSelect& append_group_by(std::string_view exp, std::span<const BindValue> span);
-		CMDSelect& append_having(std::string_view exp, std::span<const BindValue> span);
+		CMDSelect& append_column_exp(std::string_view exp, const std::vector<BindValue>& bind);
+		CMDSelect& append_where(std::string_view exp, const std::vector<BindValue>& bind);
+		CMDSelect& append_order_by(std::string_view exp, const std::vector<BindValue>& bind);
+		CMDSelect& append_group_by(std::string_view exp, const std::vector<BindValue>& bind);
+		CMDSelect& append_having(std::string_view exp, const std::vector<BindValue>& bind);
 		
 		
 	public:
@@ -129,6 +128,3 @@ namespace sqlighter
 		int64_t query_count() const;
 	};
 }
-
-
-#endif

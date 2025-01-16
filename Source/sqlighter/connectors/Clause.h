@@ -4,8 +4,6 @@
 #include <vector>
 #include <sstream>
 
-#include <span>
-
 #include "core/BindValue.h"
 #include "query_utils.h"
 
@@ -53,12 +51,12 @@ namespace sqlighter
 	public:
 		void append(std::string_view str);
 		void append_bind(const BindValue& bind);
-		void append_binds(std::span<const BindValue> binds);
+		void append_binds(const std::vector<BindValue>& binds);
 		void append_binds(std::initializer_list<BindValue> binds);
 		void append_directly(std::string_view str);
-		void append(std::string_view str, std::span<const BindValue> binds);
+		void append(std::string_view str, const std::vector<BindValue>& binds);
 		void append_directly(std::string_view str, std::initializer_list<BindValue> binds);
-		void append_directly(std::string_view str, std::span<const BindValue> binds);
+		void append_directly(std::string_view str, const std::vector<BindValue>& binds);
 		
 		int bind(sqlite3_stmt* to, int offset) const;
 		
