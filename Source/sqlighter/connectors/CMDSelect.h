@@ -121,6 +121,7 @@ namespace sqlighter
 		int64_t query_int() const;
 		double query_double() const;
 		bool query_bool() const;
+		bool query_is_null() const;
 		std::string query_str() const;
 		blob_t query_blob() const;
 		int64_t query_count() const;

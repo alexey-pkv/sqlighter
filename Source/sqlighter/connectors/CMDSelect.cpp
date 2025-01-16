@@ -317,6 +317,11 @@ bool CMDSelect::query_bool() const
 	return query_scalar().get_int64() != 0;
 }
 
+bool CMDSelect::query_is_null() const
+{
+	return query_scalar().is_null();
+}
+
 std::string CMDSelect::query_str() const
 {
 	return query_scalar().get_str();

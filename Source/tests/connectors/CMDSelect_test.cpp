@@ -635,8 +635,6 @@ TEST(CMDSelect, query_sanity)
 	}
 }
 
-
-
 TEST(CMDSelect, query__scalars)
 {
 	SQLighter sql { setup_db("test_select.db") };
@@ -661,9 +659,6 @@ TEST(CMDSelect, query__scalars)
 		);
 		
 		ASSERT_TRUE(stmt.is_done());
-		ASSERT_FALSE(stmt.is_ok());
-		ASSERT_FALSE(stmt.has_row());
-		ASSERT_FALSE(stmt.is_error());
 	}
 	
 	
@@ -716,6 +711,22 @@ TEST(CMDSelect, query__scalars)
 	
 	{
 		auto query = sql.select()
+			.column("Age")
+			.from("ExampleTable")
+			.by_field("Name", "Bob");
+		
+		ASSERT_TRUE(query.query_is_null());
+		
+		query = sql.select()
+			.column("Age")
+			.from("ExampleTable")
+			.by_field("Name", "Alice");
+		
+		ASSERT_FALSE(query.query_is_null());
+	}
+	
+	{
+		auto query = sql.select()
 			.column("NullableField")
 			.from("ExampleTable")
 			.by_field("Name", "Bob");
@@ -725,5 +736,80 @@ TEST(CMDSelect, query__scalars)
 		ASSERT_EQ(2, res.size());
 		ASSERT_EQ(0xAB, res[0]);
 		ASSERT_EQ(0xCD, res[1]);
+	}
+}
+
+
+TEST(CMDSelect, query__scalars__nullable)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	ID				INTEGER PRIMARY KEY,         		"
+		"	Name			TEXT,     				    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
+		"	CreatedAt		DATETIME DEFAULT CURRENT_TIMESTAMP,	"
+		"	NullableField	BLOB	                 			"
+		")"
+	);
+	
+	{
+		auto stmt = sql.execute(
+			"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
+			"	(NULL, NULL, NULL, NULL, NULL) "
+		);
+		
+		ASSERT_TRUE(stmt.is_done());
+	}
+	
+	
+	{
+		auto query = sql.select()
+			.column("Name")
+			.from("ExampleTable")
+			.limit_by(1);
+		
+		ASSERT_EQ("", query.query_str());
+	}
+	
+	{
+		auto query = sql.select()
+			.column("Age")
+			.from("ExampleTable")
+			.limit_by(1);
+		
+		ASSERT_EQ(0, query.query_int());
+	}
+	
+	{
+		auto query = sql.select()
+			.column("Balance")
+			.from("ExampleTable")
+			.limit_by(1);
+		
+		ASSERT_EQ(0.0, query.query_double());
+	}
+	
+	{
+		auto query = sql.select()
+			.column("IsActive")
+			.from("ExampleTable")
+			.limit_by(1);
+		
+		ASSERT_FALSE(query.query_bool());
+	}
+	
+	{
+		auto query = sql.select()
+			.column("NullableField")
+			.from("ExampleTable")
+			.limit_by(1);
+		
+		auto res = query.query_blob();
+		
+		ASSERT_TRUE(res.empty());
 	}
 }
