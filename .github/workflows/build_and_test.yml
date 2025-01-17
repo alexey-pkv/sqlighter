@@ -18,8 +18,8 @@ jobs:
       with:
         cmake-version: '3.30'
 
-    - name: Set up C++ 17
-      run: sudo apt-get install g++-7
+    - name: Set up C++
+      run: sudo apt-get install g++-10
 
     - name: Install dependencies
       run: |
