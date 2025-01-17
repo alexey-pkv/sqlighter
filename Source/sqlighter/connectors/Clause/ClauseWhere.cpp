@@ -26,3 +26,12 @@ void ClauseWhere::by_field(std::string_view column, BindValue value)
 	clause() << col(column) << " = ?";
 	clause().append_bind(value);
 }
+
+void ClauseWhere::append_to(std::ostream& to) const
+{
+	if (clause().empty_clause())
+		return;
+	
+	to << " WHERE ";
+	clause().append_to(to);
+}

@@ -55,6 +55,11 @@ CMDInsert SQLighter::insert() const
 	return CMDInsert { m_connection };
 }
 
+CMDDelete SQLighter::del() const
+{
+	return CMDDelete { m_connection };
+}
+
 Stmt SQLighter::execute(std::string_view query) const
 {
 	return direct()

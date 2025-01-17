@@ -83,46 +83,25 @@ CMDSelect& CMDSelect::columns(std::initializer_list<std::string_view> columns)
 
 CMDSelect& CMDSelect::from(std::string_view table)
 {
-	m_from = wrap_element(table);
+	m_from.table(table);
 	return *this;
 }
 
-CMDSelect& CMDSelect::from(std::string_view table, char alias)
+CMDSelect& CMDSelect::from(std::string_view scheme, std::string_view table)
 {
-	m_from = wrap_element(table, { &alias, 1 });
+	m_from.table(scheme, table);
 	return *this;
 }
 
-CMDSelect& CMDSelect::from(std::string_view table, std::string_view alias)
+CMDSelect& CMDSelect::as(std::string_view as)
 {
-	m_from = wrap_element(table, alias);
+	m_from.as(as);
 	return *this;
 }
 
 CMDSelect& CMDSelect::group_by_field(std::string_view by)
 {
 	m_groupBy << col(by);
-	return *this;
-}
-
-
-CMDSelect& CMDSelect::limit_by(int count)
-{
-	m_hasLimit = true;
-	
-	m_limitCount = count;
-	m_limitOffset = 0;
-	
-	return *this;
-}
-
-CMDSelect& CMDSelect::limit(int offset, int count)
-{
-	m_hasLimit = true;
-	
-	m_limitCount = count;
-	m_limitOffset = offset;
-	
 	return *this;
 }
 
@@ -146,16 +125,13 @@ void CMDSelect::assemble(std::ostringstream& ss) const
 		ss << " *";
 	}
 	
-	if (!m_from.empty())
+	if (m_from.has_table())
 	{
-		ss << " FROM " << m_from;
+		ss << " FROM ";
+		m_from.append_to(ss);
 	}
 	
-	if (!m_where.empty_clause())
-	{
-		ss << " WHERE ";
-		m_where.append_to(ss);
-	}
+	ss << m_where;
 	
 	if (!m_groupBy.empty_clause())
 	{
@@ -169,23 +145,9 @@ void CMDSelect::assemble(std::ostringstream& ss) const
 		m_having.append_to(ss);
 	}
 	
-	if (!m_orderBy.empty_clause())
-	{
-		ss << " ORDER BY ";
-		m_orderBy.append_to(ss);
-	}
-	
-	if (m_hasLimit)
-	{
-		ss << " LIMIT ";
-		
-		if (m_limitOffset != 0)
-		{
-			ss << m_limitOffset << ", ";
-		}
-		
-		ss << m_limitCount;
-	}
+	ss 
+		<< m_orderBy
+		<< m_limit;
 }
 
 std::string CMDSelect::assemble() const
@@ -210,10 +172,10 @@ std::vector<BindValue> CMDSelect::bind() const
 	final.reserve(total);
 	
 	m_columns.append_to(final);
-	m_where.append_to(final);
+	m_where.append_binds(final);
 	m_groupBy.append_to(final);
 	m_having.append_to(final);
-	m_orderBy.append_to(final);
+	m_orderBy.append_binds(final);
 	
 	return final;
 }

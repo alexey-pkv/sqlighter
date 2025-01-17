@@ -5,6 +5,7 @@
 #include "connectors/CMDSelect.h"
 #include "connectors/CMDInsert.h"
 #include "connectors/CMDDirect.h"
+#include "connectors/CMDDelete.h"
 #include "connection/Connection.h"
 #include "connectors/CMDCreateTable.h"
 
@@ -33,11 +34,12 @@ namespace sqlighter
 		
 		
 	public:
-		CMDSelect select() const;
-		CMDDirect direct() const;
-		CMDCreateTable create() const;
-		CMDDrop drop() const;
-		CMDInsert insert() const;
+		CMDDirect		direct() const;
+		CMDSelect		select() const;
+		CMDInsert		insert() const;
+		CMDDelete		del() const;
+		CMDCreateTable	create() const;
+		CMDDrop			drop() const;
 		
 		Stmt execute(std::string_view query) const;
 		Stmt execute(std::string_view query, const BindValue& value) const;

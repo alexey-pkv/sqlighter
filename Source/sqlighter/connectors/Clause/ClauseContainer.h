@@ -24,12 +24,16 @@ namespace sqlighter
 	public:
 		void append(std::string_view exp, const std::vector<BindValue>& bind);
 		
-	
-	public:
-		inline void append_to(std::ostringstream& to) const { m_clause.append_to(to); }
-		inline void append_to(std::vector<BindValue>& to) const { m_clause.append_to(to); }
 		
-		[[nodiscard]] inline bool empty_clause() const noexcept { return m_clause.empty_clause(); }
+	public:
+		inline void append_binds(std::vector<BindValue>& to) const { m_clause.append_to(to); }
 		[[nodiscard]] inline size_t binds_size() const noexcept { return m_clause.binds_size(); }
+	
+		
+	public:
+		virtual void append_to(std::ostream& to) const = 0;
 	};
+	
+	
+	std::ostream& operator<<(std::ostream& ss, const ClauseContainer& ct);
 }

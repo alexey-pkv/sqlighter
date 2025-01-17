@@ -5,10 +5,11 @@
 #include <sstream>
 
 #include "base/connectors/ICMD.h"
-#include "consts/OrderBy.h"
-#include "connectors/Clause/Clause.h"
-#include "connectors/Clause/ClauseOrderBy.h"
+
 #include "connectors/Clause/ClauseWhere.h"
+#include "connectors/Clause/ClauseLimit.h"
+#include "connectors/Clause/ClauseOrderBy.h"
+#include "connectors/Clause/ClauseTable.h"
 
 
 namespace sqlighter
@@ -20,18 +21,14 @@ namespace sqlighter
 	{
 	private:
 		bool m_distinct	= false;
-		bool m_hasLimit	= false;
 		
-		int m_limitOffset = 0;
-		int m_limitCount = 0;
-		
-		std::string m_from = {};
-		
+		ClauseTable		m_from		{};
 		Clause			m_columns	{ ", " };
 		ClauseWhere		m_where		{};
 		Clause			m_groupBy	{ ", " };
 		Clause			m_having	{ " AND " };
 		ClauseOrderBy	m_orderBy	{};
+		ClauseLimit		m_limit		{};
 		
 		
 	public:
@@ -71,8 +68,8 @@ namespace sqlighter
 		
 	public:
 		CMDSelect& from(std::string_view table);
-		CMDSelect& from(std::string_view table, char alias);
-		CMDSelect& from(std::string_view table, std::string_view alias);
+		CMDSelect& from(std::string_view scheme, std::string_view table);
+		CMDSelect& as(std::string_view as);
 		
 		
 	public:
@@ -80,15 +77,9 @@ namespace sqlighter
 		
 		
 	public:
-		SQLIGHTER_WHERE_CLAUSE(m_where, CMDSelect);
-		SQLIGHTER_ORDER_BY_CLAUSE(m_orderBy, CMDSelect);
-		
-		
-	public:
-		CMDSelect& limit_by(int count);
-		CMDSelect& limit(int offset, int count);
-		
-		inline CMDSelect& page(int page, int page_size) { return limit(page * page_size, page_size); };
+		SQLIGHTER_WHERE_CLAUSE		(m_where,	CMDSelect);
+		SQLIGHTER_ORDER_BY_CLAUSE	(m_orderBy,	CMDSelect);
+		SQLIGHTER_LIMIT_CLAUSE		(m_limit,	CMDSelect);
 		
 		
 	public:

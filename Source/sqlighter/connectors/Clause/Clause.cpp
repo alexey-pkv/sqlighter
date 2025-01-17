@@ -117,13 +117,16 @@ int Clause::bind(sqlite3_stmt* to, int offset) const
 	return offset;
 }
 
-void Clause::append_to(std::ostringstream& to) const
+void Clause::append_to(std::ostream& to) const
 {
 	to << m_stream.str();
 }
 
 void Clause::append_to(std::vector<BindValue>& to) const
 {
+	if (m_binds.empty())
+		return;
+	
 	to.insert(to.end(), m_binds.begin(), m_binds.end());
 }
 

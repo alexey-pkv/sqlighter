@@ -12,3 +12,9 @@ void ClauseContainer::append(std::string_view exp, const std::vector<BindValue>&
 	m_clause.append(exp, bind);
 }
 
+
+std::ostream& sqlighter::operator<<(std::ostream& ss, const ClauseContainer& ct)
+{
+	ct.append_to(ss);
+	return ss;
+}

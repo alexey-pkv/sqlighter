@@ -75,3 +75,17 @@ TEST(sqlighter, sanity__reindex)
 	sql.reindex("main.Users");
 	sql.reindex("main", "Users");
 }
+
+
+TEST(sqlighter, sanity__getters)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	sql.direct();
+	sql.create();
+	sql.drop();
+	
+	sql.select();
+	sql.insert();
+	sql.del();
+}

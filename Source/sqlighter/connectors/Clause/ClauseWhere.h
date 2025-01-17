@@ -16,6 +16,10 @@ namespace sqlighter
 		void where_null(std::string_view column);
 		void where_not_null(std::string_view column);
 		void by_field(std::string_view column, BindValue value);
+		
+		
+	public:
+		void append_to(std::ostream& to) const override;
 	};
 }
 

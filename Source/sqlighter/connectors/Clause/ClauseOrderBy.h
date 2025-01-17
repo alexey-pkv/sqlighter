@@ -2,6 +2,7 @@
 
 
 #include "ClauseContainer.h"
+#include "consts/OrderBy.h"
 
 
 namespace sqlighter
@@ -17,6 +18,10 @@ namespace sqlighter
 		
 	public:
 		void order_by_field(std::string_view by, OrderBy order);
+		
+		
+	public:
+		void append_to(std::ostream& to) const override;
 	};
 }
 

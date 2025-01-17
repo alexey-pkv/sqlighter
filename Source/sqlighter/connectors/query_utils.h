@@ -9,11 +9,8 @@ namespace sqlighter
 	enum class OrderBy; 
 	
 	
-	std::string wrap_element(std::string_view element, std::string_view as);
-	std::string wrap_element(std::string_view);
-	
-	std::ostringstream& wrap_element(std::ostringstream& ss, std::string_view element, std::string_view as);
-	std::ostringstream& wrap_element(std::ostringstream& ss, std::string_view element);
+	std::ostream& wrap_element(std::ostream& ss, std::string_view element, std::string_view as);
+	std::ostream& wrap_element(std::ostream& ss, std::string_view element);
 	
 	void element_name(std::string_view fullName, std::string& scheme, std::string& name);
 	
@@ -42,13 +39,13 @@ namespace sqlighter
 	};
 	
 	
-	inline std::ostringstream& operator<<(std::ostringstream& s, const sqlighter::col& c)
+	inline std::ostream& operator<<(std::ostream& s, const sqlighter::col& c)
 	{
 		sqlighter::wrap_element(s, c.column);
 		return s;
 	}
 	
-	inline std::ostringstream& operator<<(std::ostringstream& s, const sqlighter::col_as& c)
+	inline std::ostream& operator<<(std::ostream& s, const sqlighter::col_as& c)
 	{
 		sqlighter::wrap_element(s, c.column, c.as);
 		return s;

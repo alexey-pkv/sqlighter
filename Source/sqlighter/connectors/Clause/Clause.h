@@ -60,7 +60,7 @@ namespace sqlighter
 		
 		int bind(sqlite3_stmt* to, int offset) const;
 		
-		void append_to(std::ostringstream& to) const;
+		void append_to(std::ostream& to) const;
 		void append_to(std::vector<BindValue>& to) const;
 		
 		void clear();
@@ -80,12 +80,14 @@ namespace sqlighter
 		
 		inline std::ostringstream& operator<<(const col& c)
 		{
-			return next_section() << c;
+			next_section() << c;
+			return m_stream;
 		}
 		
 		inline std::ostringstream& operator<<(const col_as& c)
 		{
-			return next_section() << c;
+			next_section() << c;
+			return m_stream;
 		}
 	};
 }

@@ -23,3 +23,12 @@ void ClauseOrderBy::order_by_field(std::string_view by, OrderBy order)
 		clause().direct() << ' ' << order;
 	}
 }
+
+void ClauseOrderBy::append_to(std::ostream& to) const
+{
+	if (clause().empty_clause())
+		return;
+	
+	to << " ORDER BY ";
+	clause().append_to(to);
+}

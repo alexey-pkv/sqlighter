@@ -7,29 +7,13 @@
 using namespace sqlighter;
 
 
-std::string sqlighter::wrap_element(std::string_view element, std::string_view as)
-{
-	std::ostringstream ss;
-	wrap_element(ss, element, as);
-	return ss.str();
-}
-
-std::ostringstream& sqlighter::wrap_element(std::ostringstream& ss, std::string_view element, std::string_view as)
+std::ostream& sqlighter::wrap_element(std::ostream& ss, std::string_view element, std::string_view as)
 {
 	ss << '`' << element << "` as `" << as << '`';
 	return ss;
 }
 
-
-
-std::string sqlighter::wrap_element(std::string_view element)
-{
-	std::ostringstream ss;
-	wrap_element(ss, element);
-	return ss.str();
-}
-
-std::ostringstream& sqlighter::wrap_element(std::ostringstream& ss, std::string_view element)
+std::ostream& sqlighter::wrap_element(std::ostream& ss, std::string_view element)
 {
 	ss << '`' << element << '`';
 	return ss;

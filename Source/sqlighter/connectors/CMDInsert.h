@@ -2,6 +2,7 @@
 
 
 #include "base/connectors/ICMD.h"
+#include "connectors/Clause/ClauseTable.h"
 
 
 namespace sqlighter
@@ -11,9 +12,7 @@ namespace sqlighter
 	private:
 		int m_columnsCount	= -1;
 		
-		std::string	m_table		{};
-		std::string	m_scheme	{};
-		std::string	m_as		{};
+		ClauseTable	m_into		{};
 		std::string m_or		{};
 		
 		std::vector<std::string>	m_columns	{};
@@ -41,7 +40,6 @@ namespace sqlighter
 		CMDInsert& or_rollback();
 		
 		CMDInsert& as(std::string_view alias);
-		
 		CMDInsert& into(std::string_view table);
 		CMDInsert& into(std::string_view scheme, std::string_view table);
 		

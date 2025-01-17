@@ -7,6 +7,21 @@
 using namespace sqlighter;
 
 
+TEST(Clause, copy__self)
+{
+	Clause c(nullptr);
+	
+	c.append("a");
+	c.append("b");
+	
+	
+	c = c;
+	
+	
+	ASSERT_EQ("ab", c.get_clause_string());
+}
+
+
 TEST(Clause, append__no_delimiter)
 {
 	Clause c(nullptr);
@@ -45,6 +60,30 @@ TEST(Clause, append__delimiter)
 	
 	
 	ASSERT_EQ("a, b", c.get_clause_string());
+}
+
+TEST(Clause, next_section)
+{
+	Clause c(", ");
+	
+	
+	c.append("A");
+	c.next_section() << "b";
+	
+	
+	ASSERT_EQ("A, b", c.get_clause_string());
+}
+
+TEST(Clause, next_section__no_delimiter)
+{
+	Clause c(nullptr);
+	
+	
+	c.append("A");
+	c.next_section() << "b";
+	
+	
+	ASSERT_EQ("Ab", c.get_clause_string());
 }
 
 TEST(Clause, append_directly__delimiter_ignored)

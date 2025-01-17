@@ -22,20 +22,19 @@ CMDInsert& CMDInsert::or_rollback()	{ m_or = "ROLLBACK"; return *this; }
 
 CMDInsert& CMDInsert::into(std::string_view table)
 {
-	element_name(table, m_scheme, m_table);
+	m_into.table(table);
 	return *this;
 }
 
 CMDInsert& CMDInsert::into(std::string_view scheme, std::string_view table)
 {
-	m_scheme = scheme;
-	m_table = table;
+	m_into.table(scheme, table);
 	return *this;
 }
 
 CMDInsert& CMDInsert::as(std::string_view alias)
 {
-	m_as = alias;
+	m_into.as(alias);
 	return *this;
 }
 
@@ -121,15 +120,7 @@ void CMDInsert::assemble(std::ostringstream& ss) const
 	if (!m_or.empty())
 		ss << "OR " << m_or << ' ';
 	
-	ss << "INTO ";
-	
-	if (!m_scheme.empty())
-		wrap_element(ss, m_scheme) << '.';
-	
-	wrap_element(ss, m_table) << ' ';
-	
-	if (!m_as.empty())
-		ss << "AS " << wrap_element(m_as) << ' ';
+	ss << "INTO " << m_into << ' ';
 	
 	if (!m_columns.empty())
 	{
