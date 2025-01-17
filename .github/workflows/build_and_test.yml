@@ -29,6 +29,7 @@ jobs:
     - name: Build project
       run: |
         mkdir build
+        cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-10
         cd build
         make sqlighter
         make sqlighter_tests
