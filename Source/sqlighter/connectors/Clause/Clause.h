@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include "core/BindValue.h"
-#include "query_utils.h"
+#include "connectors/query_utils.h"
 
 
 class sqlite3_stmt;

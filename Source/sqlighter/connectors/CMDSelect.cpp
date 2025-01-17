@@ -3,7 +3,6 @@
 
 #include "query_utils.h"
 
-#include "core/Stmt.h"
 #include "base/connection/IConnection.h"
 #include "consts/const_cast.h"
 #include "exceptions/sqlighter_exceptions.h"
@@ -12,25 +11,14 @@
 using namespace sqlighter;
 
 
-CMDSelect::CMDSelect(const std::shared_ptr<IConnection>& connection) : 
-	m_connection(connection)
-{
-	if (connection == nullptr)
-	{
-		throw SQLighterException(SQLIGHTER_ERR_UNEXPECTED, "connection should not be null!");
-	}
-}
+CMDSelect::CMDSelect(const std::shared_ptr<IConnection>& connection) :
+	CMD(connection)
+{}
 
 
 CMDSelect& CMDSelect::append_column_exp(std::string_view exp, const std::vector<BindValue>& bind)
 {
 	m_columns.append(exp, bind);
-	return *this;
-}
-
-CMDSelect& CMDSelect::append_where(std::string_view exp, const std::vector<BindValue>& bind)
-{
-	m_where.append(exp, bind);
 	return *this;
 }
 
@@ -43,12 +31,6 @@ CMDSelect& CMDSelect::append_group_by(std::string_view exp, const std::vector<Bi
 CMDSelect& CMDSelect::append_having(std::string_view exp, const std::vector<BindValue>& bind)
 {
 	m_having.append(exp, bind);
-	return *this;
-}
-
-CMDSelect& CMDSelect::append_order_by(std::string_view exp, const std::vector<BindValue>& bind)
-{
-	m_orderBy.append(exp, bind);
 	return *this;
 }
 
@@ -117,48 +99,9 @@ CMDSelect& CMDSelect::from(std::string_view table, std::string_view alias)
 	return *this;
 }
 
-CMDSelect& CMDSelect::where_null(std::string_view column)
-{
-	m_where << col(column) << " IS NULL";
-	return *this;
-}
-
-CMDSelect& CMDSelect::where_not_null(std::string_view column)
-{
-	m_where << col(column) << " IS NOT NULL";
-	return *this;
-}
-
-CMDSelect& CMDSelect::by_field(std::string_view column, BindValue value)
-{
-	m_where << col(column) << " = ?";
-	
-	m_where.append_bind(value);
-	
-	return *this;
-}
-
 CMDSelect& CMDSelect::group_by_field(std::string_view by)
 {
 	m_groupBy << col(by);
-	return *this;
-}
-
-CMDSelect& CMDSelect::order_by_field(std::string_view by)
-{
-	m_orderBy << col(by);
-	return *this;
-}
-
-CMDSelect& CMDSelect::order_by_field(std::string_view by, OrderBy order)
-{
-	m_orderBy << col(by);
-	
-	if (order == OrderBy::DESC)
-	{
-		m_orderBy.direct() << ' ' << order;
-	}
-	
 	return *this;
 }
 
@@ -247,11 +190,7 @@ void CMDSelect::assemble(std::ostringstream& ss) const
 
 std::string CMDSelect::assemble() const
 {
-	std::ostringstream ss;
-	
-	assemble(ss);
-	
-	return ss.str();
+	return CMD::assemble();
 }
 
 std::vector<BindValue> CMDSelect::bind() const
@@ -279,14 +218,6 @@ std::vector<BindValue> CMDSelect::bind() const
 	return final;
 }
 
-
-Stmt CMDSelect::execute() const
-{
-	return m_connection->execute(
-		assemble(),
-		bind()
-	);
-}
 
 ScalarValue CMDSelect::query_scalar() const
 {
@@ -352,8 +283,7 @@ std::vector<ScalarValue> CMDSelect::query_column() const
 	
 	while (stmt.has_row())
 	{
-		data.emplace_back(stmt.column_value(0));
-		stmt.step();
+		data.emplace_back(stmt.column_value_and_step(0));
 	}
 	
 	stmt.require_done();
@@ -387,22 +317,5 @@ std::vector<ScalarValue> CMDSelect::query_row(bool expect_one) const
 
 std::vector<std::vector<ScalarValue>> CMDSelect::query_all(int failsafeLimit) const
 {
-	auto stmt = execute();
-	
-	if (!stmt.has_row())
-		return {};
-	
-	std::vector<std::vector<ScalarValue>> data = {};
-	
-	while (stmt.has_row())
-	{
-		if (data.size() >= failsafeLimit)
-			throw SQLighterException(SQLIGHTER_ERR_ROWS_OVERFLOW).query(assemble());
-		
-		data.emplace_back(stmt.row());
-		stmt.step();
-	}
-	
-	return data;
+	return execute().all(failsafeLimit);
 }
-

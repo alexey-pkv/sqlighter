@@ -42,7 +42,7 @@ TEST(CMDCreateTable, constructor__connection_is_null__exception_thrown)
 	}
 	catch (const SQLighterException& e)
 	{
-		ASSERT_TRUE(std::string(e.what()).find("connection should not be null!") != std::string::npos);
+		ASSERT_EQ(SQLIGHTER_ERR_GENERIC, e.code());
 	}
 }
 

@@ -327,6 +327,33 @@ std::vector<ScalarValue> Stmt::row() const
 	return res;
 }
 
+std::vector<ScalarValue> Stmt::row_and_step()
+{
+	auto item = row();
+	
+	step();
+	
+	return item;
+}
+
+std::vector<std::vector<ScalarValue>> Stmt::all(int failsafeLimit)
+{
+	if (!has_row())
+		return {};
+	
+	std::vector<std::vector<ScalarValue>> data = {};
+	
+	while (has_row())
+	{
+		if (data.size() >= failsafeLimit)
+			throw SQLighterException(SQLIGHTER_ERR_ROWS_OVERFLOW).query(m_query);
+		
+		data.emplace_back(row_and_step());
+	}
+	
+	return data;
+}
+
 int Stmt::column_type(int at) const
 {
 	require_column(at);
@@ -409,6 +436,15 @@ void Stmt::require_done() const
 ScalarValue Stmt::column_value(int at) const
 {
 	return to_value(at);
+}
+
+ScalarValue Stmt::column_value_and_step(int at)
+{
+	auto val = to_value(at);
+	
+	step();
+	
+	return val;
 }
 
 int Stmt::column_index(std::string_view name) const

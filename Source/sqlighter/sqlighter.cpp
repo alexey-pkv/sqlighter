@@ -2,8 +2,7 @@
 
 
 #include "core/DB.h"
-#include "connectors/CMDSelect.h"
-#include "connectors/CMDDirect.h"
+#include "connectors/query_utils.h"
 
 
 using namespace sqlighter;
@@ -16,7 +15,7 @@ SQLighter::SQLighter(const std::filesystem::path& db_path) :
 	
 }
 
-SQLighter::SQLighter(std::string_view db_path) :
+SQLighter::SQLighter(const char* db_path) :
 	m_db(std::make_shared<DB>(db_path)),
 	m_connection(std::make_shared<Connection>(m_db))
 {
@@ -44,6 +43,16 @@ CMDDirect SQLighter::direct() const
 CMDCreateTable SQLighter::create() const
 {
 	return CMDCreateTable { m_connection };
+}
+
+CMDDrop SQLighter::drop() const
+{
+	return CMDDrop { m_connection };
+}
+
+CMDInsert SQLighter::insert() const
+{
+	return CMDInsert { m_connection };
 }
 
 Stmt SQLighter::execute(std::string_view query) const
@@ -80,4 +89,35 @@ std::vector<std::vector<ScalarValue>> SQLighter::query_all(std::string_view tabl
 const std::string& SQLighter::path() const
 {
 	return m_db->path();
+}
+
+
+void SQLighter::reindex(std::string_view element) const
+{
+	auto d = direct();
+	
+	std::string scheme	{};
+	std::string name	{};
+	
+	element_name(element, scheme, name);
+	
+	if (scheme.empty())
+	{
+		d << "REINDEX `" << name << "`";
+	}
+	else
+	{
+		d << "REINDEX `" << scheme << "`.`" << name << "`";
+	}
+	
+	d.execute();
+}
+
+void SQLighter::reindex(std::string_view scheme, std::string_view element) const
+{
+	auto d = direct();
+	
+	d << "REINDEX `" << scheme << "`.`" << element << "`";
+	
+	d.execute();
 }

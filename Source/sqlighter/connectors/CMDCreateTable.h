@@ -7,12 +7,8 @@
 
 namespace sqlighter
 {
-	class CMDCreateTable : public ICMD
+	class CMDCreateTable : public CMD
 	{
-	private:
-		std::shared_ptr<IConnection>	m_connection;
-		
-		
 	private:
 		bool		m_isTemp		{ false };
 		bool		m_ifNotExists	{ false };
@@ -56,8 +52,6 @@ namespace sqlighter
 		void assemble(std::ostringstream& ss) const override;
 		[[nodiscard]] std::string assemble() const override;
 		[[nodiscard]] std::vector<BindValue> bind() const override;
-		
-		Stmt execute() const override;
 	};
 }
 

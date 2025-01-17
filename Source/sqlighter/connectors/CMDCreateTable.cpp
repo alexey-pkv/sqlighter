@@ -3,20 +3,14 @@
 
 #include <sstream>
 
+#include "query_utils.h"
 #include "exceptions/sqlighter_exceptions.h"
 
 
 using namespace sqlighter;
 
 
-CMDCreateTable::CMDCreateTable(const std::shared_ptr<IConnection>& connection) : 
-	m_connection(connection)
-{
-	if (connection == nullptr)
-	{
-		throw SQLighterException(SQLIGHTER_ERR_UNEXPECTED, "connection should not be null!");
-	}
-}
+CMDCreateTable::CMDCreateTable(const std::shared_ptr<IConnection>& connection) : CMD(connection) {}
 
 
 CMDCreateTable& CMDCreateTable::temp()
@@ -39,18 +33,7 @@ CMDCreateTable& CMDCreateTable::scheme(std::string_view name)
 
 CMDCreateTable& CMDCreateTable::table(std::string_view name)
 {
-	auto at = name.find('.');
-	
-	if (at != std::string::npos)
-	{
-		m_scheme = name.substr(0, at);
-		m_table = name.substr(at + 1);
-	}
-	else
-	{
-		m_table = name;
-	}
-	
+	element_name(name, m_scheme, m_table);
 	return *this;
 }
 
@@ -123,19 +106,10 @@ void CMDCreateTable::assemble(std::ostringstream& ss) const
 
 std::string CMDCreateTable::assemble() const
 {
-	std::ostringstream ss;
-	
-	assemble(ss);
-	
-	return ss.str();
+	return CMD::assemble();
 }
 
 std::vector<BindValue> CMDCreateTable::bind() const
 {
 	return {};
-}
-
-Stmt CMDCreateTable::execute() const
-{ 
-	return m_connection->execute(assemble(), {});
 }

@@ -2,9 +2,9 @@
 
 
 #include "base/connection/IConnection.h"
-#include "core/Stmt.h"
 
 #include "connection_override.h"
+#include "exceptions/sqlighter_exceptions.h"
 
 #include <gtest/gtest.h>
 
@@ -14,21 +14,15 @@ using namespace sqlighter;
 
 TEST(CMDDirect, constructor_with_nullptr)
 {
-	bool thrown = false;
-	
-	
 	try
 	{
 		CMDDirect cd(nullptr);
+		FAIL();
 	}
-	catch (std::runtime_error re)
+	catch (const SQLighterException& re)
 	{
-		thrown = true;
-		ASSERT_EQ("Connection must be set", std::string(re.what()));
+		ASSERT_EQ(re.code(), SQLIGHTER_ERR_GENERIC);
 	}
-	
-	
-	ASSERT_TRUE(thrown);
 }
 
 TEST(CMDDirect, constructor_copy)

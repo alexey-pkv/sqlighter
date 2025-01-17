@@ -2,22 +2,16 @@
 
 
 #include "core/Stmt.h"
+#include "exceptions/sqlighter_exceptions.h"
 
 
 using namespace sqlighter;
 
 
-CMDDirect::CMDDirect(const std::shared_ptr<IConnection>& connection) : 
-	m_connection(connection)
-{
-	if (m_connection == nullptr)
-	{
-		throw std::runtime_error("Connection must be set");
-	}
-}
+CMDDirect::CMDDirect(const std::shared_ptr<IConnection>& connection) : CMD(connection) {}
 
 CMDDirect::CMDDirect(const CMDDirect& c) :
-	m_connection(c.m_connection),
+	CMD(c),
 	m_stream(c.m_stream.str()),
 	m_binds(c.m_binds)
 {
@@ -52,7 +46,7 @@ void CMDDirect::assemble(std::ostringstream& ss) const
 
 std::string CMDDirect::assemble() const
 {
-	return m_stream.str();
+	return CMD::assemble();
 }
 
 std::vector<BindValue> CMDDirect::bind() const
@@ -60,13 +54,6 @@ std::vector<BindValue> CMDDirect::bind() const
 	return m_binds;
 }
 
-Stmt CMDDirect::execute() const
-{
-	return m_connection->execute(
-		assemble(),
-		bind()
-	);
-}
 
 void CMDDirect::execute_direct() const
 {

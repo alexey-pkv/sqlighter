@@ -65,13 +65,13 @@ const std::string& SQLighterException::what_str() const
 		ss << error_message(m_lighter_code);
 		
 		if (m_sqlite_code > 0)
-			ss << std::endl << "    > " << what_sqlite3();
+			ss << std::endl << "    > sqlite : " << what_sqlite3();
 		
 		if (!m_message.empty())
-			ss << std::endl << "    > " << m_message;
+			ss << std::endl << "    > message: " << m_message;
 		
 		if (!m_query.empty())
-			ss << std::endl << "    > query: " << m_query;
+			ss << std::endl << "    > query  : " << m_query;
 		
 		m_what = ss.str();
 	}

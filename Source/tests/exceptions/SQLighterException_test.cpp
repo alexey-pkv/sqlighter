@@ -102,6 +102,7 @@ TEST(SQLighterException, what__sanity)
 	
 	SQLighterException e(SQLIGHTER_ERR_STEP, SQLITE_NOTFOUND);
 	e.db_msg(sql.db());
+	e.query("my query");
 	
 	
 	std::string str = e.what();
@@ -112,6 +113,7 @@ TEST(SQLighterException, what__sanity)
 	ASSERT_NE(std::string::npos, str.find("unknown operation"));
 	ASSERT_NE(std::string::npos, str.find("syntax error"));
 	ASSERT_NE(std::string::npos, str.find("Failed to execute step"));
+	ASSERT_NE(std::string::npos, str.find("my query"));
 }
 
 TEST(SQLighterException, what__message_only)

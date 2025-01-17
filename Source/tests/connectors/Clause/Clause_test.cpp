@@ -1,4 +1,4 @@
-#include "connectors/Clause.h"
+#include "connectors/Clause/Clause.h"
 
 
 #include <gtest/gtest.h>

@@ -57,10 +57,10 @@ namespace sqlighter
 		inline std::shared_ptr<const DB> db() const { return m_db; }
 		inline std::shared_ptr<DB> db() { return m_db; }
 		
-		inline int is_done() const	{ return m_lastCode == SQLITE_DONE;		}
-		inline int is_ok() const	{ return m_lastCode == SQLITE_OK;		}
-		inline int is_error() const	{ return m_lastCode == SQLITE_ERROR;	}
-		inline int has_row() const	{ return m_lastCode == SQLITE_ROW;		}
+		inline bool is_done() const		{ return m_lastCode == SQLITE_DONE;		}
+		inline bool is_ok() const		{ return m_lastCode == SQLITE_OK;		}
+		inline bool is_error() const	{ return m_lastCode == SQLITE_ERROR;	}
+		inline bool has_row() const		{ return m_lastCode == SQLITE_ROW;		}
 		
 		inline const std::string& query() const { return m_query; }
 		
@@ -105,7 +105,11 @@ namespace sqlighter
 		bool column_double_n(int at, double& into) const;
 		bool column_string_n(int at, std::string& into) const;
 		
+		ScalarValue column_value(int at) const;
+		ScalarValue column_value_and_step(int at);
 		std::vector<ScalarValue> row() const;
+		std::vector<ScalarValue> row_and_step();
+		std::vector<std::vector<ScalarValue>> all(int failsafeLimit);
 		
 		const char* column_name(int at) const;
 		const std::string& column_name_str(int at) const;
@@ -117,10 +121,6 @@ namespace sqlighter
 		
 		void require_one_column() const;
 		void require_done() const;
-		
-		
-	public:
-		ScalarValue column_value(int at) const;
 		
 		
 	public:

@@ -1,12 +1,14 @@
 #pragma once
 
 
-#include <sstream>
 #include <memory>
+#include <sstream>
 
 #include "base/connectors/ICMD.h"
 #include "consts/OrderBy.h"
-#include "connectors/Clause.h"
+#include "connectors/Clause/Clause.h"
+#include "connectors/Clause/ClauseOrderBy.h"
+#include "connectors/Clause/ClauseWhere.h"
 
 
 namespace sqlighter
@@ -14,12 +16,8 @@ namespace sqlighter
 	class IConnection;
 	
 	
-	class CMDSelect : public ICMD
+	class CMDSelect : public CMD
 	{
-	private:
-		std::shared_ptr<IConnection>	m_connection;
-		
-		
 	private:
 		bool m_distinct	= false;
 		bool m_hasLimit	= false;
@@ -29,11 +27,11 @@ namespace sqlighter
 		
 		std::string m_from = {};
 		
-		Clause m_columns	{ ", " };
-		Clause m_where		{ " AND " };
-		Clause m_groupBy	{ ", " };
-		Clause m_having		{ " AND " };
-		Clause m_orderBy	{ ", " };
+		Clause			m_columns	{ ", " };
+		ClauseWhere		m_where		{};
+		Clause			m_groupBy	{ ", " };
+		Clause			m_having	{ " AND " };
+		ClauseOrderBy	m_orderBy	{};
 		
 		
 	public:
@@ -49,18 +47,14 @@ namespace sqlighter
 		
 	protected:
 		CMDSelect& append_column_exp(std::string_view exp, const std::vector<BindValue>& bind);
-		CMDSelect& append_where(std::string_view exp, const std::vector<BindValue>& bind);
-		CMDSelect& append_order_by(std::string_view exp, const std::vector<BindValue>& bind);
 		CMDSelect& append_group_by(std::string_view exp, const std::vector<BindValue>& bind);
 		CMDSelect& append_having(std::string_view exp, const std::vector<BindValue>& bind);
-		
+	
 		
 	public:
 		SQLIGHTER_INLINE_CLAUSE(column_exp,	append_column_exp,	CMDSelect);
-		SQLIGHTER_INLINE_CLAUSE(where,		append_where,	 	CMDSelect);
 		SQLIGHTER_INLINE_CLAUSE(group_by,	append_group_by,	CMDSelect);
 		SQLIGHTER_INLINE_CLAUSE(having,		append_having,		CMDSelect);
-		SQLIGHTER_INLINE_CLAUSE(order_by,	append_order_by,	CMDSelect);
 	
 	
 	public:
@@ -82,21 +76,12 @@ namespace sqlighter
 		
 		
 	public:
-		CMDSelect& where_null(std::string_view column);
-		CMDSelect& where_not_null(std::string_view column);
-		CMDSelect& by_field(std::string_view column, BindValue value);
-		
-		
-	public:
 		CMDSelect& group_by_field(std::string_view by);
 		
 		
 	public:
-		CMDSelect& order_by_field(std::string_view by, OrderBy order);
-		CMDSelect& order_by_field(std::string_view by);
-		
-		inline CMDSelect& order_by_field_asc(std::string_view by)	{ return order_by_field(by, OrderBy::ASC); };
-		inline CMDSelect& order_by_field_desc(std::string_view by)	{ return order_by_field(by, OrderBy::DESC); };
+		SQLIGHTER_WHERE_CLAUSE(m_where, CMDSelect);
+		SQLIGHTER_ORDER_BY_CLAUSE(m_orderBy, CMDSelect);
 		
 		
 	public:
@@ -110,7 +95,6 @@ namespace sqlighter
 		void assemble(std::ostringstream& ss) const override;
 		[[nodiscard]] std::string assemble() const override;
 		[[nodiscard]] std::vector<BindValue> bind() const override;
-		Stmt execute() const override;
 		
 		
 	public:

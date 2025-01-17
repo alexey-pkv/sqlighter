@@ -12,8 +12,12 @@ namespace sqlighter
 	std::string wrap_element(std::string_view element, std::string_view as);
 	std::string wrap_element(std::string_view);
 	
-	void wrap_element(std::ostringstream& ss, std::string_view element, std::string_view as);
-	void wrap_element(std::ostringstream& ss, std::string_view element);
+	std::ostringstream& wrap_element(std::ostringstream& ss, std::string_view element, std::string_view as);
+	std::ostringstream& wrap_element(std::ostringstream& ss, std::string_view element);
+	
+	void element_name(std::string_view fullName, std::string& scheme, std::string& name);
+	
+	std::string create_questions(int count);
 	
 	
 	struct col

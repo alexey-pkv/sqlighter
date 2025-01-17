@@ -1,9 +1,11 @@
 #pragma once
 
 
-#include "connection/Connection.h"
+#include "connectors/CMDDrop.h"
 #include "connectors/CMDSelect.h"
+#include "connectors/CMDInsert.h"
 #include "connectors/CMDDirect.h"
+#include "connection/Connection.h"
 #include "connectors/CMDCreateTable.h"
 
 
@@ -26,7 +28,7 @@ namespace sqlighter
 		SQLighter& operator=(const SQLighter&) = default;
 		
 		explicit SQLighter(const std::filesystem::path& db_path);
-		explicit SQLighter(std::string_view db_path);
+		explicit SQLighter(const char* db_path);
 		explicit SQLighter(const std::shared_ptr<DB>& db);
 		
 		
@@ -34,6 +36,8 @@ namespace sqlighter
 		CMDSelect select() const;
 		CMDDirect direct() const;
 		CMDCreateTable create() const;
+		CMDDrop drop() const;
+		CMDInsert insert() const;
 		
 		Stmt execute(std::string_view query) const;
 		Stmt execute(std::string_view query, const BindValue& value) const;
@@ -41,6 +45,17 @@ namespace sqlighter
 		
 		int count_rows(std::string_view table) const;
 		std::vector<std::vector<ScalarValue>> query_all(std::string_view table, int failsafeLimit = 10000) const;
+		
+		
+	public:
+		inline void begin() const		{ execute("BEGIN"); }
+		inline void commit() const		{ execute("COMMIT"); }
+		inline void rollback() const	{ execute("ROLLBACK"); }
+		
+		
+	public:
+		void reindex(std::string_view element) const;
+		void reindex(std::string_view scheme, std::string_view element) const;
 		
 		
 	public:

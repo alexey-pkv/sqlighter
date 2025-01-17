@@ -15,7 +15,7 @@ Connection::Connection(const std::shared_ptr<DB>& db) :
 {
 	if (db == nullptr)
 	{
-		throw std::invalid_argument("db must not be null");
+		throw SQLighterException(SQLIGHTER_ERR_GENERIC, "db must not be null");
 	}
 }
 

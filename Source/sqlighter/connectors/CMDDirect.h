@@ -9,11 +9,9 @@
 
 namespace sqlighter
 {
-	class CMDDirect : public ICMD
+	class CMDDirect : public CMD
 	{
 	private:
-		std::shared_ptr<IConnection>	m_connection;
-		
 		std::ostringstream		m_stream;
 		std::vector<BindValue>	m_binds;
 		
@@ -54,7 +52,5 @@ namespace sqlighter
 		
 		[[nodiscard]] std::string assemble() const override;
 		[[nodiscard]] std::vector<BindValue> bind() const override;
-		
-		Stmt execute() const override;
 	};
 }
