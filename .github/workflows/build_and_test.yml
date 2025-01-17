@@ -12,7 +12,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
+    
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v1
       with:
@@ -29,11 +29,16 @@ jobs:
     - name: Build project
       run: |
         mkdir build
-        cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-10
+        cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined"
         cd build
         make sqlighter
         make sqlighter_tests
-
+    
+    - name: Check GCC/Clang version
+      run: |
+        g++ --version
+        clang --version
+    
     - name: Run tests
       run: |
         ./build/bin/sqlighter_tests
