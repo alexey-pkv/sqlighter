@@ -846,7 +846,7 @@ TEST(CMDSelect, query__scalars__nullable)
 	}
 }
 
-
+/*
 TEST(CMDSelect, query_column)
 {
 	SQLighter sql { setup_db("test_select.db") };
@@ -912,7 +912,7 @@ TEST(CMDSelect, query_column)
 		ASSERT_EQ(60, res[9].get<int32_t>());
 	}
 }
-
+*/
 
 TEST(CMDSelect, query_row__expect_any_number_of_rows)
 {

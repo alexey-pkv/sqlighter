@@ -423,7 +423,6 @@ TEST(Stmt, column_string)
 	ASSERT_EQ("hello world", stmt.column_string(3));
 }
 
-/*
 TEST(CMDSelect, query_blob)
 {
 	SQLighter sql { setup_db("test_blob.db") };
@@ -474,7 +473,6 @@ TEST(CMDSelect, query_blob)
 	ASSERT_EQ(0, size);
 	ASSERT_EQ(blob, nullptr);
 }
-*/
 
 TEST(CMDSelect, query_blob__vector)
 {
