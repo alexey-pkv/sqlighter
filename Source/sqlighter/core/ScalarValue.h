@@ -19,43 +19,19 @@ namespace sqlighter
 			TEXT		= 3,
 			BLOB		= 4
 		};
-		
-		union value
-		{
-		public:
-			int64_t		i64;
-			double		dbl;
-			std::string	str;
-			blob_t		blob;
-			
-			
-		public:
-			~value();
-			value();
-			
-			void make_string();
-			void make_string(std::string&& s);
-			void make_string(const std::string& s);
-			
-			void make_blob();
-			void make_blob(blob_t&& b);
-			void make_blob(const blob_t& b);
-			
-			void destroy_string();
-    		void destroy_blob();
-		};
 	
 	
 	private:
-		type	m_type;
-		value	m_value;
+		type		m_type	{ type::NULL_VAL };
+		int64_t		m_i64	{};
+		double		m_dbl	{};
+		std::string	m_str	{};
+		blob_t		m_blob	{};
 		
 		
 	public:
-		~ScalarValue();
-		ScalarValue();
-		ScalarValue(ScalarValue&& v);
-		ScalarValue& operator=(ScalarValue&& v);
+		ScalarValue() = default;
+		
 		explicit ScalarValue(ScalarValue::type t);
 		
 		ScalarValue(int32_t val);				// NOLINT(*-explicit-constructor)
@@ -68,7 +44,6 @@ namespace sqlighter
 		
 		
 	public:
-		inline const value& get_value() const noexcept { return m_value; }
 		inline type get_type() const noexcept { return m_type; }
 		inline bool is_null() const noexcept { return m_type == type::NULL_VAL; }
 		

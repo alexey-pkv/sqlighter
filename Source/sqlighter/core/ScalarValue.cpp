@@ -28,159 +28,40 @@ SQLighterException create_error_unexpected_type(ScalarValue::type got, ScalarVal
 }
 
 
-ScalarValue::value::~value() {}
-ScalarValue::value::value() {}
-
-void ScalarValue::value::make_string() { new (&str) std::string(); }
-void ScalarValue::value::make_string(std::string&& s) { new (&str) std::string(std::move(s)); }
-void ScalarValue::value::make_string(const std::string& s) { new (&str) std::string(s); }
-
-void ScalarValue::value::make_blob() { new (&blob)  blob_t(); }
-void ScalarValue::value::make_blob(blob_t&& b) { new (&blob) blob_t(std::move(b)); }
-void ScalarValue::value::make_blob(const blob_t& b) { new (&blob) blob_t(std::move(b)); }
-
-
-void ScalarValue::value::destroy_string()
-{
-	typedef std::string string;
-	str.~string();
-}
-
-void ScalarValue::value::destroy_blob()
-{
-	blob.~vector<std::uint8_t>();
-}
-
-
-ScalarValue::~ScalarValue()
-{
-	switch (m_type)
-	{
-		case ScalarValue::type::BLOB:
-			m_value.destroy_blob();
-			break;
-			
-		case ScalarValue::type::TEXT:
-			m_value.destroy_string();
-			break;
-			
-		case type::INT:
-		case type::DOUBLE:
-		case type::NULL_VAL:
-			break;
-	}
-}
-
-
-ScalarValue::ScalarValue() : 
-	m_type(type::NULL_VAL)
-{
-	m_value.i64 = 0;
-}
-
-ScalarValue::ScalarValue(ScalarValue&& v)
-{
-	*this = std::move(v);
-}
-
-ScalarValue& ScalarValue::operator=(ScalarValue&& v)
-{
-	switch (m_type)
-	{
-		case ScalarValue::type::BLOB:
-			m_value.destroy_blob();
-			break;
-			
-		case ScalarValue::type::TEXT:
-			m_value.destroy_string();
-			break;
-			
-		case type::INT:
-		case type::NULL_VAL:
-		case type::DOUBLE:
-			break;
-	}
-	
-	m_type = v.m_type;
-	
-	switch (m_type)
-	{
-		case ScalarValue::type::BLOB:
-			m_value.make_blob(v.m_value.blob);
-			break;
-			
-		case ScalarValue::type::TEXT:
-			m_value.make_string(v.m_value.str);
-			break;
-			
-		case type::NULL_VAL:
-		case type::INT:
-			m_value.i64 = v.m_value.i64;
-			break;
-			
-		case type::DOUBLE:
-			m_value.dbl = v.m_value.dbl;
-			break;
-	}
-	
-	v.m_type = type::NULL_VAL;
-	
-	return *this;
-}
-
 ScalarValue::ScalarValue(ScalarValue::type t) : 
-	m_type(t),
-	m_value()
+	m_type(t)
 {
-	switch (m_type)
-	{
-		case ScalarValue::type::BLOB:
-			m_value.make_blob();
-			break;
-			
-		case ScalarValue::type::TEXT:
-			m_value.make_string();
-			break;
-			
-		case type::NULL_VAL:
-		case type::INT:
-			m_value.i64 = 0;
-			break;
-			
-		case type::DOUBLE:
-			m_value.dbl = 0.0;
-			break;
-	}
+	
 }
 
 ScalarValue::ScalarValue(int32_t val) :
 	m_type(type::INT)
 {
-	m_value.i64 = (int64_t)val;
+	m_i64 = (int64_t)val;
 }
 
 ScalarValue::ScalarValue(int64_t val) :
 	m_type(type::INT)
 {
-	m_value.i64 = val;
+	m_i64 = (int64_t)val;
 }
 
 ScalarValue::ScalarValue(double val) :
 	m_type(type::DOUBLE)
 {
-	m_value.dbl = val;
+	m_dbl = val;
 }
 
 ScalarValue::ScalarValue(std::string_view val) : 
 	m_type(type::TEXT)
 {
-	m_value.make_string(std::string { val });
+	m_str = val;
 }
 
 ScalarValue::ScalarValue(const char* val) :
 	m_type(type::TEXT)
 {
-	m_value.make_string(std::string { val });
+	m_str = val;
 }
 
 ScalarValue::ScalarValue(size_t size, void* blob) : 
@@ -189,19 +70,19 @@ ScalarValue::ScalarValue(size_t size, void* blob) :
 	if (blob && size > 0)
 	{
 		auto p = static_cast<std::uint8_t *>(blob);
-		blob_t vec(p, p + size);
-		m_value.make_blob(std::move(vec));
+		m_blob = { p, p + size };
 	}
 	else
 	{
-		m_value.make_blob({});
+		m_blob.clear();
 	}
 }
 
 ScalarValue::ScalarValue(blob_t blob) : 
-	m_type(type::BLOB)
+	m_type(type::BLOB),
+	m_blob(std::move(blob))
 {
-	m_value.make_blob(std::move(blob));
+	
 }
 
 
@@ -257,7 +138,7 @@ const std::string& ScalarValue::get_str() const
 	
 	if (m_type == ScalarValue::type::TEXT)
 	{
-		return m_value.str;
+		return m_str;
 	}
 	
 	throw SQLighterException(create_error_unexpected_type(m_type, type::TEXT));
@@ -270,7 +151,7 @@ const std::vector<uint8_t>& ScalarValue::get_blob() const
 	
 	if (m_type == ScalarValue::type::BLOB)
 	{
-		return m_value.blob;
+		return m_blob;
 	}
 	
 	throw SQLighterException(create_error_unexpected_type(m_type, type::BLOB));
@@ -283,11 +164,11 @@ bool ScalarValue::try_get_int32(int32_t& v) const noexcept
 	
 	if (m_type == ScalarValue::type::INT)
 	{
-		v = (double)m_value.i64;
+		v = (double)m_i64;
 	}
 	else if (m_type == ScalarValue::type::DOUBLE)
 	{
-		v = m_value.dbl;
+		v = m_dbl;
 	}
 	else
 	{
@@ -304,11 +185,11 @@ bool ScalarValue::try_get_int64(int64_t& v) const noexcept
 	
 	if (m_type == ScalarValue::type::INT)
 	{
-		v = m_value.i64;
+		v = m_i64;
 	}
 	else if (m_type == ScalarValue::type::DOUBLE)
 	{
-		v = (int64_t)(m_value.dbl);
+		v = (int64_t)(m_dbl);
 	}
 	else
 	{
@@ -325,11 +206,11 @@ bool ScalarValue::try_get_double(double& v) const noexcept
 	
 	if (m_type == ScalarValue::type::INT)
 	{
-		v = (double)m_value.i64;
+		v = (double)m_i64;
 	}
 	else if (m_type == ScalarValue::type::DOUBLE)
 	{
-		v = m_value.dbl;
+		v = m_dbl;
 	}
 	else
 	{
@@ -346,7 +227,7 @@ bool ScalarValue::try_get_str(std::string& v) const noexcept
 	
 	if (m_type == ScalarValue::type::TEXT)
 	{
-		v = m_value.str;
+		v = m_str;
 	}
 	else
 	{
@@ -363,7 +244,7 @@ bool ScalarValue::try_get_blob(vector<uint8_t>& v) const noexcept
 	
 	if (m_type == ScalarValue::type::BLOB)
 	{
-		v = m_value.blob;
+		v = m_blob;
 	}
 	else
 	{

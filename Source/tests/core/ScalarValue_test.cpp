@@ -8,32 +8,6 @@
 using namespace sqlighter;
 
 
-TEST(ScalarValue_value, constructor_str)
-{
-	std::string str { "hello world" }; 
-	ScalarValue::value v;
-	
-	
-	v.make_string(str);
-	
-	
-	ASSERT_EQ(str, v.str);
-	ASSERT_TRUE(!v.str.empty());
-}
-
-TEST(ScalarValue_value, constructor_blob)
-{
-	std::vector<std::uint8_t> blob({ 0, 1, 2, 3 }); 
-	ScalarValue::value v;
-	
-	
-	v.make_blob(blob);
-	
-	
-	ASSERT_EQ(4, v.blob.size());
-}
-
-
 TEST(ScalarValue, constructor__move__numeric_value)
 {
 	ScalarValue v1((int64_t)12);
@@ -117,14 +91,14 @@ TEST(ScalarValue, constructor__type__int64)
 {
 	ScalarValue t(ScalarValue::type::INT);
 	ASSERT_EQ(ScalarValue::type::INT, t.get_type());
-	ASSERT_EQ(0, t.get_value().i64);
+	ASSERT_EQ(0, t.get_int64());
 }
 
 TEST(ScalarValue, constructor__type__double)
 {
 	ScalarValue t(ScalarValue::type::DOUBLE);
 	ASSERT_EQ(ScalarValue::type::DOUBLE, t.get_type());
-	ASSERT_EQ(0.0, t.get_value().dbl);
+	ASSERT_EQ(0.0, t.get_double());
 }
 
 TEST(ScalarValue, constructor__type__text)
@@ -135,21 +109,21 @@ TEST(ScalarValue, constructor__type__text)
 	ASSERT_EQ(ScalarValue::type::TEXT, t.get_type());
 	
 	
-	ASSERT_EQ("", t.get_value().str);
+	ASSERT_EQ("", t.get_str());
 }
 
 TEST(ScalarValue, constructor__type__blob)
 {
 	ScalarValue t(ScalarValue::type::BLOB);
 	ASSERT_EQ(ScalarValue::type::BLOB, t.get_type());
-	ASSERT_TRUE(t.get_value().blob.empty());
+	ASSERT_TRUE(t.get_blob().empty());
 }
 
 TEST(ScalarValue, constructor__type__null)
 {
 	ScalarValue t(ScalarValue::type::NULL_VAL);
 	ASSERT_EQ(ScalarValue::type::NULL_VAL, t.get_type());
-	ASSERT_EQ(0, t.get_value().i64);
+	ASSERT_EQ(0, t.get_int64());
 }
 
 
@@ -157,35 +131,35 @@ TEST(ScalarValue, constructor__int32)
 {
 	ScalarValue t((int32_t)12);
 	ASSERT_EQ(ScalarValue::type::INT, t.get_type());
-	ASSERT_EQ(12, t.get_value().i64);
+	ASSERT_EQ(12, t.get_int64());
 }
 
 TEST(ScalarValue, constructor__int64)
 {
 	ScalarValue t((int64_t)12);
 	ASSERT_EQ(ScalarValue::type::INT, t.get_type());
-	ASSERT_EQ(12, t.get_value().i64);
+	ASSERT_EQ(12, t.get_int64());
 }
 
 TEST(ScalarValue, constructor__double)
 {
 	ScalarValue t((double)12.23);
 	ASSERT_EQ(ScalarValue::type::DOUBLE, t.get_type());
-	ASSERT_EQ(12.23, t.get_value().dbl);
+	ASSERT_EQ(12.23, t.get_double());
 }
 
 TEST(ScalarValue, constructor__const_char)
 {
 	ScalarValue t((const char*)("hello world"));
 	ASSERT_EQ(ScalarValue::type::TEXT, t.get_type());
-	ASSERT_EQ("hello world", t.get_value().str);
+	ASSERT_EQ("hello world", t.get_str());
 }
 
 TEST(ScalarValue, constructor__string)
 {
 	ScalarValue t(std::string { "hello world" });
 	ASSERT_EQ(ScalarValue::type::TEXT, t.get_type());
-	ASSERT_EQ("hello world", t.get_value().str);
+	ASSERT_EQ("hello world", t.get_str());
 }
 
 TEST(ScalarValue, constructor__vector)
@@ -193,11 +167,11 @@ TEST(ScalarValue, constructor__vector)
 	ScalarValue t(std::vector<std::uint8_t>({ 0, 1, 2, 3 }));
 	
 	ASSERT_EQ(ScalarValue::type::BLOB, t.get_type());
-	ASSERT_EQ(4, t.get_value().blob.size());
-	ASSERT_EQ(0, t.get_value().blob[0]);
-	ASSERT_EQ(1, t.get_value().blob[1]);
-	ASSERT_EQ(2, t.get_value().blob[2]);
-	ASSERT_EQ(3, t.get_value().blob[3]);
+	ASSERT_EQ(4, t.get_blob().size());
+	ASSERT_EQ(0, t.get_blob()[0]);
+	ASSERT_EQ(1, t.get_blob()[1]);
+	ASSERT_EQ(2, t.get_blob()[2]);
+	ASSERT_EQ(3, t.get_blob()[3]);
 }
 
 TEST(ScalarValue, constructor__void_ptr)
@@ -206,11 +180,11 @@ TEST(ScalarValue, constructor__void_ptr)
 	ScalarValue t(blob.size(), static_cast<void*>(blob.data()));
 	
 	ASSERT_EQ(ScalarValue::type::BLOB, t.get_type());
-	ASSERT_EQ(4, t.get_value().blob.size());
-	ASSERT_EQ(0, t.get_value().blob[0]);
-	ASSERT_EQ(1, t.get_value().blob[1]);
-	ASSERT_EQ(2, t.get_value().blob[2]);
-	ASSERT_EQ(3, t.get_value().blob[3]);
+	ASSERT_EQ(4, t.get_blob().size());
+	ASSERT_EQ(0, t.get_blob()[0]);
+	ASSERT_EQ(1, t.get_blob()[1]);
+	ASSERT_EQ(2, t.get_blob()[2]);
+	ASSERT_EQ(3, t.get_blob()[3]);
 }
 
 TEST(ScalarValue, constructor__void_ptr_empty)
@@ -219,7 +193,7 @@ TEST(ScalarValue, constructor__void_ptr_empty)
 	ScalarValue t(blob.size(), static_cast<void*>(blob.data()));
 	
 	ASSERT_EQ(ScalarValue::type::BLOB, t.get_type());
-	ASSERT_TRUE(t.get_value().blob.empty());
+	ASSERT_TRUE(t.get_blob().empty());
 }
 
 
