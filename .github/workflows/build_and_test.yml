@@ -24,12 +24,12 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgtest-dev sqlite3 libsqlite3-dev
+        sudo apt-get install -y libgtest-dev sqlite3 libsqlite3-dev valgrind
 
     - name: Build project
       run: |
         mkdir build
-        cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined"
+        cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-10 
         cd build
         make sqlighter
         make sqlighter_tests
@@ -42,3 +42,7 @@ jobs:
     - name: Run tests
       run: |
         ./build/bin/sqlighter_tests
+        
+    - name: Run Valgrind for memory leak check
+      run: |
+        valgrind --leak-check=full ./build/bin/sqlighter_tests
