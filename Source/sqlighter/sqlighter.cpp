@@ -55,6 +55,11 @@ CMDInsert SQLighter::insert() const
 	return CMDInsert { m_connection };
 }
 
+CMDUpdate SQLighter::update() const
+{
+	return CMDUpdate { m_connection };
+}
+
 CMDDelete SQLighter::del() const
 {
 	return CMDDelete { m_connection };

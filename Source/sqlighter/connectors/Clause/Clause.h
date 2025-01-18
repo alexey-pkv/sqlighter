@@ -58,8 +58,6 @@ namespace sqlighter
 		void append_directly(std::string_view str, std::initializer_list<BindValue> binds);
 		void append_directly(std::string_view str, const std::vector<BindValue>& binds);
 		
-		int bind(sqlite3_stmt* to, int offset) const;
-		
 		void append_to(std::ostream& to) const;
 		void append_to(std::vector<BindValue>& to) const;
 		

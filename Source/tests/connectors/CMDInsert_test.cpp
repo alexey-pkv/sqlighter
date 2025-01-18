@@ -1,9 +1,10 @@
 #include "connectors/CMDInsert.h"
 
 
-#include "base/connection/IConnection.h"
-
+#include "db_mock.h"
+#include "sqlighter.h"
 #include "connection_override.h"
+#include "base/connection/IConnection.h"
 #include "exceptions/sqlighter_exceptions.h"
 
 #include <gtest/gtest.h>
@@ -26,7 +27,7 @@ TEST(CMDInsert, sanity)
 	std::ostringstream ss;
 	
 	ss	<< "INSERT INTO `my_table` (`my_column`) VALUES " << std::endl 
-		<< "(?)";
+		<< "(?)" << std::endl;
 	
 	ASSERT_EQ(ss.str(), cmd.assemble());
 	ASSERT_EQ(1, cmd.bind().size());
@@ -47,7 +48,7 @@ TEST(CMDInsert, no_columns)
 	std::ostringstream ss;
 	
 	ss	<< "INSERT INTO `my_table` VALUES " << std::endl 
-		<< "(?, ?, ?)";
+		<< "(?, ?, ?)" << std::endl;
 	
 	ASSERT_EQ(ss.str(), cmd.assemble());
 }
@@ -67,7 +68,7 @@ TEST(CMDInsert, mult_columns)
 	std::ostringstream ss;
 	
 	ss	<< "INSERT INTO `my_table` (`a`, `b`, `c`) VALUES " << std::endl 
-		<< "(?, ?, ?)";
+		<< "(?, ?, ?)" << std::endl;
 	
 	ASSERT_EQ(ss.str(), cmd.assemble());
 }
@@ -84,6 +85,28 @@ TEST(CMDInsert, default_values)
 	
 	
 	ASSERT_EQ("INSERT INTO `my_table` (`my_column`) DEFAULT VALUES", cmd.assemble());
+}
+
+TEST(CMDInsert, on_conflict_do_nothing)
+{
+	CMDInsert cmd { get_co() };
+	
+	
+	cmd
+		.into("my_table")
+		.column("my_column")
+		.record({ 1 })
+		.on_conflict_do_nothing();
+	
+	
+	
+	std::ostringstream ss;
+	
+	ss	<< "INSERT INTO `my_table` (`my_column`) VALUES " << std::endl 
+		<< "(?)" << std::endl
+		<< "ON CONFLICT DO NOTHING";
+	
+	ASSERT_EQ(ss.str(), cmd.assemble());
 }
 
 
@@ -248,7 +271,7 @@ TEST(CMDInsert, records)
 		<< "(?, ?, ?), " << std::endl
 		<< "(?, ?, ?), " << std::endl
 		<< "(?, ?, ?), " << std::endl
-		<< "(?, ?, ?)";
+		<< "(?, ?, ?)" << std::endl;
 	
 	ASSERT_EQ(ss.str(), cmd.assemble());
 	ASSERT_EQ(27, cmd.bind().size());
@@ -290,4 +313,113 @@ TEST(CMDInsert, records)
 	ASSERT_EQ("D", cmd.bind()[24].get_str_value());
 	ASSERT_EQ("E", cmd.bind()[25].get_str_value());
 	ASSERT_EQ("F", cmd.bind()[26].get_str_value());
+}
+
+TEST(CMDUpdate, sanity__on_conflict_do_nothing)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	Name			TEXT NOT NULL PRIMARY KEY,		    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1        			"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO ExampleTable (Name, Age, Balance, IsActive) VALUES "
+		"	('Alice',	30,		2500.50,	1), "
+		"	('Bob',		NULL,	1500.00,	0)	"	
+	);
+	
+	
+	// Control Test: Make sure it actually fails. 
+	try
+	{
+		sql.insert()
+			.into("ExampleTable")
+			.columns({ "Name", "Age", "Balance", "IsActive" })
+			.record({ "Alice", 60, 1.1, 0 })
+			.execute();
+		
+		FAIL();
+	}
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_STEP, e.code());
+	}
+	
+	sql.insert()
+		.into("ExampleTable")
+		.columns({ "Name", "Age", "Balance", "IsActive" })
+		.record({ "Alice", 60, 1.1, false })
+		.on_conflict_do_nothing()
+		.execute();
+	
+	ASSERT_EQ(2, sql.count_rows("ExampleTable"));
+	ASSERT_EQ(1, sql.select()
+		.from("ExampleTable")
+		.by_field("Name", "Alice")
+		.by_field("Age", 30)
+		.by_field("Balance", 2500.50)
+		.by_field("IsActive", true)
+		.query_count());
+}
+
+TEST(CMDUpdate, sanity__on_conflict_update)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (                     		"
+		"	Name			TEXT NOT NULL PRIMARY KEY,		    "
+		"	Age				INTEGER,            			    "
+		"	Balance			REAL,                  			 	"
+		"	IsActive		BOOLEAN DEFAULT 1        			"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO ExampleTable (Name, Age, Balance, IsActive) VALUES "
+		"	('Alice',	30,		2500.50,	1), "
+		"	('Bob',		NULL,	1500.00,	0)	"	
+	);
+	
+	
+	// Control Test: Make sure it actually fails.
+	try
+	{
+		sql.insert()
+			.into("ExampleTable")
+			.columns({ "Name", "Age", "Balance", "IsActive" })
+			.record({ "Alice", 60, 1.1, 0 })
+			.execute();
+		
+		FAIL();
+	}
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_STEP, e.code());
+	}
+	
+	
+	sql.insert()
+		.into("ExampleTable")
+		.columns({ "Name", "Age", "Balance", "IsActive" })
+		.record({ "Alice", 60, 1.1, false })
+		.on_conflict("Name")
+		.set("Age", 90)
+		.execute();
+	
+	
+	ASSERT_EQ(2, sql.count_rows("ExampleTable"));
+	ASSERT_EQ(1, sql.select()
+		.from("ExampleTable")
+		.by_field("Name", "Alice")
+		.by_field("Age", 90)
+		.by_field("Balance", 2500.50)
+		.by_field("IsActive", true)
+		.query_count());
 }

@@ -3,6 +3,7 @@
 
 #include "base/connectors/ICMD.h"
 #include "connectors/Clause/ClauseTable.h"
+#include "connectors/Clause/ClauseSet.h"
 
 
 namespace sqlighter
@@ -12,13 +13,17 @@ namespace sqlighter
 	private:
 		int m_columnsCount	= -1;
 		
-		ClauseTable	m_into		{};
-		std::string m_or		{};
+		ClauseTable	m_into	{};
+		std::string m_or	{};
+		ClauseSet	m_set	{};
 		
 		std::vector<std::string>	m_columns	{};
 		std::vector<BindValue>		m_binds		{};
 		
-		bool m_isDefaultValues { false };
+		bool m_isDefaultValues	{ false };
+		bool m_doNothing		{ false };
+		
+		std::string m_onConflictColumn	{};
 		
 		
 	public:
@@ -52,12 +57,18 @@ namespace sqlighter
 		CMDInsert& records(std::initializer_list<std::initializer_list<BindValue>> values);
 		
 		CMDInsert& default_values();
+		CMDInsert& on_conflict_do_nothing();
+		CMDInsert& on_conflict(std::string_view column);
 		
 		
 	public:
 		void assemble(std::ostringstream& ss) const override;
 		std::vector<BindValue> bind() const override;
 		std::string assemble() const override;
+		
+		
+	public:
+		SQLIGHTER_SET_CLAUSE(m_set, CMDInsert);
 	};
 }
 

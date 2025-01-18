@@ -87,5 +87,6 @@ TEST(sqlighter, sanity__getters)
 	
 	sql.select();
 	sql.insert();
+	sql.update();
 	sql.del();
 }

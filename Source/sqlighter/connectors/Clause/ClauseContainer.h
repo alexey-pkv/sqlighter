@@ -28,6 +28,7 @@ namespace sqlighter
 	public:
 		inline void append_binds(std::vector<BindValue>& to) const { m_clause.append_to(to); }
 		[[nodiscard]] inline size_t binds_size() const noexcept { return m_clause.binds_size(); }
+		[[nodiscard]] inline bool is_empty_clause() const noexcept { return m_clause.empty_clause(); }
 	
 		
 	public:

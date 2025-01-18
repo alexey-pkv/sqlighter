@@ -107,16 +107,6 @@ void Clause::append_directly(std::string_view str, const std::vector<BindValue>&
 	append_binds(binds);
 }
 
-int Clause::bind(sqlite3_stmt* to, int offset) const
-{
-	for (const auto& b : m_binds)
-	{
-		b.bind(to, offset++);
-	}
-	
-	return offset;
-}
-
 void Clause::append_to(std::ostream& to) const
 {
 	to << m_stream.str();

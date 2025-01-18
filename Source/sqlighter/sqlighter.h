@@ -8,6 +8,7 @@
 #include "connectors/CMDDelete.h"
 #include "connection/Connection.h"
 #include "connectors/CMDCreateTable.h"
+#include "connectors/CMDUpdate.h"
 
 
 namespace sqlighter
@@ -37,6 +38,7 @@ namespace sqlighter
 		CMDDirect		direct() const;
 		CMDSelect		select() const;
 		CMDInsert		insert() const;
+		CMDUpdate		update() const;
 		CMDDelete		del() const;
 		CMDCreateTable	create() const;
 		CMDDrop			drop() const;

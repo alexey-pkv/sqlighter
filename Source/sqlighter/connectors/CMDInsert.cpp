@@ -112,6 +112,18 @@ CMDInsert& CMDInsert::default_values()
 	return *this;
 }
 
+CMDInsert& CMDInsert::on_conflict_do_nothing()
+{
+	m_doNothing = true;
+	return *this;
+}
+
+CMDInsert& CMDInsert::on_conflict(std::string_view column)
+{
+	m_onConflictColumn = column;
+	return *this;
+}
+
 
 void CMDInsert::assemble(std::ostringstream& ss) const
 {
@@ -142,34 +154,69 @@ void CMDInsert::assemble(std::ostringstream& ss) const
 			throw SQLighterException(SQLIGHTER_ERR_GENERIC, "DEFAULT VALUES can not be used with bind values");
 		
 		ss << "DEFAULT VALUES";
-		return;
 	}
-	
-	ss << "VALUES " << std::endl;
-	
-	int count = std::max((int)m_columns.size(), m_columnsCount);
-	
-	if (count <= 0)
+	else
 	{
-		throw SQLighterException(
-			SQLIGHTER_ERR_GENERIC, 
-			"Could not determine number of columns for the insert statement");
-	}
-	
-	auto questions = create_questions(count);
-	int records = m_binds.size() / count;
-	
-	for (int i = 0; i < records; i++)
-	{
-		if (i > 0) ss << ", " << std::endl;
+		ss << "VALUES " << std::endl;
 		
-		ss << '(' << questions << ')';
+		int count = std::max((int)m_columns.size(), m_columnsCount);
+		
+		if (count <= 0)
+		{
+			throw SQLighterException(
+				SQLIGHTER_ERR_GENERIC, 
+				"Could not determine number of columns for the insert statement");
+		}
+		
+		auto questions = create_questions(count);
+		int records = m_binds.size() / count;
+		
+		for (int i = 0; i < records; i++)
+		{
+			if (i > 0) ss << ", " << std::endl;
+			
+			ss << '(' << questions << ')';
+		}
+		
+		if (records > 0)
+		{
+			ss << std::endl;
+		}
+	}
+	
+	if (m_doNothing)
+	{
+		ss << "ON CONFLICT DO NOTHING";
+	}
+	
+	if (!m_set.is_empty_clause())
+	{
+		ss << "ON CONFLICT ";
+		
+		if (!m_onConflictColumn.empty())
+		{
+			ss << "(" << col(m_onConflictColumn) << ")";
+		}
+		
+		ss << " DO UPDATE" << m_set;
 	}
 }
 
 std::vector<BindValue> CMDInsert::bind() const
 {
-	return m_binds;
+	if (m_set.binds_size() == 0)
+		return m_binds;
+	
+	std::vector<BindValue> res;
+	
+	res.reserve(
+		m_binds.size() + 
+		m_set.binds_size());
+	
+	res.insert(res.end(), m_binds.begin(), m_binds.end());
+	m_set.append_binds(res);
+	
+	return res;
 }
 
 std::string CMDInsert::assemble() const
