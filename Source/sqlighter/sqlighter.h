@@ -60,7 +60,8 @@ namespace sqlighter
 	public:
 		void reindex(std::string_view element) const;
 		void reindex(std::string_view scheme, std::string_view element) const;
-		
+		std::string sqlight_version() const;
+		static std::string sqlight_lib_version();
 		
 	public:
 		const std::string& path() const;
