@@ -25,12 +25,14 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libgtest-dev sqlite3 libsqlite3-dev valgrind
+        sudo apt install lcov
     
     - name: Check Versions
       run: |
         g++ --version
         clang --version
         valgrind --version
+        lcov --version
 
     - name: Build project
       run: |
