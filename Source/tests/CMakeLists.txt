@@ -71,8 +71,8 @@ target_link_libraries(sqlighter_tests ${GTEST_LIBRARIES} pthread)
 
 if (BUILD_FOR_COVER)
 	
-	target_compile_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage)
-	target_link_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage)
+	target_compile_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage -g)
+	target_link_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage -g)
 	
 	add_custom_target(cover
 		COMMAND ${CMAKE_COMMAND} -E echo "Running coverage script..."
