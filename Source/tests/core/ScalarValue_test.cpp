@@ -1,4 +1,5 @@
 #include "core/ScalarValue.h"
+#include "exceptions/sqlighter_exceptions.h"
 
 
 #include <fstream>
@@ -238,7 +239,7 @@ TEST(ScalarValue, get_double)
 	ASSERT_EQ(1.1, dbl);
 }
 
-TEST(ScalarValue, get_mxed_values)
+TEST(ScalarValue, get_mixed_values)
 {
 	ScalarValue dbl(1.2);
 	ScalarValue i64((int64_t)24);
@@ -282,7 +283,7 @@ TEST(ScalarValue, try_get__different_type)
 	int32_t i32;
 	int64_t i64;
 	std::string str;
-	blob_t b;
+	blob_t blob;
 	
 	
 	ASSERT_FALSE(s.try_get_double(d));
@@ -297,8 +298,8 @@ TEST(ScalarValue, try_get__different_type)
 	ASSERT_FALSE(i.try_get_str(str));
 	ASSERT_FALSE(i.try_get<std::string>(str));
 	
-	ASSERT_FALSE(s.try_get_blob(b));
-	ASSERT_FALSE(s.try_get<blob_t>(b));
+	ASSERT_FALSE(s.try_get_blob(blob));
+	ASSERT_FALSE(s.try_get<blob_t>(blob));
 }
 
 TEST(ScalarValue, try_get__null)
@@ -326,4 +327,102 @@ TEST(ScalarValue, try_get__null)
 	
 	ASSERT_FALSE(s.try_get_blob(b));
 	ASSERT_FALSE(s.try_get<blob_t>(b));
+}
+
+TEST(ScalarValue, try_get__string)
+{
+	ScalarValue s(std::string { "ok" });
+	
+	std::string str;
+	
+	ASSERT_TRUE(s.try_get_str(str));
+	ASSERT_EQ("ok", str);
+}
+
+TEST(ScalarValue, try_get__blob)
+{
+	ScalarValue b(blob_t { 1, 2 });
+	
+	
+	blob_t blob;
+	
+	
+	ASSERT_TRUE(b.try_get_blob(blob));
+	ASSERT_EQ(2, blob.size());
+	ASSERT_EQ(1, blob[0]);
+	ASSERT_EQ(2, blob[1]);
+}
+
+TEST(ScalarValue, get__different_type__exception_thrown)
+{
+	ScalarValue s(std::string { "ok" });
+	ScalarValue i(32);
+	
+	
+	try { s.get_double(); FAIL(); } 
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
+	
+	try { s.get_int32(); FAIL(); } 
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
+	
+	try { s.get_int64(); FAIL(); } 
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
+	
+	try { s.get_blob(); FAIL(); } 
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
+	
+	try { i.get_str(); FAIL(); } 
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
+}
+
+TEST(ScalarValue, get_t__different_type__exception_thrown)
+{
+	ScalarValue s(std::string { "ok" });
+	ScalarValue i(32);
+	
+	
+	try { s.get<double>(); FAIL(); } 
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
+	
+	try { s.get<int32_t>(); FAIL(); } 
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
+	
+	try { s.get<int64_t>(); FAIL(); } 
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
+	
+	try { s.get<const blob_t&>(); FAIL(); } 
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
+	
+	try { i.get<const std::string&>(); FAIL(); } 
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
 }

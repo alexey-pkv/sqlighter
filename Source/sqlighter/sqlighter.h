@@ -1,6 +1,8 @@
 #pragma once
 
 
+#include "sqlighter_version.h"
+
 #include "connectors/CMDDrop.h"
 #include "connectors/CMDSelect.h"
 #include "connectors/CMDInsert.h"
@@ -60,8 +62,8 @@ namespace sqlighter
 	public:
 		void reindex(std::string_view element) const;
 		void reindex(std::string_view scheme, std::string_view element) const;
-		std::string sqlight_version() const;
-		static std::string sqlight_lib_version();
+		std::string sqlite_version() const;
+		
 		
 	public:
 		const std::string& path() const;
@@ -70,4 +72,8 @@ namespace sqlighter
 	public:
 		inline const std::shared_ptr<DB>& db() { return m_db; }
 	};
+	
+	
+	std::string sqlite_lib_version();
+	std::string sqlighter_lib_version();
 }

@@ -11,8 +11,9 @@ void print_versions()
 	
 	
 	std::cout << "Running with:" << std::endl;
-	std::cout << "    SQLite     : " << sql.sqlight_version() << std::endl;
-	std::cout << "    SQLite Lib : " << sqlighter::SQLighter::sqlight_lib_version() << std::endl;
+	std::cout << "    SQLighter  : " << sqlighter::sqlighter_lib_version() << std::endl;
+	std::cout << "    SQLite Lib : " << sqlighter::sqlite_lib_version() << std::endl;
+	std::cout << "    SQLite     : " << sql.sqlite_version() << std::endl;
 	std::cout << "==========================================" << std::endl;
 }
 

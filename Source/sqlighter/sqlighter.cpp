@@ -132,12 +132,18 @@ void SQLighter::reindex(std::string_view scheme, std::string_view element) const
 	d.execute();
 }
 
-std::string SQLighter::sqlight_version() const
+std::string SQLighter::sqlite_version() const
 {
 	return select().column_exp("sqlite_version()").query_str();
 }
 
-std::string SQLighter::sqlight_lib_version()
+
+std::string sqlighter::sqlite_lib_version()
 {
 	return sqlite3_libversion();
+}
+
+std::string sqlighter::sqlighter_lib_version()
+{
+	return SQLIGHTER_VERSION;
 }

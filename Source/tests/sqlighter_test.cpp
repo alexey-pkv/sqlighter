@@ -93,13 +93,13 @@ TEST(sqlighter, sanity__getters)
 }
 
 
-TEST(sqlighter, sqlight_version)
+TEST(sqlighter, sqlite_version)
 {
 	SQLighter sql { setup_db("test_select.db") };
 	std::regex versionRegex(R"(\d+\.\d+\.\d+)");
 	
 	
-	auto version = sql.sqlight_version();
+	auto version = sql.sqlite_version();
 	
 	
 	ASSERT_TRUE(std::regex_match(version, versionRegex));
@@ -111,7 +111,7 @@ TEST(sqlighter, sqlight_lib_version)
 	std::regex versionRegex(R"(\d+\.\d+\.\d+)");
 	
 	
-	auto version = SQLighter::sqlight_lib_version();
+	auto version = sqlighter::sqlite_lib_version();
 	
 	
 	ASSERT_TRUE(std::regex_match(version, versionRegex));

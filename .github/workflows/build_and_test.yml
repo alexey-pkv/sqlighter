@@ -25,24 +25,31 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libgtest-dev sqlite3 libsqlite3-dev valgrind
-
-    - name: Build project
-      run: |
-        mkdir build
-        cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-10 
-        cd build
-        make sqlighter
-        make sqlighter_tests
     
-    - name: Check GCC/Clang version
+    - name: Check Versions
       run: |
         g++ --version
         clang --version
-    
+        valgrind --version
+
+    - name: Build project
+      run: |
+        cmake -S . -B build
+        
     - name: Run tests
       run: |
-        ./build/bin/sqlighter_tests
+        cmake --build build --target test
         
-    - name: Run Valgrind for memory leak check
+    - name: Checking for leaks with Valgrind
       run: |
-        valgrind --leak-check=full ./build/bin/sqlighter_tests
+        cmake --build build --target leak_check
+        
+    - name: Rebuild for coverage
+      run: |
+        cmake --build build --target purge
+        cmake -S . -B build -DBUILD_FOR_COVER=true
+        
+    - name: Run coverage
+      run: |
+        cmake --build build --target test
+      
