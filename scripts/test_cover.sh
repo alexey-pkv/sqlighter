@@ -25,7 +25,7 @@ find . -name "*.gcda" -delete || { echo "Failed to delete .gcda files"; exit 1; 
 ########################
 
 echo "Running sqlighter_tests..."
-"$EXECUTABLE_PATH/sqlighter_tests" || { echo "Test execution failed"; exit 1; }
+"$EXECUTABLE_PATH/bin/sqlighter_tests" || { echo "Test execution failed"; exit 1; }
 
 
 ########################

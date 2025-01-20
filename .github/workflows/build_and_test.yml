@@ -17,20 +17,11 @@ jobs:
       uses: jwlawson/actions-setup-cmake@v1
       with:
         cmake-version: '3.30'
-
-# TODO: Fix, github workflow fails with geninfo: ERROR: mismatched end line for in coverage.
-#    - name: Set up C++
-#      run: |
-#        sudo apt-get install -y gcc-10 g++-10
-#        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100
-#        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 100
-#        sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-10 100
-
+    
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgtest-dev sqlite3 libsqlite3-dev valgrind
-        sudo apt install lcov
+        sudo apt-get install -y libgtest-dev sqlite3 libsqlite3-dev valgrind lcov
     
     - name: Check Versions
       run: |
@@ -53,13 +44,3 @@ jobs:
     - name: Checking for leaks with Valgrind
       run: |
         cmake --build build/debug --target leak_check
-        
-#    - name: Rebuild for coverage
-#      run: |
-#        cmake --build build --target purge
-#        cmake -S . -B build -DBUILD_FOR_COVER=true
-#        
-#    - name: Run coverage
-#      run: |
-#        cmake --build build --target cover
-#      

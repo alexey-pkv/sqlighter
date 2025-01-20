@@ -37,7 +37,7 @@ file(GLOB_RECURSE SQLIGHTER_HEADERS
 ############################
 
 add_custom_target(purge
-    COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_BINARY_DIR}
     COMMENT "Cleaning the build directory"
 )
 

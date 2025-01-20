@@ -10,4 +10,4 @@ EXECUTABLE_PATH="$1"
 
 
 echo "Checking for leaks"
-valgrind --leak-check=full --error-exitcode=1 "$EXECUTABLE_PATH/sqlighter_tests" || { echo "Execution failed"; exit 1; }
+valgrind --leak-check=full --error-exitcode=1 "$EXECUTABLE_PATH/bin/sqlighter_tests" || { echo "Execution failed"; exit 1; }
