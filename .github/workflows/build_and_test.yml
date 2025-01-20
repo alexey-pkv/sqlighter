@@ -35,12 +35,12 @@ jobs:
     - name: Build project
       run: |
         cmake -S . -B build/debug
-        cmake --build build/debug --target sqlighter_tests
+        cmake --build build/debug --target sqlighter_tests -- -j10
         
     - name: Run unit tests
       run: |
-        cmake --build build/debug --target test
+        cmake --build build/debug --target test -- -j10
         
     - name: Checking for leaks with Valgrind
       run: |
-        cmake --build build/debug --target leak_check
+        cmake --build build/debug --target leak_check -- -j10
