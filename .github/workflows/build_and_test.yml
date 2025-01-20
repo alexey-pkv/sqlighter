@@ -43,16 +43,16 @@ jobs:
 
     - name: Build project
       run: |
-        cmake -S . -B build
-        cmake --build build --target sqlighter_tests
+        cmake -S . -B build/debug
+        cmake --build build/debug --target sqlighter_tests
         
     - name: Run unit tests
       run: |
-        cmake --build build --target test
+        cmake --build build/debug --target test
         
     - name: Checking for leaks with Valgrind
       run: |
-        cmake --build build --target leak_check
+        cmake --build build/debug --target leak_check
         
 #    - name: Rebuild for coverage
 #      run: |

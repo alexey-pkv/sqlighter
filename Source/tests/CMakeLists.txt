@@ -1,41 +1,22 @@
 ############################
-### Options				####
-############################
-
-option(BUILD_FOR_COVER "Build sqlight resources with the test executable for coverage" OFF)
-
-############################
-### Variables			####
-############################
-
-set(PROFILE_DIRECTORY "${CMAKE_SOURCE_DIR}/build/profile")
-
-############################
 ### Packages			####
 ############################
 
 find_package(GTest REQUIRED)
 
-############################
 
+########################################
+### Target: sqlighter_tests	 ###########
+########################################
 
-
-### Configure variables and paths.
+add_executable(sqlighter_tests EXCLUDE_FROM_ALL)
 
 
 file(GLOB_RECURSE SQLIGHTER_TESTS_SOURCE
 	"./*.cpp"
 )
 
-if (BUILD_FOR_COVER)
-	file(GLOB_RECURSE SQLIGHTER_SOURCE
-		"./../sqlighter/*.cpp"
-	)
-endif ()
-
-
-### Configure the test target.
-add_executable(sqlighter_tests EXCLUDE_FROM_ALL ${SQLIGHTER_TESTS_SOURCE})
+target_sources(sqlighter_tests PRIVATE ${SQLIGHTER_TESTS_SOURCE})
 
 if (BUILD_FOR_COVER)
 	target_sources(sqlighter_tests PRIVATE ${SQLIGHTER_SOURCE})
@@ -43,12 +24,15 @@ endif ()
 
 set_target_properties(sqlighter_tests PROPERTIES 
 	OUTPUT_NAME "sqlighter_tests"
-	RUNTIME_OUTPUT_DIRECTORY ${SQLIGHTER_BIN_DIR})
+    ARCHIVE_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
+    LIBRARY_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
+    RUNTIME_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}")
 
 ### Include Headers
 target_include_directories(sqlighter_tests PRIVATE ${GTEST_INCLUDE_DIRS})
 target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/Source/sqlighter)
 target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/Source/tests/test_core)
+target_include_directories(sqlighter_tests PRIVATE ${SQLIGHTER_BIN})
 
 
 ### Link libraries
@@ -66,7 +50,7 @@ target_link_libraries(sqlighter_tests ${GTEST_LIBRARIES} pthread)
 
 
 ############################
-### Coverage			####
+### Script: Coverage	####
 ############################
 
 if (BUILD_FOR_COVER)
@@ -76,7 +60,7 @@ if (BUILD_FOR_COVER)
 	
 	add_custom_target(cover
 		COMMAND ${CMAKE_COMMAND} -E echo "Running coverage script..."
-		COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/test_cover.sh
+		COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/test_cover.sh ${CMAKE_BINARY_DIR}
 		DEPENDS sqlighter_tests
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		COMMENT "Running coverage collection and report generation"
@@ -87,12 +71,12 @@ if (BUILD_FOR_COVER)
 endif ()
 
 ############################
-### Unittests			####
+### Script: Unittests	####
 ############################
 
 add_custom_target(test
 	COMMAND ${CMAKE_COMMAND} -E echo "Running tests..."
-	COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/test.sh
+	COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/test.sh ${CMAKE_BINARY_DIR}
 	DEPENDS sqlighter_tests
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	COMMENT "Running unit tests"
@@ -100,13 +84,13 @@ add_custom_target(test
 
 add_dependencies(test sqlighter_tests)
 
-############################
-### Test for Leaks		####
-############################
+####################################
+### Script: Test for Leaks		####
+####################################
 
 add_custom_target(leak_check
 	COMMAND ${CMAKE_COMMAND} -E echo "Checking for memory leaks..."
-	COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/leak_check.sh
+	COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/leak_check.sh ${CMAKE_BINARY_DIR}
 	DEPENDS sqlighter_tests
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	COMMENT "Check for memory leaks by running unit tests in valgrind"
