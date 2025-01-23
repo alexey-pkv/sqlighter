@@ -26,12 +26,13 @@ void DB::close()
 		return;
 	
 	auto res = sqlite3_close(m_db);
-	m_db = nullptr;
 	
 	if (res != SQLITE_OK)
 	{
 		throw SQLighterException(SQLIGHTER_ERR_FAILED_TO_CLOSE_DB, res);
 	}
+	
+	m_db = nullptr;
 }
 
 void DB::open()

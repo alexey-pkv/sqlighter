@@ -19,22 +19,23 @@ configure_file(
 ### Targets		 ###########
 ############################
 
-if (NOT BUILD_FOR_COVER)
-	
-	if (BUILD_STATIC_LIBS)
-		add_library(sqlighter STATIC ${SQLIGHTER_SOURCE})
-	else ()
-		add_library(sqlighter SHARED ${SQLIGHTER_SOURCE})
-	endif ()
-	
-	set_target_properties(sqlighter PROPERTIES 
-		OUTPUT_NAME "sqlighter"
-		ARCHIVE_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
-		LIBRARY_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
-		RUNTIME_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}")
-	
-	
-	target_include_directories(sqlighter PRIVATE ${SQLIGHTER_BIN})
-	target_include_directories(sqlighter PRIVATE ${CMAKE_SOURCE_DIR}/Source/sqlighter)
+if (BUILD_STATIC_LIBS)
+	add_library(sqlighter STATIC ${SQLIGHTER_SOURCE})
+else ()
+	add_library(sqlighter SHARED ${SQLIGHTER_SOURCE})
+endif ()
 
+set_target_properties(sqlighter PROPERTIES 
+	OUTPUT_NAME "sqlighter"
+	ARCHIVE_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
+	LIBRARY_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
+	RUNTIME_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}")
+
+
+target_include_directories(sqlighter PRIVATE ${SQLIGHTER_BIN})
+target_include_directories(sqlighter PRIVATE ${CMAKE_SOURCE_DIR}/Source/sqlighter)
+	
+if (BUILD_FOR_COVER)
+	target_compile_options(sqlighter PRIVATE -fprofile-arcs -ftest-coverage -g)
+	target_link_options(sqlighter PRIVATE -fprofile-arcs -ftest-coverage -g)
 endif ()

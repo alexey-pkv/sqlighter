@@ -322,7 +322,7 @@ std::vector<ScalarValue> Stmt::row() const
 	}
 	
 	return res;
-}
+} // LCOV_EXCL_LINE
 
 std::vector<ScalarValue> Stmt::row_and_step()
 {
@@ -331,7 +331,7 @@ std::vector<ScalarValue> Stmt::row_and_step()
 	step();
 	
 	return item;
-}
+} // LCOV_EXCL_LINE
 
 std::vector<std::vector<ScalarValue>> Stmt::all(int failsafeLimit)
 {
@@ -442,7 +442,7 @@ ScalarValue Stmt::column_value_and_step(int at)
 	step();
 	
 	return val;
-}
+} // LCOV_EXCL_LINE
 
 int Stmt::column_index(std::string_view name) const
 {

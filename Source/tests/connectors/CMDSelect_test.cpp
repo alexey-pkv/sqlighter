@@ -37,6 +37,32 @@ TEST(CMDSelect, constructor__connection_is_null__exception_thrown)
 	}
 }
 
+TEST(CMDSelect, constructor__copy)
+{
+	CMDSelect cmd(std::make_shared<connection_override>());
+	
+	cmd
+		.from("hello")
+		.column("age")
+		.column("name")
+		.where("compare = ?", 1)
+		.by_field("field", "value")
+		.limit_by(23)
+		.order_by("something");
+	
+	
+	CMDSelect cmd2(cmd);
+	
+	
+	ASSERT_EQ(cmd.assemble(), cmd2.assemble());
+	ASSERT_EQ(cmd.bind().size(), cmd2.bind().size());
+	ASSERT_EQ(cmd.bind()[0].get_type(), cmd2.bind()[0].get_type());
+	ASSERT_EQ(cmd.bind()[1].get_type(), cmd2.bind()[1].get_type());
+	
+	ASSERT_EQ(cmd.bind()[0].get_value().i32, cmd2.bind()[0].get_value().i32);
+	ASSERT_EQ(cmd.bind()[1].get_str_value(), cmd2.bind()[1].get_str_value());
+}
+
 TEST(CMDSelect, constructor__move)
 {
 	CMDSelect cmd(std::make_shared<connection_override>());

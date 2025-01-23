@@ -18,15 +18,18 @@ file(GLOB_RECURSE SQLIGHTER_TESTS_SOURCE
 
 target_sources(sqlighter_tests PRIVATE ${SQLIGHTER_TESTS_SOURCE})
 
-if (BUILD_FOR_COVER)
-	target_sources(sqlighter_tests PRIVATE ${SQLIGHTER_SOURCE})
-endif ()
-
 set_target_properties(sqlighter_tests PROPERTIES 
 	OUTPUT_NAME "sqlighter_tests"
     ARCHIVE_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
     LIBRARY_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
     RUNTIME_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}")
+
+add_dependencies(sqlighter_tests sqlighter)
+
+if (BUILD_FOR_COVER)
+	target_compile_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage -g)
+	target_link_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage -g)
+endif ()
 
 ### Include Headers
 target_include_directories(sqlighter_tests PRIVATE ${GTEST_INCLUDE_DIRS})
@@ -34,17 +37,7 @@ target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/Source/sq
 target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/Source/tests/test_core)
 target_include_directories(sqlighter_tests PRIVATE ${SQLIGHTER_BIN})
 
-
-### Link libraries
-if (NOT BUILD_FOR_COVER)
-	add_dependencies(sqlighter_tests sqlighter)
-	target_link_libraries(sqlighter_tests sqlighter)
-	
-	message(STATUS "Not for cover")
-else ()
-	message(STATUS "For cover")
-endif ()
-
+target_link_libraries(sqlighter_tests sqlighter)
 target_link_libraries(sqlighter_tests sqlite3)
 target_link_libraries(sqlighter_tests ${GTEST_LIBRARIES} pthread)
 
@@ -54,10 +47,7 @@ target_link_libraries(sqlighter_tests ${GTEST_LIBRARIES} pthread)
 ############################
 
 if (BUILD_FOR_COVER)
-	
-	target_compile_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage -g)
-	target_link_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage -g)
-	
+
 	add_custom_target(cover
 		COMMAND ${CMAKE_COMMAND} -E echo "Running coverage script..."
 		COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/test_cover.sh ${CMAKE_BINARY_DIR}

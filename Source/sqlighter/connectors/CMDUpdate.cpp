@@ -58,7 +58,7 @@ std::vector<BindValue> CMDUpdate::bind() const
 	m_where.append_binds(final);
 	
 	return final;
-}
+} // LCOV_EXCL_LINE
 
 std::string CMDUpdate::assemble() const
 {

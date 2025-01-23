@@ -32,9 +32,10 @@ echo "Running sqlighter_tests..."
 ### Generate Reports ###
 ########################
 
-echo "Generating coverage info..."
-lcov --capture --directory "$EXECUTABLE_PATH" --output-file "$EXECUTABLE_PATH/coverage.info"                              || { echo "Failed to generate coverage info"; exit 1; }
-lcov --extract "$EXECUTABLE_PATH/coverage.info" '*/sqlighter/*' --output-file "$EXECUTABLE_PATH/sqlighter_coverage.info"  || { echo "Failed to filter coverage info"; exit 1; }
-genhtml "$EXECUTABLE_PATH/sqlighter_coverage.info" --output-directory "$EXECUTABLE_PATH/coverage"                         || { echo "Failed to generate HTML report"; exit 1; }
+echo "Generating coverage info for $EXECUTABLE_PATH..."
+
+lcov --ignore-errors mismatch,mismatch,gcov,gcov --capture --directory "$EXECUTABLE_PATH/" --output-file "$EXECUTABLE_PATH/coverage.info"      || { echo "Failed to generate coverage info"; exit 1; }
+lcov --extract "$EXECUTABLE_PATH/coverage.info" '*/sqlighter/*'  --output-file "$EXECUTABLE_PATH/sqlighter_coverage.info"                      || { echo "Failed to filter coverage info"; exit 1; }
+genhtml "$EXECUTABLE_PATH/sqlighter_coverage.info" --output-directory "$EXECUTABLE_PATH/coverage"                                              || { echo "Failed to generate HTML report"; exit 1; }
 
 echo "Script completed successfully."
