@@ -14,12 +14,6 @@ Stmt::~Stmt()
 	close();
 }
 
-Stmt::Stmt(std::shared_ptr<DB> db) : 
-	m_db(db ? std::move(db) : nullptr)
-{
-	
-}
-
 Stmt::Stmt(sqlite3_stmt* stmt) :
 	m_stmt(stmt)
 {
@@ -76,10 +70,14 @@ ScalarValue Stmt::to_value(int at) const
 		case SQLITE_TEXT:
 			return ScalarValue(column_string(at));
 			
-		default:
-			throw SQLighterException(SQLIGHTER_ERR_UNEXPECTED)
+		// Seems like this case is not currently possible unless we somehow override the column_type
+		// method somehow, but it's a bit of an overkill just to test this line.
+		// LCOV_EXCL_START
+		default:																			
+			throw SQLighterException(SQLIGHTER_ERR_UNEXPECTED)						
 				.msg("Got unexpected column type: " + std::to_string(column_type(at)))
 				.query(m_query);
+		// LCOV_EXCL_STOP
 	}
 }
 
@@ -145,11 +143,13 @@ void Stmt::require_column_type(int at, int type) const
 {
 	if (type != column_type(at))
 	{
-		throw SQLighterException(SQLIGHTER_ERR_VALUE)
+		auto e = SQLighterException(SQLIGHTER_ERR_VALUE)
 			.msg(
 				"Expected column of type " + std::to_string(type) +
 				" but got " + std::to_string(column_type(at)))
 			.query(m_query);
+		
+		throw e;
 	}
 }
 
@@ -313,9 +313,6 @@ std::vector<ScalarValue> Stmt::row() const
 	
 	auto c = column_count();
 	std::vector<ScalarValue> res {};
-	
-	if (c == 0)
-		return {};
 	
 	res.reserve(c);
 	

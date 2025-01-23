@@ -4,9 +4,13 @@
 #include "exceptions/sqlighter_exceptions.h"
 
 #include <sqlite3.h>
+#include <sstream>
 
 
 using namespace sqlighter;
+
+
+const BindValue BindValue::null { BindValue::type::NULL_VAL };
 
 
 BindValue::BindValue() : 
@@ -88,11 +92,9 @@ void BindValue::bind(sqlite3_stmt* stmt, int offset) const
 			break;
 			
 		case type::TEXT_16:
-			res = sqlite3_bind_text16(stmt, offset, m_strValue.c_str(), -1, SQLITE_TRANSIENT);
-			break;
-			
 		case type::TEXT_64:
-			throw SQLighterException(SQLIGHTER_ERR_GENERIC, "TEXT_64 bind is not implemented");
+		default:
+			throw SQLighterException(SQLIGHTER_ERR_BIND, "TEXT_64 bind is not implemented");
 	}
 	
 	if (res != SQLITE_OK)
@@ -101,7 +103,43 @@ void BindValue::bind(sqlite3_stmt* stmt, int offset) const
 	}
 }
 
-void BindValue::to_error_message(std::ostringstream& stream) const
+void BindValue::to_error_message(std::ostream& stream) const
 {
-	
+	switch (m_type)
+	{
+		case type::INT_32:
+			stream << "int32:" << m_value.i32;
+			break;
+			
+		case type::INT_64:
+			stream << "int64:" << m_value.i64;
+			break;
+			
+		case type::DOUBLE:
+			stream << "double:" << m_value.dbl;
+			break;
+		
+		[[unlikely]] case type::NULL_VAL:
+			stream << "null";
+			break;
+		
+		[[likely]] case type::TEXT:
+			stream << "string[" << m_strValue.length() << "]:";
+			
+			if (m_strValue.length() > 32)
+			{
+				stream << m_strValue.substr(0, 32) << "...";
+			}
+			else
+			{
+				stream << m_strValue;
+			}
+			
+			break;
+			
+		case type::TEXT_16:
+		case type::TEXT_64:
+		default:
+			throw SQLighterException(SQLIGHTER_ERR_BIND, "TEXT_16, TEXT_64 binds are not implemented");
+	}
 }

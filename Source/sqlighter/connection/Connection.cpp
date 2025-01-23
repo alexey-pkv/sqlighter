@@ -15,18 +15,12 @@ Connection::Connection(const std::shared_ptr<DB>& db) :
 {
 	if (db == nullptr)
 	{
-		throw SQLighterException(SQLIGHTER_ERR_GENERIC, "db must not be null");
+		throw SQLighterException(SQLIGHTER_ERR_UNEXPECTED, "db must not be null");
 	}
 }
 
 Connection::Connection(const std::filesystem::path& db_path) :
 	m_db(std::make_shared<DB>(db_path.c_str()))
-{
-	
-}
-
-Connection::Connection(std::string_view db_path) : 
-	m_db(std::make_shared<DB>(db_path))
 {
 	
 }

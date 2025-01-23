@@ -26,11 +26,14 @@ namespace sqlighter
 		Connection& operator=(Connection&&) = delete;
 		
 		explicit Connection(const std::filesystem::path& db_path);
-		explicit Connection(std::string_view db_path);
 		explicit Connection(const std::shared_ptr<DB>& db);
 		
 		
 	public:
 		Stmt execute(std::string_view query, const std::vector<BindValue>& values) override;
+		
+		
+	public:
+		inline std::shared_ptr<DB> db() const { return m_db; };
 	};
 }

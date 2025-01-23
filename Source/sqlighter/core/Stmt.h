@@ -37,7 +37,6 @@ namespace sqlighter
 		~Stmt();
 		
 		Stmt() = default;
-		explicit Stmt(std::shared_ptr<DB> db);
 		explicit Stmt(sqlite3_stmt* stmt);
 		
 		Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db);

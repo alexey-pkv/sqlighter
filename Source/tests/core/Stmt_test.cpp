@@ -280,6 +280,25 @@ TEST(Stmt, require_one_column__more_than_one_column__exception_thrown)
 }
 
 
+TEST(Stmt, require_column_type)
+{
+	SQLighter sql { setup_db("test_mock_n.db") };
+	Stmt stmt = sql.execute("SELECT 1, 2, 3");
+	
+	
+	stmt.require_column_type(0, SQLITE_INTEGER);
+	
+	try
+	{
+		stmt.require_column_type(0, SQLITE_BLOB);
+		FAIL();
+	}
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_VALUE, e.code());
+	}
+}
+
 TEST(Stmt, column_name)
 {
 	SQLighter sql { setup_db("test_mock_n.db") };
@@ -422,6 +441,29 @@ TEST(Stmt, column_string)
 	
 	ASSERT_EQ("hello world", stmt.column_string(3));
 }
+
+TEST(CMDSelect, column_blob__empty_blob__empty_vector_returned)
+{
+	SQLighter sql { setup_db("test_blob.db") };
+	
+	sql.execute(
+		"CREATE TABLE MockTable (			"
+		"   ID		INTEGER PRIMARY KEY,	"
+		"   Data	BLOB					"
+		")"
+	);
+	
+	sql.execute("INSERT INTO MockTable (Data) VALUES (X'')");
+	
+	auto stmt = sql.select()
+		.column("Data")
+		.from("MockTable")
+		.execute();
+	
+	
+	ASSERT_TRUE(stmt.column_blob(0).empty());
+}
+
 
 TEST(CMDSelect, query_blob)
 {
@@ -831,4 +873,58 @@ TEST(Stmt, column_value)
 	ASSERT_EQ(2,				i.get_int64());
 	ASSERT_EQ(1.1,				d.get_double());
 	ASSERT_EQ("hello world",	s.get_str());
+}
+
+
+TEST(Stmt, require_done__no_data_done__no_errors)
+{
+	SQLighter sql { create_mock_table("mock_table") };
+	auto stmt = sql.select()
+			.from("mock_table")
+			.where("FALSE")
+			.execute();
+	
+	ASSERT_TRUE(stmt.is_done());
+	
+	
+	stmt.require_done();
+}
+
+TEST(Stmt, require_done__all_data_read_done__no_errors)
+{
+	SQLighter sql { create_mock_table("mock_table") };
+	auto stmt = sql.select()
+			.from("mock_table")
+			.execute();
+	
+	// Sanity check for conditions before the test.
+	ASSERT_TRUE(stmt.has_row());
+	stmt.step();
+	ASSERT_FALSE(stmt.has_row());
+	ASSERT_TRUE(stmt.is_done());
+	
+	
+	stmt.require_done();
+}
+
+TEST(Stmt, require_done__not_done__error_thrown)
+{
+	SQLighter sql { create_mock_table("mock_table") };
+	auto stmt = sql.select()
+			.from("mock_table")
+			.execute();
+	
+	// Sanity check for conditions before the test.
+	ASSERT_TRUE(stmt.has_row());
+	
+	
+	try
+	{
+		stmt.require_done();
+		FAIL();
+	}
+	catch (const SQLighterException& e) 
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_GENERIC, e.code());
+	}
 }

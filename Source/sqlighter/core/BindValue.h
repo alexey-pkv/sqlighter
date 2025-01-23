@@ -70,7 +70,11 @@ namespace sqlighter
 		
 	public:
 		void bind(sqlite3_stmt* stmt, int offset) const;
-		void to_error_message(std::ostringstream& stream) const;
+		void to_error_message(std::ostream& stream) const;
+		
+		
+	public:
+		static const BindValue null;
 	};
 	
 	
