@@ -33,7 +33,7 @@ set_target_properties(sqlighter PROPERTIES
 
 
 target_include_directories(sqlighter PUBLIC ${SQLIGHTER_BIN})
-target_include_directories(sqlighter PUBLIC ${CMAKE_SOURCE_DIR}/Source/sqlighter)
+target_include_directories(sqlighter PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 	
 if (SQLIGHTER_BUILD_FOR_COVER)
 	target_compile_options(sqlighter PRIVATE -fprofile-arcs -ftest-coverage -g)
