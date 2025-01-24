@@ -21,6 +21,7 @@ configure_file(
 
 if (SQLIGHTER_BUILD_STATIC_LIBS)
 	add_library(sqlighter STATIC ${SQLIGHTER_SOURCE})
+	set_target_properties(sqlighter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 else ()
 	add_library(sqlighter SHARED ${SQLIGHTER_SOURCE})
 endif ()
