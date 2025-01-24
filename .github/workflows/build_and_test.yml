@@ -49,3 +49,10 @@ jobs:
       run: |
         cmake -S . -B build/cover -DBUILD_FOR_COVER=true
         cmake --build build/cover --target cover -- -j10
+    
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./build/cover/sqlighter_coverage.info
+        verbose: true
