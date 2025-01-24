@@ -19,7 +19,7 @@ configure_file(
 ### Targets		 ###########
 ############################
 
-if (BUILD_STATIC_LIBS)
+if (SQLIGHTER_BUILD_STATIC_LIBS)
 	add_library(sqlighter STATIC ${SQLIGHTER_SOURCE})
 else ()
 	add_library(sqlighter SHARED ${SQLIGHTER_SOURCE})
@@ -32,10 +32,10 @@ set_target_properties(sqlighter PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}")
 
 
-target_include_directories(sqlighter PRIVATE ${SQLIGHTER_BIN})
-target_include_directories(sqlighter PRIVATE ${CMAKE_SOURCE_DIR}/Source/sqlighter)
+target_include_directories(sqlighter PUBLIC ${SQLIGHTER_BIN})
+target_include_directories(sqlighter PUBLIC ${CMAKE_SOURCE_DIR}/Source/sqlighter)
 	
-if (BUILD_FOR_COVER)
+if (SQLIGHTER_BUILD_FOR_COVER)
 	target_compile_options(sqlighter PRIVATE -fprofile-arcs -ftest-coverage -g)
 	target_link_options(sqlighter PRIVATE -fprofile-arcs -ftest-coverage -g)
 endif ()

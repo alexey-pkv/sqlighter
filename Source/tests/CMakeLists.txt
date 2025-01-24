@@ -26,14 +26,13 @@ set_target_properties(sqlighter_tests PROPERTIES
 
 add_dependencies(sqlighter_tests sqlighter)
 
-if (BUILD_FOR_COVER)
+if (SQLIGHTER_BUILD_FOR_COVER)
 	target_compile_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage -g)
 	target_link_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage -g)
 endif ()
 
 ### Include Headers
 target_include_directories(sqlighter_tests PRIVATE ${GTEST_INCLUDE_DIRS})
-target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/Source/sqlighter)
 target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/Source/tests/test_core)
 target_include_directories(sqlighter_tests PRIVATE ${SQLIGHTER_BIN})
 
@@ -46,7 +45,7 @@ target_link_libraries(sqlighter_tests ${GTEST_LIBRARIES} pthread)
 ### Script: Coverage	####
 ############################
 
-if (BUILD_FOR_COVER)
+if (SQLIGHTER_BUILD_FOR_COVER)
 
 	add_custom_target(cover
 		COMMAND ${CMAKE_COMMAND} -E echo "Running coverage script..."
