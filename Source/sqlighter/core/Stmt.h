@@ -45,8 +45,8 @@ namespace sqlighter
 		Stmt(const Stmt&) = delete;
 		Stmt& operator=(const Stmt&) = delete;
 		
-		Stmt(Stmt&&) = default;
-		Stmt& operator=(Stmt&&) = default;
+		Stmt(Stmt&&);
+		Stmt& operator=(Stmt&&);
 		
 		
 	public:

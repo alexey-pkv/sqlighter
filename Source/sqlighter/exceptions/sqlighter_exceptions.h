@@ -27,7 +27,7 @@ namespace sqlighter
 		
 		
 	public:
-		~SQLighterException() = default; // LCOV_EXCL_LINE
+		~SQLighterException() override = default; // LCOV_EXCL_LINE
 		SQLighterException() = delete;
 		
 		SQLighterException(SQLighterException&&) = default;

@@ -34,6 +34,25 @@ Stmt::Stmt(std::shared_ptr<DB> db, std::string_view query) :
 	
 }
 
+Stmt::Stmt(Stmt&& s)
+{
+	*this = std::move(s);
+}
+
+Stmt& Stmt::operator=(Stmt&& s)
+{
+	m_stmt			= s.m_stmt;
+	m_columns		= std::move(s.m_columns);
+	m_columnIndex	= std::move(s.m_columnIndex);
+	m_query			= std::move(s.m_query);
+	m_db			= std::move(s.m_db);
+	
+	m_lastCode = s.m_lastCode;
+	s.m_stmt = nullptr;
+	
+	return *this;
+}
+
 
 sqlite3_stmt* Stmt::stmt()
 {

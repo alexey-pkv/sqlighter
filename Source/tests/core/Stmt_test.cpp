@@ -55,6 +55,27 @@ TEST(Stmt, contructor__db__string_view)
 	ASSERT_EQ("SELECT 1, 2", stmt.query());
 }
 
+TEST(Stmt, constructor__move)
+{
+	SQLighter sql { create_mock_table("mock_table") };
+	auto stmt = sql.select()
+			.from("mock_table")
+			.execute();
+	
+	Stmt stmt2;
+	auto query = stmt.query();
+	
+	// Force a destructor to be called
+	{
+		Stmt stmt3 { std::move(stmt) };
+		stmt2 = std::move(stmt3);
+	}
+	
+	
+	// Sanity check
+	ASSERT_FALSE(stmt2.column_names().empty());
+	ASSERT_EQ(query, stmt2.query());
+}
 
 TEST(Stmt, stmt__no_stmt__exception_thrown)
 {
