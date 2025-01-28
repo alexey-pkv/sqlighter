@@ -23,6 +23,7 @@ std::string sqlighter::error_message(int sqlighter_code)
 		case SQLIGHTER_ERR_INVALID_COLUMN:	return "Invalid column index";
 		case SQLIGHTER_ERR_BIND:			return "Failed to bind a value";
 		case SQLIGHTER_ERR_VALUE:			return "Incorrect value type";
+		case SQLIGHTER_ERR_EMPTY_QUERY:		return "The query string is empty";
 		
 		case SQLIGHTER_ERR_FAILED_TO_CLOSE_DB:	return "Error when closing DB";
 		case SQLIGHTER_ERR_FAILED_TO_OPEN_DB:	return "Error when opening DB";

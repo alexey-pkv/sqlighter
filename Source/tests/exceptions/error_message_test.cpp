@@ -29,6 +29,7 @@ TEST(error_message, message_defined)
 	ASSERT_EQ(std::string::npos, sqlighter::error_message(SQLIGHTER_ERR_ROWS_OVERFLOW).find(NDS));
 	ASSERT_EQ(std::string::npos, sqlighter::error_message(SQLIGHTER_ERR_INVALID_COLUMN).find(NDS));
 	ASSERT_EQ(std::string::npos, sqlighter::error_message(SQLIGHTER_ERR_BIND).find(NDS));
+	ASSERT_EQ(std::string::npos, sqlighter::error_message(SQLIGHTER_ERR_EMPTY_QUERY).find(NDS));
 	ASSERT_EQ(std::string::npos, sqlighter::error_message(SQLIGHTER_ERR_VALUE).find(NDS));
 	ASSERT_EQ(std::string::npos, sqlighter::error_message(SQLIGHTER_ERR_FAILED_TO_CLOSE_DB).find(NDS));
 	ASSERT_EQ(std::string::npos, sqlighter::error_message(SQLIGHTER_ERR_FAILED_TO_OPEN_DB).find(NDS));

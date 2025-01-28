@@ -30,6 +30,11 @@ Stmt Connection::execute(std::string_view query, const std::vector<BindValue>& v
 {
 	Stmt stmt { m_db, query };
 	
+	if (query.empty())
+	{
+		throw SQLighterException(SQLIGHTER_ERR_EMPTY_QUERY);
+	}
+	
 	m_db->open();
 	
 	auto res = sqlite3_prepare_v2(

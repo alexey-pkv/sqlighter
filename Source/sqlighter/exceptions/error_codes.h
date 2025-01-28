@@ -21,6 +21,7 @@
 
 #define SQLIGHTER_ERR_BIND						50		<< 16
 #define SQLIGHTER_ERR_VALUE						51		<< 16
+#define SQLIGHTER_ERR_EMPTY_QUERY				52		<< 16
 
 
 #define SQLIGHTER_ERR_FAILED_TO_CLOSE_DB		100		<< 16
