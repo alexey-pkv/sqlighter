@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CLAUSEWHERE_H
+#define SQLIGHTER_CLAUSEWHERE_H
 
 
 #include "ClauseContainer.h"
@@ -6,43 +7,53 @@
 
 namespace sqlighter
 {
-	class ClauseWhere : public ClauseContainer
+	template<class self>
+	class ClauseWhere
 	{
-	public:
-		ClauseWhere();
+	private:
+		Clause m_where { " AND " };
+		
+		
+	private:
+		inline self& get_self() { return *static_cast<self*>( this ); }
+		
+		
+	protected:
+		Clause& where_clause() { return m_where; }
+		const Clause& where_clause() const { return m_where; }
 		
 		
 	public:
-		void where_null(std::string_view column);
-		void where_not_null(std::string_view column);
-		void by_field(std::string_view column, BindValue value);
+		self& where(std::string_view exp, const std::vector<BindValue>& values)
+		{
+			m_where.append(exp, values);
+			return get_self();
+		}
 		
+		self& where(std::string_view exp)											{ return where(exp, {}); };
+		self& where(std::string_view exp, BindValue value)							{ return where(exp, { value }); };
+		self& where(std::string_view exp, std::initializer_list<BindValue> values)	{ return where(exp, { values }); };
 		
-	public:
-		void append_to(std::ostream& to) const override;
+		self& where_null(std::string_view column)
+		{
+			m_where << col(column) << " IS NULL";
+			return get_self();
+		}
+		
+		self& where_not_null(std::string_view column)
+		{
+			m_where << col(column) << " IS NOT NULL";
+			return get_self();
+		}
+		
+		self& by_field(std::string_view column, BindValue value)
+		{
+			m_where << col(column) << " = ?";
+			m_where.append_bind(value);
+			return get_self();
+		}
 	};
 }
 
 
-#define SQLIGHTER_WHERE_CLAUSE(data_member, self)						\
-	public:																\
-		SQLIGHTER_INLINE_CLAUSE(where, append_where, self);				\
-																		\
-	protected:															\
-		inline self& append_where(										\
-			std::string_view exp, const std::vector<BindValue>& bind)	\
-		{																\
-			data_member.append(exp, bind);								\
-			return *this;												\
-		}																\
-																		\
-	public:																\
-		inline self& where_null(std::string_view column) 				\
-		{ data_member.where_null(column); return *this; }				\
-																		\
-		inline self& where_not_null(std::string_view column)			\
-		{ data_member.where_not_null(column); return *this; }			\
-																		\
-		inline self& by_field(std::string_view column, BindValue value)	\
-		{ data_member.by_field(column, value); return *this; }
-
+#endif

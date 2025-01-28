@@ -20,9 +20,6 @@ void print_versions()
 
 int main(int argc, char **argv)
 {
-	print_versions();
-	
-	
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

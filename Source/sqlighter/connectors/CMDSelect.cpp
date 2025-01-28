@@ -115,7 +115,7 @@ void CMDSelect::assemble(std::ostringstream& ss) const
 		ss << " DISTINCT";
 	}
 	
-	if (!m_columns.empty_clause())
+	if (!m_columns.is_empty_clause())
 	{
 		ss << ' ';
 		m_columns.append_to(ss);
@@ -131,15 +131,18 @@ void CMDSelect::assemble(std::ostringstream& ss) const
 		m_from.append_to(ss);
 	}
 	
-	ss << m_where;
+	if (!where_clause().is_empty_clause())
+	{
+		ss << " WHERE " << where_clause();
+	}
 	
-	if (!m_groupBy.empty_clause())
+	if (!m_groupBy.is_empty_clause())
 	{
 		ss << " GROUP BY ";
 		m_groupBy.append_to(ss);
 	}
 	
-	if (!m_having.empty_clause())
+	if (!m_having.is_empty_clause())
 	{
 		ss << " HAVING ";
 		m_having.append_to(ss);
@@ -161,7 +164,7 @@ std::vector<BindValue> CMDSelect::bind() const
 	
 	auto total =
 		m_columns.binds_size() + 
-		m_where.binds_size() + 
+		where_clause().binds_size() + 
 		m_groupBy.binds_size() + 
 		m_having.binds_size() + 
 		m_orderBy.binds_size();
@@ -172,7 +175,7 @@ std::vector<BindValue> CMDSelect::bind() const
 	final.reserve(total);
 	
 	m_columns.append_to(final);
-	m_where.append_binds(final);
+	where_clause().append_to(final);
 	m_groupBy.append_to(final);
 	m_having.append_to(final);
 	m_orderBy.append_binds(final);

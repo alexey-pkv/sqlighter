@@ -116,3 +116,16 @@ TEST(sqlighter, sqlight_lib_version)
 	
 	ASSERT_TRUE(std::regex_match(version, versionRegex));
 }
+
+
+TEST(sqlighter, sqlighter_lib_version)
+{
+	std::regex versionRegex(R"(\d+\.\d+\.\d+)");
+	
+	
+	auto version = sqlighter::sqlighter_lib_version();
+	
+	
+	ASSERT_TRUE(std::regex_match(version, versionRegex));
+}
+

@@ -17,14 +17,15 @@ namespace sqlighter
 	class IConnection;
 	
 	
-	class CMDSelect : public CMD
+	class CMDSelect :
+		public CMD,
+		public ClauseWhere<CMDSelect>
 	{
 	private:
 		bool m_distinct	= false;
 		
 		ClauseTable		m_from		{};
 		Clause			m_columns	{ ", " };
-		ClauseWhere		m_where		{};
 		Clause			m_groupBy	{ ", " };
 		Clause			m_having	{ " AND " };
 		ClauseOrderBy	m_orderBy	{};
@@ -77,7 +78,6 @@ namespace sqlighter
 		
 		
 	public:
-		SQLIGHTER_WHERE_CLAUSE		(m_where,	CMDSelect);
 		SQLIGHTER_ORDER_BY_CLAUSE	(m_orderBy,	CMDSelect);
 		SQLIGHTER_LIMIT_CLAUSE		(m_limit,	CMDSelect);
 		

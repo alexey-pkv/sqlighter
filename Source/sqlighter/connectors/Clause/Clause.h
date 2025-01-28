@@ -39,7 +39,7 @@ namespace sqlighter
 		
 		
 	public:
-		[[nodiscard]] inline bool empty_clause() const noexcept { return m_isEmpty; }
+		[[nodiscard]] inline bool is_empty_clause() const noexcept { return m_isEmpty; }
 		[[nodiscard]] inline bool has_binds() const noexcept { return !m_binds.empty(); }
 		[[nodiscard]] inline std::string get_clause_string() const { return m_stream.str(); }
 		
@@ -88,4 +88,11 @@ namespace sqlighter
 			return m_stream;
 		}
 	};
+	
+	
+	inline std::ostream& operator<<(std::ostream& ss, const Clause& ct)
+	{
+		ct.append_to(ss);
+		return ss;
+	}
 }

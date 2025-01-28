@@ -43,7 +43,12 @@ void CMDUpdate::assemble(std::ostringstream& ss) const
 	if (!m_or.empty())
 		ss << "OR " << m_or << ' ';
 	
-	ss << m_table << m_set << m_where;
+	ss << m_table << m_set;
+	
+	if (!where_clause().is_empty_clause())
+	{
+		ss << " WHERE " << where_clause();
+	}
 }
 
 std::vector<BindValue> CMDUpdate::bind() const
@@ -52,10 +57,10 @@ std::vector<BindValue> CMDUpdate::bind() const
 	
 	final.reserve(
 		m_set.binds_size() +
-		m_where.binds_size());
+		where_clause().binds_size());
 	
 	m_set.append_binds(final);
-	m_where.append_binds(final);
+	where_clause().append_to(final);
 	
 	return final;
 } // LCOV_EXCL_LINE

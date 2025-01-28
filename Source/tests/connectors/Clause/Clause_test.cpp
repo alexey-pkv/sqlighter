@@ -134,7 +134,7 @@ TEST(Clause, clear)
 	
 	c.clear();
 	
-	ASSERT_TRUE(c.empty_clause());
+	ASSERT_TRUE(c.is_empty_clause());
 	ASSERT_TRUE(!c.has_binds());
 	ASSERT_TRUE(c.get_clause_string().empty());
 }

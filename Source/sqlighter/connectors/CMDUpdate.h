@@ -10,13 +10,13 @@
 
 namespace sqlighter
 {
-	class CMDUpdate : public CMD
+	class CMDUpdate : public CMD,
+		public ClauseWhere<CMDUpdate> 
 	{
 	private:
 		std::string	m_or	{};
 		ClauseTable	m_table {};
 		ClauseSet	m_set	{};
-		ClauseWhere	m_where	{};
 		
 		
 	public:
@@ -44,7 +44,6 @@ namespace sqlighter
 		
 	public:
 		SQLIGHTER_SET_CLAUSE(m_set, CMDUpdate);
-		SQLIGHTER_WHERE_CLAUSE(m_where, CMDUpdate);
 		
 		
 	public:

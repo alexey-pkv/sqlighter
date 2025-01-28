@@ -26,7 +26,7 @@ void ClauseOrderBy::order_by_field(std::string_view by, OrderBy order)
 
 void ClauseOrderBy::append_to(std::ostream& to) const
 {
-	if (clause().empty_clause())
+	if (clause().is_empty_clause())
 		return;
 	
 	to << " ORDER BY ";

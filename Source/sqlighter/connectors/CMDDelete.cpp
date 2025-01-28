@@ -35,8 +35,12 @@ CMDDelete& CMDDelete::from(std::string_view scheme, std::string_view table)
 void CMDDelete::assemble(std::ostringstream& ss) const
 {
 	ss << "DELETE FROM " 
-		<< m_from
-		<< m_where
+		<< m_from;
+	
+	if (!where_clause().is_empty_clause())
+		ss << " WHERE " << where_clause();
+	
+	ss 
 		<< m_orderBy
 		<< m_limit;
 }
@@ -46,7 +50,7 @@ std::vector<BindValue> CMDDelete::bind() const
 	std::vector<BindValue> final = {};
 	
 	auto total = 
-		m_where.binds_size() +  
+		where_clause().binds_size() +  
 		m_orderBy.binds_size();
 	
 	if (total == 0)
@@ -54,7 +58,7 @@ std::vector<BindValue> CMDDelete::bind() const
 	
 	final.reserve(total);
 	
-	m_where.append_binds(final);
+	where_clause().append_to(final);
 	m_orderBy.append_binds(final);
 	
 	return final;
