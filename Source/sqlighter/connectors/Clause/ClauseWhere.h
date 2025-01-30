@@ -2,7 +2,7 @@
 #define SQLIGHTER_CLAUSEWHERE_H
 
 
-#include "ClauseContainer.h"
+#include "Clause.h"
 
 
 namespace sqlighter

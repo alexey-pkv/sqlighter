@@ -148,8 +148,7 @@ void CMDSelect::assemble(std::ostringstream& ss) const
 		m_having.append_to(ss);
 	}
 	
-	ss << m_orderBy;
-	
+	append_order_by(ss);
 	append_limit(ss);
 }
 
@@ -167,7 +166,7 @@ std::vector<BindValue> CMDSelect::bind() const
 		where_clause().binds_size() + 
 		m_groupBy.binds_size() + 
 		m_having.binds_size() + 
-		m_orderBy.binds_size();
+		order_by_clause().binds_size();
 	
 	if (total == 0)
 		return {};
@@ -178,7 +177,7 @@ std::vector<BindValue> CMDSelect::bind() const
 	where_clause().append_to(final);
 	m_groupBy.append_to(final);
 	m_having.append_to(final);
-	m_orderBy.append_binds(final);
+	order_by_clause().append_to(final);
 	
 	return final;
 }

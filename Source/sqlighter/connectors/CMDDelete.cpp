@@ -40,8 +40,7 @@ void CMDDelete::assemble(std::ostringstream& ss) const
 	if (!where_clause().is_empty_clause())
 		ss << " WHERE " << where_clause();
 	
-	ss << m_orderBy;
-	
+	append_order_by(ss);
 	append_limit(ss);
 }
 
@@ -51,7 +50,7 @@ std::vector<BindValue> CMDDelete::bind() const
 	
 	auto total = 
 		where_clause().binds_size() +  
-		m_orderBy.binds_size();
+		order_by_clause().binds_size();
 	
 	if (total == 0)
 		return {};
@@ -59,7 +58,7 @@ std::vector<BindValue> CMDDelete::bind() const
 	final.reserve(total);
 	
 	where_clause().append_to(final);
-	m_orderBy.append_binds(final);
+	order_by_clause().append_to(final);
 	
 	return final;
 }

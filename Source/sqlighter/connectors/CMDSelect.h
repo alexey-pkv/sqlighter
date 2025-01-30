@@ -20,6 +20,7 @@ namespace sqlighter
 	class CMDSelect :
 		public CMD,
 		public ClauseWhere<CMDSelect>,
+		public ClauseOrderBy<CMDSelect>,
 		public ClauseLimit<CMDSelect>
 	{
 	private:
@@ -29,7 +30,6 @@ namespace sqlighter
 		Clause			m_columns	{ ", " };
 		Clause			m_groupBy	{ ", " };
 		Clause			m_having	{ " AND " };
-		ClauseOrderBy	m_orderBy	{};
 		
 		
 	public:
@@ -75,10 +75,6 @@ namespace sqlighter
 		
 	public:
 		CMDSelect& group_by_field(std::string_view by);
-		
-		
-	public:
-		SQLIGHTER_ORDER_BY_CLAUSE	(m_orderBy,	CMDSelect);
 		
 		
 	public:

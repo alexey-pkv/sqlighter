@@ -1,7 +1,8 @@
-#pragma once
+#ifndef SQLIGHTER_CLAUSESET_H
+#define SQLIGHTER_CLAUSESET_H
 
 
-#include "ClauseContainer.h"
+#include "Clause.h"
 
 
 namespace sqlighter
@@ -42,3 +43,5 @@ namespace sqlighter
 		inline self& set_exp(std::string_view exp, std::initializer_list<BindValue> values)	{ return set_exp(exp, { values }); };
 	};
 }
+
+#endif
