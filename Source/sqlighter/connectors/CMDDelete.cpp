@@ -40,9 +40,9 @@ void CMDDelete::assemble(std::ostringstream& ss) const
 	if (!where_clause().is_empty_clause())
 		ss << " WHERE " << where_clause();
 	
-	ss 
-		<< m_orderBy
-		<< m_limit;
+	ss << m_orderBy;
+	
+	append_limit(ss);
 }
 
 std::vector<BindValue> CMDDelete::bind() const

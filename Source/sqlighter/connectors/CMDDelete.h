@@ -11,17 +11,16 @@
 namespace sqlighter
 {
 	class CMDDelete : public CMD, 
-		public ClauseWhere<CMDDelete>
+		public ClauseWhere<CMDDelete>,
+		public ClauseLimit<CMDDelete>
 	{
 	private:
 		ClauseTable		m_from;
 		ClauseOrderBy	m_orderBy;
-		ClauseLimit		m_limit;
 		
 		
 	public:
 		SQLIGHTER_ORDER_BY_CLAUSE	(m_orderBy,	CMDDelete);
-		SQLIGHTER_LIMIT_CLAUSE		(m_limit,	CMDDelete);
 		
 		
 	public:

@@ -6,6 +6,7 @@
 
 namespace sqlighter
 {
+	template<class self>
 	class ClauseLimit
 	{
 	private:
@@ -15,33 +16,56 @@ namespace sqlighter
 		int m_limitCount = 0;
 		
 		
-	public:
-		void limit_by(int count);
-		void limit(int offset, int count);
-		void page(int page, int page_size);
+	private:
+		inline self& get_self() { return *static_cast<self*>( this ); }
+		
+		
+	protected:
+		void append_limit(std::ostream& to) const
+		{
+			if (!m_hasLimit)
+				return;
+			
+			to << " LIMIT ";
+			
+			if (m_limitOffset != 0)
+			{
+				to << m_limitOffset << ", ";
+			}
+			
+			to << m_limitCount;
+		}
 		
 		
 	public:
-		[[nodiscard]] bool is_empty() const { return !m_hasLimit; }
+		self& limit_by(int count)
+		{
+			m_hasLimit = true;
+			
+			m_limitCount = count;
+			m_limitOffset = 0;
+			
+			return get_self();
+		}
 		
+		self& limit(int offset, int count)
+		{
+			m_hasLimit = true;
+			
+			m_limitCount = count;
+			m_limitOffset = offset;
+			
+			return get_self();
+		}
 		
-	public:
-		void append_to(std::ostream& to) const;
+		self& page(int page, int page_size)
+		{
+			m_hasLimit = true;
+			
+			m_limitCount = page_size;
+			m_limitOffset = page * page_size;
+			
+			return get_self();
+		}
 	};
-	
-	
-	std::ostream& operator<<(std::ostream& ss, const ClauseLimit& ct);
 }
-
-#define SQLIGHTER_LIMIT_CLAUSE(data_member, self)						\
-	public:																\
-		inline self& limit_by(int count)								\
-		{ data_member.limit_by(count); return *this; }					\
-																		\
-		inline self& limit(int offset, int count) 						\
-		{ data_member.limit(offset, count); return *this; }				\
-        																\
-		inline self& page(int page, int page_size)         				\
-		{ data_member.page(page, page_size); return *this; }
-
-		

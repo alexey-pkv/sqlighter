@@ -148,9 +148,9 @@ void CMDSelect::assemble(std::ostringstream& ss) const
 		m_having.append_to(ss);
 	}
 	
-	ss 
-		<< m_orderBy
-		<< m_limit;
+	ss << m_orderBy;
+	
+	append_limit(ss);
 }
 
 std::string CMDSelect::assemble() const
