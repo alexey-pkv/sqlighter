@@ -49,6 +49,7 @@ endif ()
 ############################
 
 
+add_subdirectory(Source/cmake)
 add_subdirectory(Source/sqlighter)
 
 

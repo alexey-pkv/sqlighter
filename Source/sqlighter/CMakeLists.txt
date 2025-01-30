@@ -1,21 +1,4 @@
 ############################
-### Define Version #########
-############################
-
-set(SQLIGHTER_VERSION_MAJOR 0)
-set(SQLIGHTER_VERSION_MINOR 1)
-set(SQLIGHTER_VERSION_PATCH 3)
-
-set(SQLIGHTER_VERSION "${SQLIGHTER_VERSION_MAJOR}.${SQLIGHTER_VERSION_MINOR}.${SQLIGHTER_VERSION_PATCH}")
-
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/sqlighter_version.h.in"
-    "${SQLIGHTER_BIN}/sqlighter_version.h"
-    @ONLY
-)
-
-
-############################
 ### Targets		 ###########
 ############################
 
