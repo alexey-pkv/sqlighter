@@ -11,12 +11,12 @@
 namespace sqlighter
 {
 	class CMDUpdate : public CMD,
-		public ClauseWhere<CMDUpdate> 
+		public ClauseWhere<CMDUpdate>,
+		public ClauseSet<CMDUpdate>
 	{
 	private:
 		std::string	m_or	{};
 		ClauseTable	m_table {};
-		ClauseSet	m_set	{};
 		
 		
 	public:
@@ -40,10 +40,6 @@ namespace sqlighter
 		CMDUpdate& or_ignore();
 		CMDUpdate& or_replace();
 		CMDUpdate& or_rollback();
-		
-		
-	public:
-		SQLIGHTER_SET_CLAUSE(m_set, CMDUpdate);
 		
 		
 	public:

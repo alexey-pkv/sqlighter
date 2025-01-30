@@ -18,11 +18,11 @@ TEST(CMDUpdate, or_)
 	CMDUpdate cmd { get_co() };
 	
 	
-	ASSERT_EQ("UPDATE OR ABORT `my_table` SET ",	cmd.table("my_table").or_abort().assemble());
-	ASSERT_EQ("UPDATE OR FAIL `my_table` SET ",		cmd.table("my_table").or_fail().assemble());
-	ASSERT_EQ("UPDATE OR IGNORE `my_table` SET ",	cmd.table("my_table").or_ignore().assemble());
-	ASSERT_EQ("UPDATE OR REPLACE `my_table` SET ",	cmd.table("my_table").or_replace().assemble());
-	ASSERT_EQ("UPDATE OR ROLLBACK `my_table` SET ",	cmd.table("my_table").or_rollback().assemble());
+	ASSERT_EQ("UPDATE OR ABORT `my_table`",		cmd.table("my_table").or_abort().assemble());
+	ASSERT_EQ("UPDATE OR FAIL `my_table`",		cmd.table("my_table").or_fail().assemble());
+	ASSERT_EQ("UPDATE OR IGNORE `my_table`",	cmd.table("my_table").or_ignore().assemble());
+	ASSERT_EQ("UPDATE OR REPLACE `my_table`",	cmd.table("my_table").or_replace().assemble());
+	ASSERT_EQ("UPDATE OR ROLLBACK `my_table`",	cmd.table("my_table").or_rollback().assemble());
 }
 
 TEST(CMDUpdate, table)
@@ -30,9 +30,9 @@ TEST(CMDUpdate, table)
 	CMDUpdate cmd { get_co() };
 	
 	
-	ASSERT_EQ("UPDATE `my_table` SET ",				cmd.table("my_table").assemble());
-	ASSERT_EQ("UPDATE `hello`.`world` SET ",		cmd.table("hello.world").assemble());
-	ASSERT_EQ("UPDATE `scheme`.`my_table` SET ",	cmd.table("scheme", "my_table").assemble());
+	ASSERT_EQ("UPDATE `my_table`",			cmd.table("my_table").assemble());
+	ASSERT_EQ("UPDATE `hello`.`world`",		cmd.table("hello.world").assemble());
+	ASSERT_EQ("UPDATE `scheme`.`my_table`",	cmd.table("scheme", "my_table").assemble());
 }
 
 TEST(CMDUpdate, as)
@@ -40,7 +40,7 @@ TEST(CMDUpdate, as)
 	CMDUpdate cmd { get_co() };
 	
 	
-	ASSERT_EQ("UPDATE `hello` AS `world` SET ",	cmd.table("hello").as("world").assemble());
+	ASSERT_EQ("UPDATE `hello` AS `world`",	cmd.table("hello").as("world").assemble());
 }
 
 TEST(CMDUpdate, sanity)

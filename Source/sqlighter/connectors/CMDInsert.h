@@ -8,7 +8,9 @@
 
 namespace sqlighter
 {
-	class CMDInsert : public CMD
+	class CMDInsert : 
+		public CMD, 
+		public ClauseSet<CMDInsert>
 	{
 	private:
 		int m_columnsCount	= -1;
@@ -65,10 +67,6 @@ namespace sqlighter
 		void assemble(std::ostringstream& ss) const override;
 		std::vector<BindValue> bind() const override;
 		std::string assemble() const override;
-		
-		
-	public:
-		SQLIGHTER_SET_CLAUSE(m_set, CMDInsert);
 	};
 }
 

@@ -43,7 +43,12 @@ void CMDUpdate::assemble(std::ostringstream& ss) const
 	if (!m_or.empty())
 		ss << "OR " << m_or << ' ';
 	
-	ss << m_table << m_set;
+	ss << m_table;
+	
+	if (!set_clause().is_empty_clause())
+	{
+		ss << " SET " << set_clause();
+	}
 	
 	if (!where_clause().is_empty_clause())
 	{
@@ -56,10 +61,10 @@ std::vector<BindValue> CMDUpdate::bind() const
 	std::vector<BindValue> final = {};
 	
 	final.reserve(
-		m_set.binds_size() +
+		set_clause().binds_size() +
 		where_clause().binds_size());
 	
-	m_set.append_binds(final);
+	set_clause().append_to(final);
 	where_clause().append_to(final);
 	
 	return final;

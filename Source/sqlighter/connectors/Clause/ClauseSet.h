@@ -6,36 +6,39 @@
 
 namespace sqlighter
 {
-	class ClauseSet : public ClauseContainer
+	template<class self>
+	class ClauseSet
 	{
-	public:
-		ClauseSet();
+	private:
+		Clause m_set { ", " };
+		
+		
+	private:
+		inline self& get_self() { return *static_cast<self*>( this ); }
+		
+		
+	protected:
+		inline Clause& set_clause() { return m_set; }
+		inline const Clause& set_clause() const { return m_set; }
 		
 		
 	public:
-		void set_field(std::string_view column, BindValue value);
+		self& set_exp(std::string_view exp, const std::vector<BindValue>& values)
+		{
+			m_set.append(exp, values);
+			return get_self();
+		}
+		
+		self& set(std::string_view field, BindValue value)
+		{
+			m_set << col(field) << " = ?";
+			m_set.append_bind(value);
+			return get_self();
+		}
 		
 		
-	public:
-		void append_to(std::ostream& to) const override;
+		inline self& set_exp(std::string_view exp)											{ return set_exp(exp, {}); };
+		inline self& set_exp(std::string_view exp, BindValue value)							{ return set_exp(exp, { value }); };
+		inline self& set_exp(std::string_view exp, std::initializer_list<BindValue> values)	{ return set_exp(exp, { values }); };
 	};
 }
-
-
-#define SQLIGHTER_SET_CLAUSE(data_member, self)							\
-	public:																\
-		SQLIGHTER_INLINE_CLAUSE(set_exp, append_set_exp, self);			\
-																		\
-	protected:															\
-		inline self& append_set_exp(									\
-			std::string_view exp, const std::vector<BindValue>& bind)	\
-		{																\
-			data_member.append(exp, bind);								\
-			return *this;												\
-		}																\
-																		\
-	public:																\
-		inline self& set(std::string_view field, BindValue value)		\
-		{ data_member.set_field(field, value); return *this; }			
-
-

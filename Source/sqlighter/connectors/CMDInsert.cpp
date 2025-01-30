@@ -189,7 +189,7 @@ void CMDInsert::assemble(std::ostringstream& ss) const
 		ss << "ON CONFLICT DO NOTHING";
 	}
 	
-	if (!m_set.is_empty_clause())
+	if (!set_clause().is_empty_clause())
 	{
 		ss << "ON CONFLICT ";
 		
@@ -198,23 +198,23 @@ void CMDInsert::assemble(std::ostringstream& ss) const
 			ss << "(" << col(m_onConflictColumn) << ")";
 		}
 		
-		ss << " DO UPDATE" << m_set;
+		ss << " DO UPDATE SET " << set_clause();
 	}
 }
 
 std::vector<BindValue> CMDInsert::bind() const
 {
-	if (m_set.binds_size() == 0)
+	if (set_clause().binds_size() == 0)
 		return m_binds;
 	
 	std::vector<BindValue> res;
 	
 	res.reserve(
 		m_binds.size() + 
-		m_set.binds_size());
+		set_clause().binds_size());
 	
 	res.insert(res.end(), m_binds.begin(), m_binds.end());
-	m_set.append_binds(res);
+	set_clause().append_to(res);
 	
 	return res;
 }
