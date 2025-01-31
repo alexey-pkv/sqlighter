@@ -26,7 +26,7 @@ TEST(CMDInsert, sanity)
 	
 	std::ostringstream ss;
 	
-	ss	<< "INSERT INTO `my_table` (`my_column`) VALUES " << std::endl 
+	ss	<< "INSERT INTO my_table (my_column) VALUES " << std::endl 
 		<< "(?)" << std::endl;
 	
 	ASSERT_EQ(ss.str(), cmd.assemble());
@@ -47,7 +47,7 @@ TEST(CMDInsert, no_columns)
 	
 	std::ostringstream ss;
 	
-	ss	<< "INSERT INTO `my_table` VALUES " << std::endl 
+	ss	<< "INSERT INTO my_table VALUES " << std::endl 
 		<< "(?, ?, ?)" << std::endl;
 	
 	ASSERT_EQ(ss.str(), cmd.assemble());
@@ -67,7 +67,7 @@ TEST(CMDInsert, mult_columns)
 	
 	std::ostringstream ss;
 	
-	ss	<< "INSERT INTO `my_table` (`a`, `b`, `c`) VALUES " << std::endl 
+	ss	<< "INSERT INTO my_table (a, b, c) VALUES " << std::endl 
 		<< "(?, ?, ?)" << std::endl;
 	
 	ASSERT_EQ(ss.str(), cmd.assemble());
@@ -84,7 +84,7 @@ TEST(CMDInsert, default_values)
 		.default_values();
 	
 	
-	ASSERT_EQ("INSERT INTO `my_table` (`my_column`) DEFAULT VALUES", cmd.assemble());
+	ASSERT_EQ("INSERT INTO my_table (my_column) DEFAULT VALUES", cmd.assemble());
 }
 
 TEST(CMDInsert, on_conflict_do_nothing)
@@ -102,7 +102,7 @@ TEST(CMDInsert, on_conflict_do_nothing)
 	
 	std::ostringstream ss;
 	
-	ss	<< "INSERT INTO `my_table` (`my_column`) VALUES " << std::endl 
+	ss	<< "INSERT INTO my_table (my_column) VALUES " << std::endl 
 		<< "(?)" << std::endl
 		<< "ON CONFLICT DO NOTHING";
 	
@@ -118,7 +118,7 @@ TEST(CMDInsert, or_abort)
 	cmd.into("my_table").or_abort().default_values();
 	
 	
-	ASSERT_EQ("INSERT OR ABORT INTO `my_table` DEFAULT VALUES", cmd.assemble());
+	ASSERT_EQ("INSERT OR ABORT INTO my_table DEFAULT VALUES", cmd.assemble());
 }
 
 TEST(CMDInsert, or_ignore)
@@ -129,7 +129,7 @@ TEST(CMDInsert, or_ignore)
 	cmd.into("my_table").or_ignore().default_values();
 	
 	
-	ASSERT_EQ("INSERT OR IGNORE INTO `my_table` DEFAULT VALUES", cmd.assemble());
+	ASSERT_EQ("INSERT OR IGNORE INTO my_table DEFAULT VALUES", cmd.assemble());
 }
 
 TEST(CMDInsert, or_fail)
@@ -140,7 +140,7 @@ TEST(CMDInsert, or_fail)
 	cmd.into("my_table").or_fail().default_values();
 	
 	
-	ASSERT_EQ("INSERT OR FAIL INTO `my_table` DEFAULT VALUES", cmd.assemble());
+	ASSERT_EQ("INSERT OR FAIL INTO my_table DEFAULT VALUES", cmd.assemble());
 }
 
 TEST(CMDInsert, or_rollback)
@@ -151,7 +151,7 @@ TEST(CMDInsert, or_rollback)
 	cmd.into("my_table").or_rollback().default_values();
 	
 	
-	ASSERT_EQ("INSERT OR ROLLBACK INTO `my_table` DEFAULT VALUES", cmd.assemble());
+	ASSERT_EQ("INSERT OR ROLLBACK INTO my_table DEFAULT VALUES", cmd.assemble());
 }
 
 TEST(CMDInsert, or_replace)
@@ -162,7 +162,7 @@ TEST(CMDInsert, or_replace)
 	cmd.into("my_table").or_replace().default_values();
 	
 	
-	ASSERT_EQ("INSERT OR REPLACE INTO `my_table` DEFAULT VALUES", cmd.assemble());
+	ASSERT_EQ("INSERT OR REPLACE INTO my_table DEFAULT VALUES", cmd.assemble());
 }
 
 TEST(CMDInsert, scheme)
@@ -173,7 +173,7 @@ TEST(CMDInsert, scheme)
 	cmd.into("sc", "my_table").default_values();
 	
 	
-	ASSERT_EQ("INSERT INTO `sc`.`my_table` DEFAULT VALUES", cmd.assemble());
+	ASSERT_EQ("INSERT INTO sc.my_table DEFAULT VALUES", cmd.assemble());
 }
 
 TEST(CMDInsert, scheme_in_name)
@@ -184,7 +184,7 @@ TEST(CMDInsert, scheme_in_name)
 	cmd.into("sc.my_table").default_values();
 	
 	
-	ASSERT_EQ("INSERT INTO `sc`.`my_table` DEFAULT VALUES", cmd.assemble());
+	ASSERT_EQ("INSERT INTO sc.my_table DEFAULT VALUES", cmd.assemble());
 }
 
 TEST(CMDInsert, as)
@@ -195,7 +195,7 @@ TEST(CMDInsert, as)
 	cmd.into("my_table").as("something").default_values();
 	
 	
-	ASSERT_EQ("INSERT INTO `my_table` AS `something` DEFAULT VALUES", cmd.assemble());
+	ASSERT_EQ("INSERT INTO my_table AS something DEFAULT VALUES", cmd.assemble());
 }
 
 
@@ -262,7 +262,7 @@ TEST(CMDInsert, records)
 	
 	std::ostringstream ss;
 	
-	ss	<< "INSERT INTO `my_table` (`a`, `b`, `c`) VALUES " << std::endl 
+	ss	<< "INSERT INTO my_table (a, b, c) VALUES " << std::endl 
 		<< "(?, ?, ?), " << std::endl
 		<< "(?, ?, ?), " << std::endl
 		<< "(?, ?, ?), " << std::endl

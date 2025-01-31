@@ -44,19 +44,19 @@ CMDSelect& CMDSelect::distinct()
 
 CMDSelect& CMDSelect::column(std::string_view column)
 {
-	m_columns << col(column);
+	m_columns.next_section() << column;
 	return *this;
 }
 
 CMDSelect& CMDSelect::column_as(std::string_view column, std::string_view as)
 {
-	m_columns << col_as(column, as);
+	m_columns.next_section() << column << " AS " << as;
 	return *this;
 }
 
 CMDSelect& CMDSelect::column_as(std::string_view column, char as)
 {
-	m_columns << col_as(column, { &as, 1 });
+	m_columns.next_section() << column << " AS " << as;
 	return *this;
 }
 
@@ -64,7 +64,7 @@ CMDSelect& CMDSelect::columns(const std::vector<std::string_view>& columns)
 {
 	for (const auto& c : columns)
 	{
-		m_columns << col(c);
+		m_columns.next_section() << c;
 	}
 	
 	return *this;
@@ -74,7 +74,7 @@ CMDSelect& CMDSelect::columns(std::initializer_list<std::string_view> columns)
 {
 	for (const auto& c : columns)
 	{
-		m_columns << col(c);
+		m_columns.next_section() << c;
 	}
 	
 	return *this;
@@ -101,7 +101,7 @@ CMDSelect& CMDSelect::as(std::string_view as)
 
 CMDSelect& CMDSelect::group_by_field(std::string_view by)
 {
-	m_groupBy << col(by);
+	m_groupBy.next_section() << by;
 	return *this;
 }
 

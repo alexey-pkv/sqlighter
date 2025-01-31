@@ -36,19 +36,19 @@ namespace sqlighter
 		
 		self& where_null(std::string_view column)
 		{
-			m_where << col(column) << " IS NULL";
+			m_where.next_section() << column << " IS NULL";
 			return get_self();
 		}
 		
 		self& where_not_null(std::string_view column)
 		{
-			m_where << col(column) << " IS NOT NULL";
+			m_where.next_section() << column << " IS NOT NULL";
 			return get_self();
 		}
 		
 		self& by_field(std::string_view column, BindValue value)
 		{
-			m_where << col(column) << " = ?";
+			m_where.next_section() << column << " = ?";
 			m_where.append_bind(value);
 			return get_self();
 		}

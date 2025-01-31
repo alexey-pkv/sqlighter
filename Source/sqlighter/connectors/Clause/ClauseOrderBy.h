@@ -43,7 +43,7 @@ namespace sqlighter
 		
 		self& order_by_field(std::string_view by, OrderBy order)
 		{
-			m_orderBy << col(by);
+			m_orderBy.next_section() << by;
 			
 			if (order == OrderBy::DESC)
 			{

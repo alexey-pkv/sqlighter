@@ -76,12 +76,6 @@ namespace sqlighter
 			return m_stream;
 		}
 		
-		inline std::ostringstream& operator<<(const col& c)
-		{
-			next_section() << c;
-			return m_stream;
-		}
-		
 		inline std::ostringstream& operator<<(const col_as& c)
 		{
 			next_section() << c;

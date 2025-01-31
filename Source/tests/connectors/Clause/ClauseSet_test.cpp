@@ -42,7 +42,7 @@ TEST(ClauseSet, set_field)
 	cs.append_query(ss);
 	
 	
-	ASSERT_EQ("`Some field` = ?, `Hello` = ?", ss.str());
+	ASSERT_EQ("Some field = ?, Hello = ?", ss.str());
 	ASSERT_EQ(2, cs.binds_size());
 	ASSERT_EQ(2, binds.size());
 	ASSERT_EQ(32, binds[0].get_value().i32);

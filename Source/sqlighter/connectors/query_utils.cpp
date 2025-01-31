@@ -7,19 +7,6 @@
 using namespace sqlighter;
 
 
-std::ostream& sqlighter::wrap_element(std::ostream& ss, std::string_view element, std::string_view as)
-{
-	ss << '`' << element << "` as `" << as << '`';
-	return ss;
-}
-
-std::ostream& sqlighter::wrap_element(std::ostream& ss, std::string_view element)
-{
-	ss << '`' << element << '`';
-	return ss;
-}
-
-
 void sqlighter::element_name(std::string_view fullName, std::string& scheme, std::string& name)
 {
 	auto at = fullName.find('.');

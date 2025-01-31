@@ -32,7 +32,7 @@ namespace sqlighter
 		
 		self& set(std::string_view field, BindValue value)
 		{
-			m_set << col(field) << " = ?";
+			m_set.next_section() << field << " = ?";
 			m_set.append_bind(value);
 			return get_self();
 		}

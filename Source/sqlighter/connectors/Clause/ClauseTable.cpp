@@ -29,18 +29,17 @@ void ClauseTable::append_to(std::ostream& to) const
 {
 	if (has_scheme())
 	{
-		wrap_element(to, m_scheme) << ".";
+		to << m_scheme << ".";
 	}
 	
 	if (has_table())
 	{
-		wrap_element(to, m_table);
+		to << m_table;
 	}
 	
 	if (has_alias())
 	{
-		to << " AS ";
-		wrap_element(to, m_as);
+		to << " AS " << m_as;
 	}
 }
 

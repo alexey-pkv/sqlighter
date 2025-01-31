@@ -125,7 +125,7 @@ TEST(CMDSelect, from)
 	cmd.from("table");
 	
 	
-	ASSERT_EQ("SELECT * FROM `table`", cmd.assemble());
+	ASSERT_EQ("SELECT * FROM table", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -137,7 +137,7 @@ TEST(CMDSelect, from__with_scheme)
 	cmd.from("table", "tab");
 	
 	
-	ASSERT_EQ("SELECT * FROM `table`.`tab`", cmd.assemble());
+	ASSERT_EQ("SELECT * FROM table.tab", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -149,7 +149,7 @@ TEST(CMDSelect, as)
 	cmd.from("tab").as("hello");
 	
 	
-	ASSERT_EQ("SELECT * FROM `tab` AS `hello`", cmd.assemble());
+	ASSERT_EQ("SELECT * FROM tab AS hello", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -327,13 +327,13 @@ TEST(CMDSelect, column)
 	
 	cmd.column("hello");
 	
-	ASSERT_EQ("SELECT `hello`", cmd.assemble());
+	ASSERT_EQ("SELECT hello", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 	
 	
 	cmd.column("world");
 	
-	ASSERT_EQ("SELECT `hello`, `world`", cmd.assemble());
+	ASSERT_EQ("SELECT hello, world", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -344,13 +344,13 @@ TEST(CMDSelect, column_as)
 	
 	cmd.column_as("hello", "h");
 	
-	ASSERT_EQ("SELECT `hello` as `h`", cmd.assemble());
+	ASSERT_EQ("SELECT hello AS h", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 	
 	
 	cmd.column_as("world", "wo");
 	
-	ASSERT_EQ("SELECT `hello` as `h`, `world` as `wo`", cmd.assemble());
+	ASSERT_EQ("SELECT hello AS h, world AS wo", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -361,13 +361,13 @@ TEST(CMDSelect, column_as__char)
 	
 	cmd.column_as("hello", 'h');
 	
-	ASSERT_EQ("SELECT `hello` as `h`", cmd.assemble());
+	ASSERT_EQ("SELECT hello AS h", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 	
 	
 	cmd.column_as("world", 'w');
 	
-	ASSERT_EQ("SELECT `hello` as `h`, `world` as `w`", cmd.assemble());
+	ASSERT_EQ("SELECT hello AS h, world AS w", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -381,7 +381,7 @@ TEST(CMDSelect, columns__vector)
 	cmd.columns(std::vector<std::string_view> { "c", "abc" });
 	
 	
-	ASSERT_EQ("SELECT `a`, `c`, `abc`", cmd.assemble());
+	ASSERT_EQ("SELECT a, c, abc", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -395,7 +395,7 @@ TEST(CMDSelect, columns__init_list)
 	cmd.columns({ "c", "abc" });
 	
 	
-	ASSERT_EQ("SELECT `a`, `c`, `abc`", cmd.assemble());
+	ASSERT_EQ("SELECT a, c, abc", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -407,7 +407,7 @@ TEST(CMDSelect, column_exp)
 	
 	cmd.column_exp("COUNT(*)");
 	cmd.column_exp("SUM(amount)");
-	cmd.column_exp("IF (status = ?, ?, ?)", std::initializer_list<BindValue> { "active", 1, 0 });
+	cmd.column_exp("IF (status = ?, ?, ?)", std::initializer_list<BindValue>{ "active", 1, 0 });
 	cmd.column_exp("CASE WHEN type = ? THEN ? ELSE ? END", std::vector<BindValue>{ "A", 100, 200 });
 	
 	
@@ -463,7 +463,7 @@ TEST(CMDSelect, where_null)
 	cmd.where_null("status");
 	
 	
-	ASSERT_EQ("SELECT * WHERE `age` IS NULL AND `status` IS NULL", cmd.assemble());
+	ASSERT_EQ("SELECT * WHERE age IS NULL AND status IS NULL", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -476,7 +476,7 @@ TEST(CMDSelect, where_not_null)
 	cmd.where_not_null("status");
 	
 	
-	ASSERT_EQ("SELECT * WHERE `age` IS NOT NULL AND `status` IS NOT NULL", cmd.assemble());
+	ASSERT_EQ("SELECT * WHERE age IS NOT NULL AND status IS NOT NULL", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -489,7 +489,7 @@ TEST(CMDSelect, by_field)
 	cmd.by_field("status", "active");
 	
 	
-	ASSERT_EQ("SELECT * WHERE `age` = ? AND `status` = ?", cmd.assemble());
+	ASSERT_EQ("SELECT * WHERE age = ? AND status = ?", cmd.assemble());
 	
 	auto binds = cmd.bind();
 	ASSERT_EQ(2, binds.size());
@@ -508,7 +508,7 @@ TEST(CMDSelect, group_by_field)
 	cmd.group_by_field("world");
 	
 	
-	ASSERT_EQ("SELECT * GROUP BY `age`, `hello`, `world`", cmd.assemble());
+	ASSERT_EQ("SELECT * GROUP BY age, hello, world", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
@@ -571,7 +571,7 @@ TEST(CMDSelect, order_by_field)
 	cmd.order_by_field_desc("last");
 	
 	
-	ASSERT_EQ("SELECT * ORDER BY `age`, `status`, `hello` DESC, `world`, `last` DESC", cmd.assemble());
+	ASSERT_EQ("SELECT * ORDER BY age, status, hello DESC, world, last DESC", cmd.assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 

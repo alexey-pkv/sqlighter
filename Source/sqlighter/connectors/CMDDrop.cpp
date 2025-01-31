@@ -51,9 +51,9 @@ void CMDDrop::assemble(std::ostringstream& ss) const
 		ss << "IF EXISTS ";
 	
 	if (!m_scheme.empty())
-		ss << '`' << m_scheme << "`.";
+		ss << m_scheme << ".";
 	
-	ss << '`' << m_name << '`';
+	ss << m_name;
 }
 
 std::vector<BindValue> CMDDrop::bind() const

@@ -17,9 +17,9 @@ TEST(CMDDelete, from)
 	CMDDelete cmd { get_co() };
 	
 	
-	ASSERT_EQ("DELETE FROM `my_table`",			cmd.from("my_table").assemble());
-	ASSERT_EQ("DELETE FROM `temp`.`my_table`",	cmd.from("temp.my_table").assemble());
-	ASSERT_EQ("DELETE FROM `temp`.`my_table`",	cmd.from("temp", "my_table").assemble());
+	ASSERT_EQ("DELETE FROM my_table",		cmd.from("my_table").assemble());
+	ASSERT_EQ("DELETE FROM temp.my_table",	cmd.from("temp.my_table").assemble());
+	ASSERT_EQ("DELETE FROM temp.my_table",	cmd.from("temp", "my_table").assemble());
 }
 
 
@@ -31,7 +31,7 @@ TEST(CMDDelete, as)
 	cmd.from("my_table").as("as");
 	
 	
-	ASSERT_EQ("DELETE FROM `my_table` AS `as`", cmd.assemble());
+	ASSERT_EQ("DELETE FROM my_table AS as", cmd.assemble());
 }
 
 
@@ -90,7 +90,7 @@ TEST(CMDDelete, sanity)
 	
 	sql.del()
 		.from("ExampleTable")
-		.where("`Age` <= ?", 30)
+		.where("Age <= ?", 30)
 		.execute();
 	
 	

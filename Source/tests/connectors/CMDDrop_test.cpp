@@ -32,7 +32,7 @@ TEST(CMDDrop, if_exists)
 {
 	CMDDrop cd(std::make_shared<connection_override>());
 	
-	ASSERT_EQ("DROP TABLE IF EXISTS `a`", cd.if_exists().table("a").assemble());
+	ASSERT_EQ("DROP TABLE IF EXISTS a", cd.if_exists().table("a").assemble());
 }
 
 TEST(CMDDrop, sanity_bind)
@@ -46,30 +46,30 @@ TEST(CMDDrop, sanity_element)
 {
 	CMDDrop cd(std::make_shared<connection_override>());
 	
-	ASSERT_EQ("DROP TABLE `a`", cd.table("a").assemble());
-	ASSERT_EQ("DROP VIEW `a`", cd.view("a").assemble());
-	ASSERT_EQ("DROP INDEX `a`", cd.index("a").assemble());
-	ASSERT_EQ("DROP TRIGGER `a`", cd.trigger("a").assemble());
+	ASSERT_EQ("DROP TABLE a", cd.table("a").assemble());
+	ASSERT_EQ("DROP VIEW a", cd.view("a").assemble());
+	ASSERT_EQ("DROP INDEX a", cd.index("a").assemble());
+	ASSERT_EQ("DROP TRIGGER a", cd.trigger("a").assemble());
 }
 
 TEST(CMDDrop, sanity_scheme_name)
 {
 	CMDDrop cd(std::make_shared<connection_override>());
 	
-	ASSERT_EQ("DROP TABLE `s`.`a`", cd.table("s", "a").assemble());
-	ASSERT_EQ("DROP VIEW `s`.`a`", cd.view("s", "a").assemble());
-	ASSERT_EQ("DROP INDEX `s`.`a`", cd.index("s", "a").assemble());
-	ASSERT_EQ("DROP TRIGGER `s`.`a`", cd.trigger("s", "a").assemble());
+	ASSERT_EQ("DROP TABLE s.a", cd.table("s", "a").assemble());
+	ASSERT_EQ("DROP VIEW s.a", cd.view("s", "a").assemble());
+	ASSERT_EQ("DROP INDEX s.a", cd.index("s", "a").assemble());
+	ASSERT_EQ("DROP TRIGGER s.a", cd.trigger("s", "a").assemble());
 }
 
 TEST(CMDDrop, sanity_name_with_scheme)
 {
 	CMDDrop cd(std::make_shared<connection_override>());
 	
-	ASSERT_EQ("DROP TABLE `s`.`a`", cd.table("s.a").assemble());
-	ASSERT_EQ("DROP VIEW `s`.`a`", cd.view("s.a").assemble());
-	ASSERT_EQ("DROP INDEX `s`.`a`", cd.index("s.a").assemble());
-	ASSERT_EQ("DROP TRIGGER `s`.`a`", cd.trigger("s.a").assemble());
+	ASSERT_EQ("DROP TABLE s.a", cd.table("s.a").assemble());
+	ASSERT_EQ("DROP VIEW s.a", cd.view("s.a").assemble());
+	ASSERT_EQ("DROP INDEX s.a", cd.index("s.a").assemble());
+	ASSERT_EQ("DROP TRIGGER s.a", cd.trigger("s.a").assemble());
 }
 
 TEST(CMDDrop, sanity)

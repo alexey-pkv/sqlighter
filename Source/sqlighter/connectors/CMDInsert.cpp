@@ -142,7 +142,7 @@ void CMDInsert::assemble(std::ostringstream& ss) const
 		{
 			if (i > 0) ss << ", ";
 			
-			wrap_element(ss, m_columns[i]);
+			ss << m_columns[i];
 		}
 		
 		ss << ") ";
@@ -195,7 +195,7 @@ void CMDInsert::assemble(std::ostringstream& ss) const
 		
 		if (!m_onConflictColumn.empty())
 		{
-			ss << "(" << col(m_onConflictColumn) << ")";
+			ss << "(" << m_onConflictColumn << ")";
 		}
 		
 		ss << " DO UPDATE SET " << set_clause();
