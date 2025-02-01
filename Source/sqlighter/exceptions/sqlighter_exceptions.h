@@ -30,12 +30,12 @@ namespace sqlighter
 		~SQLighterException() override = default; // LCOV_EXCL_LINE
 		SQLighterException() = delete;
 		
-		SQLighterException(SQLighterException&&) = default;
-		SQLighterException(const SQLighterException&) = default;
-		SQLighterException& operator=(SQLighterException&&) = default;
-		SQLighterException& operator=(const SQLighterException&) = default;
+		SQLighterException(SQLighterException&&) noexcept = default;
+		SQLighterException(const SQLighterException&) noexcept = default;
+		SQLighterException& operator=(SQLighterException&&) noexcept = default;
+		SQLighterException& operator=(const SQLighterException&) noexcept = default;
 		
-		explicit SQLighterException(int code);
+		explicit SQLighterException(int code) noexcept;
 		
 		SQLighterException(int code, int sqlite_code);
 		SQLighterException(int code, int sqlite_code, std::string_view message);

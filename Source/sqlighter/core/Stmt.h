@@ -45,8 +45,8 @@ namespace sqlighter
 		Stmt(const Stmt&) = delete;
 		Stmt& operator=(const Stmt&) = delete;
 		
-		Stmt(Stmt&&);
-		Stmt& operator=(Stmt&&);
+		Stmt(Stmt&&) noexcept;
+		Stmt& operator=(Stmt&&) noexcept;
 		
 		
 	public:
@@ -60,6 +60,7 @@ namespace sqlighter
 		inline bool is_ok() const		{ return m_lastCode == SQLITE_OK;		}
 		inline bool is_error() const	{ return m_lastCode == SQLITE_ERROR;	}
 		inline bool has_row() const		{ return m_lastCode == SQLITE_ROW;		}
+		inline bool is_closed() const	{ return m_stmt == nullptr; }
 		
 		inline const std::string& query() const { return m_query; }
 		
@@ -71,6 +72,11 @@ namespace sqlighter
 		
 		
 		int close();
+		
+		/**
+		 * Throw an exception if the stmt was finalized and closed.
+		 */
+		void require_open() const;
 		
 		/**
 		 * Throw an exception if there is no current row to read form.

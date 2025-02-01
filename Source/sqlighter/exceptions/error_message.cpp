@@ -12,7 +12,7 @@ std::string sqlighter::error_message(int sqlighter_code)
 		case SQLIGHTER_ERR_GENERIC: 	return "Generic error";
 		case SQLIGHTER_ERR_UNEXPECTED:	return "Unexpected error";
 		
-		case SQLIGHTER_ERR_STMT_FINALIZED:	return "";
+		case SQLIGHTER_ERR_STMT_FINALIZED:	return "The statement was finalized and can not be used.";
 		case SQLIGHTER_ERR_STEP:			return "Failed to execute step";
 		case SQLIGHTER_ERR_PREPARE:			return "Error when preparing statement";
 		case SQLIGHTER_ERR_NO_ROWS:			return "A row is required for this operation. The current statement does not hold a row";

@@ -71,6 +71,7 @@ namespace sqlighter
 		
 	public:
 		inline const std::shared_ptr<DB>& db() { return m_db; }
+		inline static SQLighter memory() { return std::move(SQLighter(":memory:")); }
 	};
 	
 	

@@ -949,3 +949,56 @@ TEST(Stmt, require_done__not_done__error_thrown)
 		ASSERT_EQ(SQLIGHTER_ERR_GENERIC, e.code());
 	}
 }
+
+#define OP_FAIL_WITH_STMT_FINALIZED(op) 					\
+	try														\
+	{														\
+		op;													\
+		FAIL();												\
+	}														\
+	catch (const SQLighterException& e)						\
+	{														\
+		ASSERT_EQ(SQLIGHTER_ERR_STMT_FINALIZED, e.code());	\
+	}	
+
+TEST(Stmt, stmt_finalized__action_not_allowed)
+{
+	SQLighter sql(":memory:");
+	
+	auto stmt = sql.execute("SELECT 1");
+	
+	ASSERT_FALSE(stmt.is_closed());
+	stmt.close();
+	ASSERT_TRUE(stmt.is_closed());
+	
+	bool b;
+	int i;
+	int64_t i64;
+	std::string s;
+	double d;
+	
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_int(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_int64(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_bool(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_double(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_string(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_blob(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_blob(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_is_null(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_int_n(0, i));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_int64_n(0, i64));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_bool_n(0, b));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_double_n(0, d));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_string_n(0, s));
+	
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_name(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_name_str(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_names());
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_type(0));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_count());
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.column_index("col"));
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.has_column("col"));
+	
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.require_one_column());
+	OP_FAIL_WITH_STMT_FINALIZED(stmt.require_done());
+}

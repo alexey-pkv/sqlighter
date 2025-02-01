@@ -129,3 +129,11 @@ TEST(sqlighter, sqlighter_lib_version)
 	ASSERT_TRUE(std::regex_match(version, versionRegex));
 }
 
+
+TEST(sqlighter, memory)
+{
+	auto s = SQLighter::memory();
+	
+	
+	ASSERT_EQ(":memory:", s.path());
+}

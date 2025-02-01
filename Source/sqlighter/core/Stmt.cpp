@@ -34,12 +34,12 @@ Stmt::Stmt(std::shared_ptr<DB> db, std::string_view query) :
 	
 }
 
-Stmt::Stmt(Stmt&& s)
+Stmt::Stmt(Stmt&& s) noexcept
 {
 	*this = std::move(s);
 }
 
-Stmt& Stmt::operator=(Stmt&& s)
+Stmt& Stmt::operator=(Stmt&& s) noexcept
 {
 	m_stmt			= s.m_stmt;
 	m_columns		= std::move(s.m_columns);
@@ -78,16 +78,16 @@ ScalarValue Stmt::to_value(int at) const
 			return ScalarValue::null();
 		
 		case SQLITE_INTEGER:
-			return ScalarValue(column_int64(at));
+			return { column_int64(at) };
 			
 		case SQLITE_FLOAT:
-			return ScalarValue(column_double(at));
+			return { column_double(at) };
 			
 		case SQLITE_BLOB:
-			return ScalarValue(column_blob(at));
+			return { column_blob(at) };
 			
 		case SQLITE_TEXT:
-			return ScalarValue(column_string(at));
+			return { column_string(at) };
 			
 		// Seems like this case is not currently possible unless we somehow override the column_type
 		// method somehow, but it's a bit of an overkill just to test this line.
@@ -136,8 +136,18 @@ int Stmt::close()
 	return res;
 }
 
+void Stmt::require_open() const
+{
+	if (m_stmt == nullptr)
+	{
+		throw SQLighterException(SQLIGHTER_ERR_STMT_FINALIZED);
+	}
+}
+
 void Stmt::require_row() const
 {
+	require_open();
+	
 	if (!has_row())
 	{
 		throw SQLighterException(SQLIGHTER_ERR_NO_ROWS).query(m_query);
@@ -378,6 +388,7 @@ int Stmt::column_type(int at) const
 
 int Stmt::column_count() const
 {
+	require_open();
 	return sqlite3_column_count(m_stmt);
 }
 
@@ -413,7 +424,7 @@ const std::vector<std::string>& Stmt::column_names() const
 	if (!m_columns.empty())
 		return m_columns;
 	
-	auto cc = sqlite3_column_count(m_stmt);
+	auto cc = column_count();
 	
 	m_columns.reserve(cc);
 	
@@ -442,6 +453,8 @@ void Stmt::require_one_column() const
 
 void Stmt::require_done() const
 {
+	require_open();
+	
 	if (!is_done())
 	{
 		throw SQLighterException(SQLIGHTER_ERR_GENERIC, "Query is not in done state")
@@ -500,7 +513,7 @@ bool Stmt::column<bool>(int at) const
 template <>
 float Stmt::column<float>(int at) const
 {
-	return column_double(at);
+	return (float)column_double(at);
 }
 
 template <>

@@ -9,7 +9,7 @@
 using namespace sqlighter;
 
 
-SQLighterException::SQLighterException(int code) : 
+SQLighterException::SQLighterException(int code) noexcept : 
 	m_lighter_code(code)
 {
 	
