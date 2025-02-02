@@ -73,10 +73,11 @@ void DB::open(std::string_view path)
 		
 		throw SQLighterException(SQLIGHTER_ERR_DB_ALREADY_OPEN, "While trying to open on a different path");
 	}
-	
-	m_path = path;
-	
-	open();
+	else
+	{
+		m_path = path;
+		open();
+	}
 }
 
 const char* DB::error_message() const
