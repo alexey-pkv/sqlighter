@@ -1,0 +1,5 @@
+# Generated from CLion Inspection settings
+---
+Checks: >
+  -modernize-use-nodiscard
+  

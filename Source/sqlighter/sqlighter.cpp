@@ -9,20 +9,19 @@ using namespace sqlighter;
 
 
 SQLighter::SQLighter(const std::filesystem::path& db_path) :
-	m_db(std::make_shared<DB>(db_path.c_str())),
-	m_connection(std::make_shared<Connection>(m_db))
+	m_path(db_path)
 {
 	
 }
 
 SQLighter::SQLighter(const char* db_path) :
-	m_db(std::make_shared<DB>(db_path)),
-	m_connection(std::make_shared<Connection>(m_db))
+	m_path(db_path)
 {
 	
 }
 
 SQLighter::SQLighter(const std::shared_ptr<DB>& db) :
+	m_path(db->path()),
 	m_db(db),
 	m_connection(std::make_shared<Connection>(db))
 {
@@ -30,79 +29,113 @@ SQLighter::SQLighter(const std::shared_ptr<DB>& db) :
 }
 
 
-CMDSelect SQLighter::select() const
+const std::shared_ptr<Connection>& SQLighter::connection()
 {
-	return CMDSelect { m_connection };
+	open();
+	
+	return m_connection;
 }
 
-CMDDirect SQLighter::direct() const
+
+CMDSelect SQLighter::select()
 {
-	return CMDDirect { m_connection };
+	return CMDSelect { connection() };
 }
 
-CMDCreateTable SQLighter::create() const
+CMDDirect SQLighter::direct()
 {
-	return CMDCreateTable { m_connection };
+	return CMDDirect { connection() };
 }
 
-CMDDrop SQLighter::drop() const
+CMDCreateTable SQLighter::create()
 {
-	return CMDDrop { m_connection };
+	return CMDCreateTable { connection() };
 }
 
-CMDInsert SQLighter::insert() const
+CMDDrop SQLighter::drop()
 {
-	return CMDInsert { m_connection };
+	return CMDDrop { connection() };
 }
 
-CMDUpdate SQLighter::update() const
+CMDInsert SQLighter::insert()
 {
-	return CMDUpdate { m_connection };
+	return CMDInsert { connection() };
 }
 
-CMDDelete SQLighter::del() const
+CMDUpdate SQLighter::update()
 {
-	return CMDDelete { m_connection };
+	return CMDUpdate { connection() };
 }
 
-Stmt SQLighter::execute(std::string_view query) const
+CMDDelete SQLighter::del()
+{
+	return CMDDelete { connection() };
+}
+
+Stmt SQLighter::execute(std::string_view query)
 {
 	return direct()
 		.append(query)
 		.execute();
 }
 
-Stmt SQLighter::execute(std::string_view query, const BindValue& value) const
+Stmt SQLighter::execute(std::string_view query, const BindValue& value)
 {
 	return direct()
 		.append(query, { value })
 		.execute();
 }
 
-Stmt SQLighter::execute(std::string_view query, std::initializer_list<BindValue> values) const
+Stmt SQLighter::execute(std::string_view query, std::initializer_list<BindValue> values)
 {
 	return direct()
 		.append(query, values)
 		.execute();
 }
 
-int SQLighter::count_rows(std::string_view table) const
+int64_t SQLighter::count_rows(std::string_view table)
 {
 	return select().from(table).query_count();
 }
 
-std::vector<std::vector<ScalarValue>> SQLighter::query_all(std::string_view table, int failsafeLimit) const
+std::vector<std::vector<ScalarValue>> SQLighter::query_all(std::string_view table, int failsafeLimit)
 {
 	return select().from(table).query_all(failsafeLimit);
 }
 
 const std::string& SQLighter::path() const
 {
-	return m_db->path();
+	return m_path;
 }
 
+void SQLighter::close()
+{
+	if (m_db != nullptr)
+	{
+		m_db->close();
+	}
+	
+	m_db = nullptr;
+	m_connection = nullptr;
+}
 
-void SQLighter::reindex(std::string_view element) const
+void SQLighter::open()
+{
+	if (is_open())
+		return;
+	
+	m_db = std::make_shared<DB>(m_path);
+	m_connection = std::make_shared<Connection>(m_db);
+	
+	m_db->open();
+}
+
+bool SQLighter::is_open() const noexcept
+{
+	return m_db && m_db->is_open();
+}
+
+void SQLighter::reindex(std::string_view element)
 {
 	auto d = direct();
 	
@@ -123,7 +156,7 @@ void SQLighter::reindex(std::string_view element) const
 	d.execute();
 }
 
-void SQLighter::reindex(std::string_view scheme, std::string_view element) const
+void SQLighter::reindex(std::string_view scheme, std::string_view element)
 {
 	auto d = direct();
 	
@@ -132,7 +165,7 @@ void SQLighter::reindex(std::string_view scheme, std::string_view element) const
 	d.execute();
 }
 
-std::string SQLighter::sqlite_version() const
+std::string SQLighter::sqlite_version()
 {
 	return select().column_exp("sqlite_version()").query_str();
 }

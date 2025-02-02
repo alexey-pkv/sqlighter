@@ -137,3 +137,15 @@ TEST(sqlighter, memory)
 	
 	ASSERT_EQ(":memory:", s.path());
 }
+
+
+TEST(sqlighter, is_open)
+{
+	auto s = SQLighter::memory();
+	
+	ASSERT_FALSE(s.is_open());
+	s.open();
+	ASSERT_TRUE(s.is_open());
+	s.close();
+	ASSERT_FALSE(s.is_open());
+}

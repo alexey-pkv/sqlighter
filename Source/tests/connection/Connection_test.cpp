@@ -1,7 +1,8 @@
 #include "connection/Connection.h"
 
-#include "exceptions/sqlighter_exceptions.h"
 
+#include "exceptions/sqlighter_exceptions.h"
+#include "db_mock.h"
 
 #include <gtest/gtest.h>
 
@@ -42,5 +43,21 @@ TEST(Connection, execute__empty_query__exception_thrown)
 	catch (const SQLighterException& e)
 	{
 		ASSERT_EQ(SQLIGHTER_ERR_EMPTY_QUERY, e.code());
+	}
+}
+
+TEST(Connection, execute__connection_closed__exception_thrown)
+{
+	Connection c(setup_db("test_select.db"));
+	c.db()->close();
+	
+	
+	try
+	{
+		c.execute("SELECT 1", {});
+	}
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_CONNECTION_WAS_CLOSED, e.code());
 	}
 }

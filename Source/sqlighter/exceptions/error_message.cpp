@@ -25,10 +25,10 @@ std::string sqlighter::error_message(int sqlighter_code)
 		case SQLIGHTER_ERR_VALUE:			return "Incorrect value type";
 		case SQLIGHTER_ERR_EMPTY_QUERY:		return "The query string is empty";
 		
-		case SQLIGHTER_ERR_FAILED_TO_CLOSE_DB:	return "Error when closing DB";
-		case SQLIGHTER_ERR_FAILED_TO_OPEN_DB:	return "Error when opening DB";
-		case SQLIGHTER_ERR_DB_WAS_CLOSED:		return "The connection was closed";
-		case SQLIGHTER_ERR_DB_ALREADY_OPEN:		return "Database already open";
+		case SQLIGHTER_ERR_FAILED_TO_CLOSE_DB:		return "Error when closing DB";
+		case SQLIGHTER_ERR_FAILED_TO_OPEN_DB:		return "Error when opening DB";
+		case SQLIGHTER_ERR_CONNECTION_WAS_CLOSED:	return "The connection was closed";
+		case SQLIGHTER_ERR_CONNECTION_ALREADY_OPEN:	return "Database already open";
 		
 		case SQLIGHTER_ERR_INVALID_ENUM: return "Invalid enum value encountered";
 		

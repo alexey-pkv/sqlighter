@@ -8,9 +8,9 @@
 #include "connectors/CMDInsert.h"
 #include "connectors/CMDDirect.h"
 #include "connectors/CMDDelete.h"
+#include "connectors/CMDUpdate.h"
 #include "connection/Connection.h"
 #include "connectors/CMDCreateTable.h"
-#include "connectors/CMDUpdate.h"
 
 
 namespace sqlighter
@@ -18,18 +18,23 @@ namespace sqlighter
 	class SQLighter
 	{
 	private:
-		std::shared_ptr<DB>			m_db;
-		std::shared_ptr<Connection>	m_connection;
+		std::string 				m_path;
+		std::shared_ptr<DB>			m_db			{ nullptr };
+		std::shared_ptr<Connection>	m_connection	{ nullptr };
+		
+		
+	private:
+		const std::shared_ptr<Connection>& connection();
 		
 		
 	public:
 		~SQLighter() = default;
 		SQLighter() = delete;
 		
-		SQLighter(SQLighter&&) = default;
-		SQLighter(const SQLighter&) = default;
-		SQLighter& operator=(SQLighter&&) = default;
-		SQLighter& operator=(const SQLighter&) = default;
+		SQLighter(SQLighter&&) noexcept = default;
+		SQLighter(const SQLighter&) noexcept = default;
+		SQLighter& operator=(SQLighter&&) noexcept = default;
+		SQLighter& operator=(const SQLighter&) noexcept = default;
 		
 		explicit SQLighter(const std::filesystem::path& db_path);
 		explicit SQLighter(const char* db_path);
@@ -37,36 +42,39 @@ namespace sqlighter
 		
 		
 	public:
-		CMDDirect		direct() const;
-		CMDSelect		select() const;
-		CMDInsert		insert() const;
-		CMDUpdate		update() const;
-		CMDDelete		del() const;
-		CMDCreateTable	create() const;
-		CMDDrop			drop() const;
+		CMDDirect		direct();
+		CMDSelect		select();
+		CMDInsert		insert();
+		CMDUpdate		update();
+		CMDDelete		del();
+		CMDCreateTable	create();
+		CMDDrop			drop();
 		
-		Stmt execute(std::string_view query) const;
-		Stmt execute(std::string_view query, const BindValue& value) const;
-		Stmt execute(std::string_view query, std::initializer_list<BindValue> values) const;
+		Stmt execute(std::string_view query);
+		Stmt execute(std::string_view query, const BindValue& value);
+		Stmt execute(std::string_view query, std::initializer_list<BindValue> values);
 		
-		int count_rows(std::string_view table) const;
-		std::vector<std::vector<ScalarValue>> query_all(std::string_view table, int failsafeLimit = 10000) const;
-		
-		
-	public:
-		inline void begin() const		{ execute("BEGIN"); }
-		inline void commit() const		{ execute("COMMIT"); }
-		inline void rollback() const	{ execute("ROLLBACK"); }
+		int64_t count_rows(std::string_view table);
+		std::vector<std::vector<ScalarValue>> query_all(std::string_view table, int failsafeLimit = 10000);
 		
 		
 	public:
-		void reindex(std::string_view element) const;
-		void reindex(std::string_view scheme, std::string_view element) const;
-		std::string sqlite_version() const;
+		inline void begin()		{ execute("BEGIN"); }
+		inline void commit()		{ execute("COMMIT"); }
+		inline void rollback()	{ execute("ROLLBACK"); }
+		
+		
+	public:
+		void reindex(std::string_view element);
+		void reindex(std::string_view scheme, std::string_view element);
+		std::string sqlite_version();
 		
 		
 	public:
 		const std::string& path() const;
+		void close();
+		void open();
+		bool is_open() const noexcept; 
 		
 		
 	public:

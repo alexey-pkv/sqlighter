@@ -42,7 +42,7 @@ void DB::open()
 		return;
 	
 	if (m_closed)
-		throw SQLighterException(SQLIGHTER_ERR_DB_WAS_CLOSED);
+		throw SQLighterException(SQLIGHTER_ERR_CONNECTION_WAS_CLOSED);
 	if (m_path.empty())
 		throw SQLighterException(SQLIGHTER_ERR_FAILED_TO_OPEN_DB, "Path for database not provided");
 	
@@ -71,7 +71,7 @@ void DB::open(std::string_view path)
 		if (m_path == path)
 			return;
 		
-		throw SQLighterException(SQLIGHTER_ERR_DB_ALREADY_OPEN, "While trying to open on a different path");
+		throw SQLighterException(SQLIGHTER_ERR_CONNECTION_ALREADY_OPEN, "While trying to open on a different path");
 	}
 	else
 	{

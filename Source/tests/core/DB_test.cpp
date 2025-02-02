@@ -132,22 +132,10 @@ TEST(DB, open__db_opened)
 	}
 	
 	{
-		SQLighter sql { get_db_directory() / "another.db" };
+		SQLighter sql(path);
 		
-		sql.db()->open(path);
 		ASSERT_EQ(1, sql.select().from("mock_table").query_count());
 	}
-}
-
-TEST(DB, open__same_path__db_not_closed)
-{
-	SQLighter sql { create_mock_table("mock_table", "c_null", "c_int", 1) };
-	
-	auto stmt = sql.select().column_exp("1").execute();
-	
-	
-	// This will throw an exception if the DB is re-opened as the previous statement is not yet finalized.
-	sql.db()->open(sql.path());
 }
 
 TEST(DB, open__empty_path__error_thrown)
@@ -156,7 +144,7 @@ TEST(DB, open__empty_path__error_thrown)
 	
 	try
 	{
-		sql.db()->open("");
+		sql.open();
 		FAIL();
 	}
 	catch (const SQLighterException& e)
@@ -168,11 +156,11 @@ TEST(DB, open__empty_path__error_thrown)
 
 TEST(DB, open__failed_to_open__error_thrown)
 {
-	SQLighter sql("");
+	SQLighter sql("/var");
 	
 	try
 	{
-		sql.db()->open("/var");
+		sql.open();
 		FAIL();
 	}
 	catch (const SQLighterException& e)
@@ -203,7 +191,7 @@ TEST(DB, open__db_was_closed__error_thrown)
 	}
 	catch (const SQLighterException& e)
 	{
-		ASSERT_EQ(SQLIGHTER_ERR_DB_WAS_CLOSED, e.code());
+		ASSERT_EQ(SQLIGHTER_ERR_CONNECTION_WAS_CLOSED, e.code());
 	}
 }
 
@@ -218,7 +206,7 @@ TEST(DB, open__db_open_on_another_path__error_thrown)
 	}
 	catch (const SQLighterException& e)
 	{
-		ASSERT_EQ(SQLIGHTER_ERR_DB_ALREADY_OPEN, e.code());
+		ASSERT_EQ(SQLIGHTER_ERR_CONNECTION_ALREADY_OPEN, e.code());
 	}
 }
 

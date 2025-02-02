@@ -15,7 +15,7 @@
 using namespace sqlighter;
 
 
-Stmt stmt__select_mock(const SQLighter& sql, std::string_view table = "mock_table")
+Stmt stmt__select_mock(SQLighter& sql, std::string_view table = "mock_table")
 {
 	return sql
 		.select()
