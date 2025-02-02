@@ -12,8 +12,9 @@ namespace sqlighter
 	class DB
 	{
 	private:
-		std::string m_path	{ };
-		sqlite3*	m_db	{ nullptr };
+		std::string m_path		{ };
+		sqlite3*	m_db		{ nullptr };
+		bool		m_closed	{ false };
 		
 		
 	public:

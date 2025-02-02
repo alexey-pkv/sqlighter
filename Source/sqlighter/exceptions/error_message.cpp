@@ -27,8 +27,12 @@ std::string sqlighter::error_message(int sqlighter_code)
 		
 		case SQLIGHTER_ERR_FAILED_TO_CLOSE_DB:	return "Error when closing DB";
 		case SQLIGHTER_ERR_FAILED_TO_OPEN_DB:	return "Error when opening DB";
+		case SQLIGHTER_ERR_DB_WAS_CLOSED:		return "The connection was closed";
 		
 		case SQLIGHTER_ERR_INVALID_ENUM: return "Invalid enum value encountered";
+		
+		default:
+			break;
 	}
 	
 	return std::to_string(sqlighter_code) + " is not an sqlighter code.";

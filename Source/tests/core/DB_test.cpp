@@ -152,7 +152,7 @@ TEST(DB, open__same_path__db_not_closed)
 
 TEST(DB, open__empty_path__error_thrown)
 {
-	SQLighter sql { create_mock_table("mock_table") };
+	SQLighter sql("");
 	
 	try
 	{
@@ -168,7 +168,7 @@ TEST(DB, open__empty_path__error_thrown)
 
 TEST(DB, open__failed_to_open__error_thrown)
 {
-	SQLighter sql { create_mock_table("mock_table") };
+	SQLighter sql("");
 	
 	try
 	{
@@ -188,4 +188,21 @@ TEST(DB, error_message__db_closed__return_empty_string)
 	sql.db()->close();
 	
 	ASSERT_TRUE(std::string { sql.db()->error_message() }.empty());
+}
+
+TEST(DB, open__db_was_closed__error_thrown)
+{
+	SQLighter sql { create_mock_table("db") };
+	
+	sql.db()->close();
+	
+	try
+	{
+		sql.db()->open(setup_db("db_2").string());
+		FAIL();
+	}
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_DB_WAS_CLOSED, e.code());
+	}
 }
