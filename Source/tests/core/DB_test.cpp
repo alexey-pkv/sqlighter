@@ -206,3 +206,28 @@ TEST(DB, open__db_was_closed__error_thrown)
 		ASSERT_EQ(SQLIGHTER_ERR_DB_WAS_CLOSED, e.code());
 	}
 }
+
+TEST(DB, open__db_open_on_another_path__error_thrown)
+{
+	SQLighter sql { create_mock_table("db") };
+	
+	try
+	{
+		sql.db()->open(sql.path() + ".2");
+		FAIL();
+	}
+	catch (const SQLighterException& e)
+	{
+		ASSERT_EQ(SQLIGHTER_ERR_DB_ALREADY_OPEN, e.code());
+	}
+}
+
+TEST(DB, open__db_open_on_same_path__no_error)
+{
+	SQLighter sql { create_mock_table("db") };
+	
+	
+	ASSERT_TRUE(sql.db()->is_open());
+	sql.db()->open(sql.path());
+	ASSERT_TRUE(sql.db()->is_open());
+}

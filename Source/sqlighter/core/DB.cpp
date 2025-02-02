@@ -66,8 +66,13 @@ void DB::open()
 
 void DB::open(std::string_view path)
 {
-	if (m_db && m_path == path)
-		return;
+	if (m_db)
+	{
+		if (m_path == path)
+			return;
+		
+		throw SQLighterException(SQLIGHTER_ERR_DB_ALREADY_OPEN, "While trying to open on a different path");
+	}
 	
 	m_path = path;
 	
