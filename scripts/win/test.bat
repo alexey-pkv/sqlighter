@@ -12,11 +12,10 @@ set EXECUTABLE_PATH=%1
 for /f "delims=" %%i in ('cygpath -w "%EXECUTABLE_PATH%"') do set EXECUTABLE_PATH=%%i
 
 
-echo Running sqlighter_tests
-echo "Path %EXECUTABLE_PATH%"
+echo "Running sqlighter_tests in %EXECUTABLE_PATH%"
 
 
-"%EXECUTABLE_PATH%/bin/sqlighter_tests.exe" || (
+"%EXECUTABLE_PATH%/sqlighter_tests.exe" || (
     echo Test execution failed
     exit /b 1
 )

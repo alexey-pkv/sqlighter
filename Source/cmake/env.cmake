@@ -1,0 +1,7 @@
+if(WIN32)
+	message(STATUS "Running on Windows")
+elseif(UNIX)
+	message(STATUS "Running on Linux")
+else()
+	message(FATAL_ERROR "Unsupported env")
+endif()

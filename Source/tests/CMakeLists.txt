@@ -11,27 +11,12 @@ file(GLOB_RECURSE SQLIGHTER_TESTS_SOURCE
 
 target_sources(sqlighter_tests PRIVATE ${SQLIGHTER_TESTS_SOURCE})
 
-message(STATUS "Path ${SQLIGHTER_BIN}")
 
 set_target_properties(sqlighter_tests PROPERTIES
 	OUTPUT_NAME "sqlighter_tests"
 	ARCHIVE_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
 	LIBRARY_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
 	RUNTIME_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}")
-
-if (MSVC)
-	set_target_properties(sqlighter_tests PROPERTIES
-		ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${SQLIGHTER_BIN}"
-		LIBRARY_OUTPUT_DIRECTORY_DEBUG "${SQLIGHTER_BIN}"
-		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${SQLIGHTER_BIN}"
-		ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${SQLIGHTER_BIN}"
-		LIBRARY_OUTPUT_DIRECTORY_RELEASE "${SQLIGHTER_BIN}"
-		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${SQLIGHTER_BIN}"
-		ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${SQLIGHTER_BIN}"
-		LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "${SQLIGHTER_BIN}"
-		RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${SQLIGHTER_BIN}"
-	)
-endif()
 
 
 add_dependencies(sqlighter_tests sqlighter)
@@ -41,11 +26,12 @@ if (SQLIGHTER_BUILD_FOR_COVER)
 	target_link_options(sqlighter_tests PRIVATE -fprofile-arcs -ftest-coverage -g)
 endif ()
 
+
 ### Include Headers
 
-message(STATUS "target_include_directories GTEST_INCLUDE_DIR: ${GTEST_INCLUDE_DIR}")
-message(STATUS "target_include_directories CMAKE_SOURCE_DIR:  ${CMAKE_SOURCE_DIR}")
-message(STATUS "target_include_directories SQLIGHTER_BIN:     ${SQLIGHTER_BIN}")
+message(STATUS "    Directory GTEST_INCLUDE_DIR : ${GTEST_INCLUDE_DIR}")
+message(STATUS "    Directory CMAKE_SOURCE_DIR  : ${CMAKE_SOURCE_DIR}")
+message(STATUS "    Directory SQLIGHTER_BIN     : ${SQLIGHTER_BIN}")
 
 target_include_directories(sqlighter_tests PRIVATE ${GTEST_INCLUDE_DIR})
 target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/Source/tests/test_core)
@@ -54,6 +40,11 @@ target_include_directories(sqlighter_tests PRIVATE ${SQLIGHTER_BIN})
 target_link_libraries(sqlighter_tests sqlighter)
 target_link_libraries(sqlighter_tests sqlite3)
 target_link_libraries(sqlighter_tests gtest gtest_main)
+
+# TODO: Fix pthread for windows.
+if (UNIX)
+	target_link_libraries(sqlighter_tests pthread)
+endif ()
 
 
 ############################
@@ -78,15 +69,14 @@ endif ()
 ### Script: Unittests	####
 ############################
 
-if (CYGWIN)
-	set(TEST_COMMAND ${CMAKE_SOURCE_DIR}/scripts/win/test.bat ${CMAKE_BINARY_DIR})
-elseif(UNIX)
-	set(TEST_COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/linux/test.sh ${CMAKE_BINARY_DIR})
+if (WIN32)
+	set(TEST_COMMAND ${CMAKE_SOURCE_DIR}/scripts/win/test.bat ${SQLIGHTER_BIN_OUTPUT})
+elseif (UNIX)
+	set(TEST_COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/linux/test.sh ${SQLIGHTER_BIN_OUTPUT})
 else ()
-	set(TEST_COMMAND ${CMAKE_SOURCE_DIR}/scripts/win/test.bat ${CMAKE_BINARY_DIR})
-endif()
+	message(FATAL_ERROR "System not supported")
+endif ()
 
-message(STATUS ${CMAKE_BINARY_DIR})
 
 add_custom_target(test
 	COMMAND ${CMAKE_COMMAND} -E echo "Running tests..."
