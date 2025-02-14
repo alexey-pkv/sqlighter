@@ -1,6 +1,8 @@
 #include "sqlighter.h"
 
 
+#include <string>
+
 #include "core/DB.h"
 #include "connectors/query_utils.h"
 
@@ -9,7 +11,7 @@ using namespace sqlighter;
 
 
 SQLighter::SQLighter(const std::filesystem::path& db_path) :
-	m_path(db_path)
+	m_path(db_path.u8string())
 {
 	
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 
+#include <utility>
+
 #include "Clause.h"
 #include "consts/OrderBy.h"
 #include "consts/const_cast.h"
@@ -57,8 +59,8 @@ namespace sqlighter
 		inline self& order_by_field_asc(std::string_view by) { return order_by_field(by, OrderBy::ASC); }
 		inline self& order_by_field_desc(std::string_view by) { return order_by_field(by, OrderBy::DESC); }
 		
-		inline self& order_by(std::string_view exp)												{ return order_by(exp, {}); };
-		inline self& order_by(std::string_view exp, BindValue value)							{ return order_by(exp, { value }); };
-		inline self& order_by(std::string_view exp, std::initializer_list<BindValue> values)	{ return order_by(exp, { values }); };
+		inline self& order_by(std::string_view exp)												{ return order_by(exp, std::vector<BindValue> {}); };
+		inline self& order_by(std::string_view exp, BindValue value)							{ return order_by(exp, std::vector<BindValue> { std::move(value) }); };
+		inline self& order_by(std::string_view exp, std::initializer_list<BindValue> values)	{ return order_by(exp, std::vector<BindValue> { values }); };
 	};
 }

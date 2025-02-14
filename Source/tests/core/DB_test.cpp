@@ -43,7 +43,7 @@ TEST(DB, open)
 {
 	auto path = setup_db_dir() / "open.test.db";
 	
-	DB db(path.c_str());
+	DB db(path);
 	
 	
 	db.open();
@@ -51,7 +51,7 @@ TEST(DB, open)
 	
 	ASSERT_TRUE(is_file_exists_in_db_dir("open.test.db"));
 	ASSERT_TRUE(db.is_open());
-	ASSERT_EQ(path.c_str(), db.path());
+	ASSERT_EQ(path, db.path());
 }
 
 TEST(DB, open__with_path)
@@ -59,7 +59,7 @@ TEST(DB, open__with_path)
 	auto path = setup_db_dir() / "open.test.db";
 	auto otherPath = get_db_file("diff.name.db");
 	
-	DB db(path.c_str());
+	DB db(path);
 	
 	
 	db.open(otherPath);
@@ -75,7 +75,7 @@ TEST(DB, close__opened_connection_closed)
 {
 	auto path = setup_db_dir() / "open.test.db";
 	
-	DB db(path.c_str());
+	DB db(path);
 	
 	db.open();
 	
@@ -91,7 +91,7 @@ TEST(DB, db)
 {
 	auto path = setup_db_dir() / "open.test.db";
 	
-	DB db(path.c_str());
+	DB db(path);
 	
 	db.open();
 	

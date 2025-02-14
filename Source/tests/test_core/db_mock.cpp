@@ -19,7 +19,7 @@ fs::path get_db_directory()
 
 std::string get_db_file(std::string_view name) 
 {
-	return { get_db_directory() / name };
+	return (get_db_directory() / name).u8string();
 }
 
 void create_db_folder() 

@@ -87,7 +87,7 @@ ScalarValue Stmt::to_value(int at) const
 			return { column_blob(at) };
 			
 		case SQLITE_TEXT:
-			return { column_string(at) };
+			return ScalarValue { column_string(at) };
 			
 		// Seems like this case is not currently possible unless we somehow override the column_type
 		// method somehow, but it's a bit of an overkill just to test this line.

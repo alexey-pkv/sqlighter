@@ -20,9 +20,9 @@ Connection::Connection(const std::shared_ptr<DB>& db) :
 }
 
 Connection::Connection(const std::filesystem::path& db_path) :
-	m_db(std::make_shared<DB>(db_path.c_str()))
+	m_db(std::make_shared<DB>(db_path))
 {
-	
+
 }
 
 

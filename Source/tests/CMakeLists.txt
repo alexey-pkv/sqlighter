@@ -19,6 +19,21 @@ set_target_properties(sqlighter_tests PROPERTIES
 	LIBRARY_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
 	RUNTIME_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}")
 
+if (MSVC)
+	set_target_properties(sqlighter_tests PROPERTIES
+		ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${SQLIGHTER_BIN}"
+		LIBRARY_OUTPUT_DIRECTORY_DEBUG "${SQLIGHTER_BIN}"
+		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${SQLIGHTER_BIN}"
+		ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${SQLIGHTER_BIN}"
+		LIBRARY_OUTPUT_DIRECTORY_RELEASE "${SQLIGHTER_BIN}"
+		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${SQLIGHTER_BIN}"
+		ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${SQLIGHTER_BIN}"
+		LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "${SQLIGHTER_BIN}"
+		RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${SQLIGHTER_BIN}"
+	)
+endif()
+
+
 add_dependencies(sqlighter_tests sqlighter)
 
 if (SQLIGHTER_BUILD_FOR_COVER)
@@ -38,7 +53,7 @@ target_include_directories(sqlighter_tests PRIVATE ${SQLIGHTER_BIN})
 
 target_link_libraries(sqlighter_tests sqlighter)
 target_link_libraries(sqlighter_tests sqlite3)
-target_link_libraries(sqlighter_tests gtest gtest_main pthread)
+target_link_libraries(sqlighter_tests gtest gtest_main)
 
 
 ############################
@@ -68,7 +83,8 @@ if (CYGWIN)
 elseif(UNIX)
 	set(TEST_COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/linux/test.sh ${CMAKE_BINARY_DIR})
 else ()
-	message(FATAL_ERROR "System not supported")
+	set(TEST_COMMAND ${CMAKE_SOURCE_DIR}/scripts/win/test.bat ${CMAKE_BINARY_DIR})
+	# message(FATAL_ERROR "System not supported")
 endif()
 
 message(STATUS ${CMAKE_BINARY_DIR})

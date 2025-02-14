@@ -2,6 +2,7 @@
 
 
 #include <string>
+#include <filesystem>
 
 
 struct sqlite3;
@@ -21,6 +22,9 @@ namespace sqlighter
 		~DB();
 		DB() = default;
 		explicit DB(std::string_view path);
+		explicit DB(std::string path);
+		explicit DB(const char* path);
+		explicit DB(const std::filesystem::path& path);
 		
 		DB(const DB&) = delete;
 		DB(DB&&) = delete;

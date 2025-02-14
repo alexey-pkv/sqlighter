@@ -10,9 +10,6 @@
 using namespace sqlighter;
 
 
-const BindValue BindValue::null { BindValue::type::NULL_VAL };
-
-
 BindValue::BindValue() : 
 	m_type(type::NULL_VAL),
 	m_value({})
@@ -29,23 +26,23 @@ BindValue::BindValue(BindValue::type t) :
 
 BindValue::BindValue(int32_t val) : 
 	m_type(type::INT_32),
-	m_value({ .i32 = val })
+	m_value()
 {
-	
+	m_value.i32 = val;
 }
 
 BindValue::BindValue(int64_t val) : 
 	m_type(type::INT_64),
-	m_value({ .i64 = val })
+	m_value()
 {
-	
+	m_value.i64 = val;
 }
 
 BindValue::BindValue(double val) : 
 	m_type(type::DOUBLE),
-	m_value({ .dbl = val })
+	m_value()
 {
-	
+	m_value.dbl = val;
 }
 
 BindValue::BindValue(std::string_view val) : 

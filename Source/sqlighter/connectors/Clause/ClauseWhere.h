@@ -2,6 +2,8 @@
 #define SQLIGHTER_CLAUSEWHERE_H
 
 
+#include <utility>
+
 #include "Clause.h"
 
 
@@ -30,9 +32,9 @@ namespace sqlighter
 			return get_self();
 		}
 		
-		self& where(std::string_view exp)											{ return where(exp, {}); };
-		self& where(std::string_view exp, BindValue value)							{ return where(exp, { value }); };
-		self& where(std::string_view exp, std::initializer_list<BindValue> values)	{ return where(exp, { values }); };
+		self& where(std::string_view exp)											{ return where(exp, std::vector<BindValue> {}); };
+		self& where(std::string_view exp, BindValue value)							{ return where(exp, std::vector<BindValue> { std::move(value) }); };
+		self& where(std::string_view exp, std::initializer_list<BindValue> values)	{ return where(exp, std::vector<BindValue> { values }); };
 		
 		self& where_null(std::string_view column)
 		{

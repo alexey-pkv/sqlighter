@@ -167,7 +167,7 @@ TEST(BindValue, to_error_message)
 	};
 	
 	
-	ASSERT_EQ("null", test(BindValue::null));
+	ASSERT_EQ("null", test(BindValue { BindValue::type::NULL_VAL }));
 	ASSERT_EQ("int32:123", test({ (int32_t)123}));
 	ASSERT_EQ("int64:456", test({ (int64_t)456}));
 	ASSERT_EQ("double:1.2", test({ (double)1.2}));

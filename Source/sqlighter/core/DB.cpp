@@ -4,6 +4,8 @@
 
 #include <sqlite3.h>
 
+#include <utility>
+
 
 using namespace sqlighter;
 
@@ -12,6 +14,24 @@ DB::DB(std::string_view path) :
 	m_path(path)
 {
 	
+}
+
+DB::DB(std::string path) :
+	m_path(std::move(path))
+{
+
+}
+
+DB::DB(const char* path) :
+	m_path(path)
+{
+
+}
+
+DB::DB(const std::filesystem::path& path) :
+	m_path(path.u8string())
+{
+
 }
 
 DB::~DB()
