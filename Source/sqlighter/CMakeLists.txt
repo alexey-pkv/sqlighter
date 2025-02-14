@@ -19,7 +19,6 @@ set_target_properties(sqlighter PROPERTIES
 	LIBRARY_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}"
 	RUNTIME_OUTPUT_DIRECTORY "${SQLIGHTER_BIN}")
 
-
 target_link_libraries(sqlighter sqlite3)
 
 message(STATUS "    Directory SQLITE3_SOURCE_DIR       : ${SQLITE3_SOURCE_DIR}")

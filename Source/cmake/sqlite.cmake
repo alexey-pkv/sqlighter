@@ -26,7 +26,13 @@ else()
 	endif()
 	
 	
-	add_library(sqlite3 STATIC ${sqlite3_SOURCE_DIR}/sqlite3.c)
+	if (UNIX)
+		add_library(sqlite3 SHARED ${sqlite3_SOURCE_DIR}/sqlite3.c)
+		target_link_libraries(sqlite3 PRIVATE dl)
+	else () 
+		add_library(sqlite3 STATIC ${sqlite3_SOURCE_DIR}/sqlite3.c)
+	endif ()
+	
 	target_include_directories(sqlite3 PUBLIC ${sqlite3_SOURCE_DIR})
 endif()
 
