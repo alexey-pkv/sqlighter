@@ -10,12 +10,6 @@
 using namespace sqlighter;
 
 
-DB::DB(std::string_view path) : 
-	m_path(path)
-{
-	
-}
-
 DB::DB(std::string path) :
 	m_path(std::move(path))
 {
