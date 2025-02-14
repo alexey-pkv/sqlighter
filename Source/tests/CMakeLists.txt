@@ -84,7 +84,6 @@ elseif(UNIX)
 	set(TEST_COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/linux/test.sh ${CMAKE_BINARY_DIR})
 else ()
 	set(TEST_COMMAND ${CMAKE_SOURCE_DIR}/scripts/win/test.bat ${CMAKE_BINARY_DIR})
-	# message(FATAL_ERROR "System not supported")
 endif()
 
 message(STATUS ${CMAKE_BINARY_DIR})

@@ -1,0 +1,26 @@
+name: Windows Build
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up CMake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.29.x'
+
+    - name: Print version
+      run: cmake --version
+
+    - name: Run unit tests
+      run: |
+        cmake --build build/debug --target test -- -j10
