@@ -5,3 +5,10 @@
 # SQLighter 
 
 C++ wrapper for SQLite 3
+
+# Building
+
+```shell
+cmake -S . -B build/debug
+cmake --build build/debug --target test
+```

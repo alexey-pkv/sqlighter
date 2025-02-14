@@ -83,11 +83,11 @@ void BindValue::bind(sqlite3_stmt* stmt, int offset) const
 			res = sqlite3_bind_double(stmt, offset, m_value.dbl);
 			break;
 		
-		[[unlikely]] case type::NULL_VAL:
+		case type::NULL_VAL:
 			res = sqlite3_bind_null(stmt, offset);
 			break;
 		
-		[[likely]] case type::TEXT:
+		case type::TEXT:
 			res = sqlite3_bind_text(stmt, offset, m_strValue.c_str(), -1, SQLITE_TRANSIENT);
 			break;
 			
@@ -119,11 +119,11 @@ void BindValue::to_error_message(std::ostream& stream) const
 			stream << "double:" << m_value.dbl;
 			break;
 		
-		[[unlikely]] case type::NULL_VAL:
+		case type::NULL_VAL:
 			stream << "null";
 			break;
 		
-		[[likely]] case type::TEXT:
+		case type::TEXT:
 			stream << "string[" << m_strValue.length() << "]:";
 			
 			if (m_strValue.length() > 32)

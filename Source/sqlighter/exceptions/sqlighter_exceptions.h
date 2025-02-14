@@ -60,7 +60,7 @@ namespace sqlighter
 		
 	public:
 		const std::string& message() const noexcept;
-		const char* what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override;
+		const char* what() const noexcept override;
 		const char* what_sqlite3() const;
 		const std::string& what_str() const;
 		
