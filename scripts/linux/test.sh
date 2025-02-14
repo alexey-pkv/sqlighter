@@ -12,4 +12,4 @@ EXECUTABLE_PATH="$1"
 echo "Running sqlighter_tests"
 
 
-"$EXECUTABLE_PATH/bin/sqlighter_tests" || { echo "Test execution failed"; exit 1; }
+"$EXECUTABLE_PATH/sqlighter_tests" || { echo "Test execution failed"; exit 1; }
