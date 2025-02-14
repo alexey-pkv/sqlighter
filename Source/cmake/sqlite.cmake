@@ -24,11 +24,11 @@ else()
 	else()
 		message(FATAL_ERROR "sqlite3.h not found in ${sqlite3_SOURCE_DIR}")
 	endif()
-
-	add_library(sqlite3 STATIC ${sqlite3_SOURCE_DIR}/sqlite3.c)
-	target_include_directories(sqlite3 PUBLIC ${sqlite3_SOURCE_DIR})
 	
 	if (MSVC)
+		add_library(sqlite3 STATIC ${sqlite3_SOURCE_DIR}/sqlite3.c)
+		target_include_directories(sqlite3 PUBLIC ${sqlite3_SOURCE_DIR})
+		
 		set_target_properties(sqlite3 PROPERTIES
 			ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${SQLIGHTER_BIN}"
 			LIBRARY_OUTPUT_DIRECTORY_DEBUG "${SQLIGHTER_BIN}"
