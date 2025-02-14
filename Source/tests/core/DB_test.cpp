@@ -156,7 +156,9 @@ TEST(DB, open__empty_path__error_thrown)
 
 TEST(DB, open__failed_to_open__error_thrown)
 {
-	SQLighter sql("/var");
+	auto path = std::filesystem::path("var") / "non-existing-dir" / "example.db";
+	
+	SQLighter sql(path);
 	
 	try
 	{
