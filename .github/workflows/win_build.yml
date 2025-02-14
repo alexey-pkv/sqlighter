@@ -24,4 +24,4 @@ jobs:
     - name: Build and run unit tests
       run: |
         cmake -S . -B build/debug
-        cmake --build build/debug --target test -- -j10
+        cmake --build build/debug --target test
