@@ -10,7 +10,7 @@ project(SQLighter)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-# set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 
 ############################
 ### Options				####
@@ -48,7 +48,6 @@ file(GLOB_RECURSE SQLIGHTER_HEADERS
 ############################
 ### Include Projects #######
 ############################
-
 
 add_subdirectory(Source/cmake)
 add_subdirectory(Source/sqlighter)
