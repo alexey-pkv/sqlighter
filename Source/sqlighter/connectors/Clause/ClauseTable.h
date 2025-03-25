@@ -17,8 +17,8 @@ namespace sqlighter
 		
 	public:
 		void as(std::string_view alias);
-		void table(std::string_view table);
-		void table(std::string_view scheme, std::string_view table);
+		void table(std::string_view, std::string_view as = {});
+		void table_scheme(std::string_view scheme, std::string_view table, std::string_view as = {});
 		
 		
 	public:

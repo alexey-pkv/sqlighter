@@ -18,6 +18,7 @@ void sqlighter::element_name(std::string_view fullName, std::string& scheme, std
 	}
 	else
 	{
+		scheme = {};
 		name = fullName;
 	}
 }

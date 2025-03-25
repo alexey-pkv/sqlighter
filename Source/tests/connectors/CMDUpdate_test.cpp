@@ -30,7 +30,7 @@ TEST(CMDUpdate, table)
 	CMDUpdate cmd { get_co() };
 	
 	
-	ASSERT_EQ("UPDATE my_table",			cmd.table("my_table").assemble());
+	ASSERT_EQ("UPDATE my_table",		cmd.table("my_table").assemble());
 	ASSERT_EQ("UPDATE hello.world",		cmd.table("hello.world").assemble());
 	ASSERT_EQ("UPDATE scheme.my_table",	cmd.table("scheme", "my_table").assemble());
 }

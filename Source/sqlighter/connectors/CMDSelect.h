@@ -6,6 +6,7 @@
 
 #include "base/connectors/ICMD.h"
 
+#include "connectors/Clause/ClauseFrom.h"
 #include "connectors/Clause/ClauseWhere.h"
 #include "connectors/Clause/ClauseLimit.h"
 #include "connectors/Clause/ClauseOrderBy.h"
@@ -19,6 +20,7 @@ namespace sqlighter
 	
 	class CMDSelect :
 		public CMD,
+		public ClauseFrom<CMDSelect>,
 		public ClauseWhere<CMDSelect>,
 		public ClauseOrderBy<CMDSelect>,
 		public ClauseLimit<CMDSelect>
@@ -26,7 +28,6 @@ namespace sqlighter
 	private:
 		bool m_distinct	= false;
 		
-		ClauseTable		m_from		{};
 		Clause			m_columns	{ ", " };
 		Clause			m_groupBy	{ ", " };
 		Clause			m_having	{ " AND " };
@@ -68,9 +69,7 @@ namespace sqlighter
 		
 		
 	public:
-		CMDSelect& from(std::string_view table);
-		CMDSelect& from(std::string_view scheme, std::string_view table);
-		CMDSelect& as(std::string_view as);
+		// CMDSelect& join(std::string_view table, std::string_view alias, std::string_view condition, )
 		
 		
 	public:

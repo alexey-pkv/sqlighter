@@ -33,7 +33,15 @@ CMDCreateTable& CMDCreateTable::scheme(std::string_view name)
 
 CMDCreateTable& CMDCreateTable::table(std::string_view name)
 {
-	element_name(name, m_scheme, m_table);
+	std::string scheme = {};
+	
+	element_name(name, scheme, m_table);
+	
+	if (!scheme.empty())
+	{
+		m_scheme = scheme;
+	}
+	
 	return *this;
 }
 

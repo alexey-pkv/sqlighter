@@ -81,24 +81,6 @@ CMDSelect& CMDSelect::columns(std::initializer_list<std::string_view> columns)
 }
 
 
-CMDSelect& CMDSelect::from(std::string_view table)
-{
-	m_from.table(table);
-	return *this;
-}
-
-CMDSelect& CMDSelect::from(std::string_view scheme, std::string_view table)
-{
-	m_from.table(scheme, table);
-	return *this;
-}
-
-CMDSelect& CMDSelect::as(std::string_view as)
-{
-	m_from.as(as);
-	return *this;
-}
-
 CMDSelect& CMDSelect::group_by_field(std::string_view by)
 {
 	m_groupBy.next_section() << by;
@@ -125,11 +107,7 @@ void CMDSelect::assemble(std::ostringstream& ss) const
 		ss << " *";
 	}
 	
-	if (m_from.has_table())
-	{
-		ss << " FROM ";
-		m_from.append_to(ss);
-	}
+	append_from(ss);
 	
 	if (!where_clause().is_empty_clause())
 	{

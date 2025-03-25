@@ -17,7 +17,7 @@ namespace sqlighter
 		
 		
 	private:
-		inline self& get_self() { return *static_cast<self*>( this ); }
+		inline self& get_self() { return *static_cast<self*>(this); }
 		
 		
 	protected:
@@ -48,7 +48,7 @@ namespace sqlighter
 			return get_self();
 		}
 		
-		self& by_field(std::string_view column, BindValue value)
+		self& by_field(std::string_view column, const BindValue& value)
 		{
 			m_where.next_section() << column << " = ?";
 			m_where.append_bind(value);

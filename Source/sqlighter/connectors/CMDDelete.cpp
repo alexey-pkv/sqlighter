@@ -13,29 +13,11 @@ CMDDelete::CMDDelete(const std::shared_ptr<IConnection>& connection) : CMD(conne
 }
 
 
-CMDDelete& CMDDelete::as(std::string_view alias)
-{
-	m_from.as(alias);
-	return *this;
-}
-
-CMDDelete& CMDDelete::from(std::string_view table)
-{
-	m_from.table(table);
-	return *this;
-}
-
-CMDDelete& CMDDelete::from(std::string_view scheme, std::string_view table)
-{
-	m_from.table(scheme, table);
-	return *this;
-}
-
-
 void CMDDelete::assemble(std::ostringstream& ss) const
 {
-	ss << "DELETE FROM " 
-		<< m_from;
+	ss << "DELETE";
+	
+	append_from(ss);
 	
 	if (!where_clause().is_empty_clause())
 		ss << " WHERE " << where_clause();

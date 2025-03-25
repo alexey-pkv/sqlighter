@@ -28,7 +28,7 @@ CMDInsert& CMDInsert::into(std::string_view table)
 
 CMDInsert& CMDInsert::into(std::string_view scheme, std::string_view table)
 {
-	m_into.table(scheme, table);
+	m_into.table_scheme(scheme, table);
 	return *this;
 }
 
@@ -61,7 +61,7 @@ CMDInsert& CMDInsert::columns(const std::vector<std::string>& names)
 
 CMDInsert& CMDInsert::record(const std::vector<BindValue>& values)
 {
-	m_columnsCount = values.size();
+	m_columnsCount = (int)values.size();
 	
 	m_binds.insert(m_binds.end(), values.begin(), values.end());
 	return *this;
@@ -69,7 +69,7 @@ CMDInsert& CMDInsert::record(const std::vector<BindValue>& values)
 
 CMDInsert& CMDInsert::record(std::initializer_list<BindValue> values)
 {
-	m_columnsCount = values.size();
+	m_columnsCount = (int)values.size();
 	
 	m_binds.insert(m_binds.end(), values.begin(), values.end());
 	return *this;
@@ -169,7 +169,7 @@ void CMDInsert::assemble(std::ostringstream& ss) const
 		}
 		
 		auto questions = create_questions(count);
-		int records = m_binds.size() / count;
+		int records = (int)m_binds.size() / count;
 		
 		for (int i = 0; i < records; i++)
 		{

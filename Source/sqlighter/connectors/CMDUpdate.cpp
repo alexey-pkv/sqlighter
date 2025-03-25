@@ -25,7 +25,7 @@ CMDUpdate& CMDUpdate::table(std::string_view table)
 
 CMDUpdate& CMDUpdate::table(std::string_view scheme, std::string_view table)
 {
-	m_table.table(scheme, table);
+	m_table.table_scheme(scheme, table);
 	return *this;
 }
 

@@ -17,21 +17,19 @@ TEST(CMDDelete, from)
 	CMDDelete cmd { get_co() };
 	
 	
-	ASSERT_EQ("DELETE FROM my_table",		cmd.from("my_table").assemble());
-	ASSERT_EQ("DELETE FROM temp.my_table",	cmd.from("temp.my_table").assemble());
-	ASSERT_EQ("DELETE FROM temp.my_table",	cmd.from("temp", "my_table").assemble());
+	ASSERT_EQ("DELETE FROM my_table",			cmd.from("my_table").assemble());
+	ASSERT_EQ("DELETE FROM temp.my_table",		cmd.from("temp.my_table").assemble());
+	ASSERT_EQ("DELETE FROM temp AS my_table",	cmd.from("temp", "my_table").assemble());
 }
 
 
-TEST(CMDDelete, as)
+TEST(CMDDelete, from_scheme)
 {
 	CMDDelete cmd { get_co() };
 	
 	
-	cmd.from("my_table").as("as");
-	
-	
-	ASSERT_EQ("DELETE FROM my_table AS as", cmd.assemble());
+	ASSERT_EQ("DELETE FROM scheme_name.table_name", cmd.from_scheme("scheme_name", "table_name").assemble());
+	ASSERT_EQ("DELETE FROM scheme_name.table_name AS as_name", cmd.from_scheme("scheme_name", "table_name", "as_name").assemble());
 }
 
 
@@ -66,12 +64,12 @@ TEST(CMDDelete, sanity)
 	
 	
 	sql.execute(
-		"CREATE TABLE ExampleTable (                     		"
-		"	Name			TEXT NOT NULL PRIMARY KEY,		    "
-		"	Age				INTEGER,            			    "
-		"	Balance			REAL,                  			 	"
-		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
-		"	NullableField	BLOB	                 			"
+		"CREATE TABLE ExampleTable (				"
+		"	Name			TEXT NOT NULL PRIMARY KEY,	"
+		"	Age				INTEGER,					"
+		"	Balance			REAL,						"
+		"	IsActive		BOOLEAN DEFAULT 1,			"
+		"	NullableField	BLOB						"
 		")"
 	);
 	

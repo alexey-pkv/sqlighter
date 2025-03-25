@@ -122,34 +122,22 @@ TEST(CMDSelect, from)
 	CMDSelect cmd(std::make_shared<connection_override>());
 	
 	
-	cmd.from("table");
+	ASSERT_EQ("SELECT * FROM table", cmd.from("table").assemble());
+	ASSERT_TRUE(cmd.bind().empty());
 	
-	
-	ASSERT_EQ("SELECT * FROM table", cmd.assemble());
+	ASSERT_EQ("SELECT * FROM table AS a", cmd.from("table", "a").assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
-TEST(CMDSelect, from__with_scheme)
+TEST(CMDSelect, from_scheme)
 {
 	CMDSelect cmd(std::make_shared<connection_override>());
 	
 	
-	cmd.from("table", "tab");
-	
-	
-	ASSERT_EQ("SELECT * FROM table.tab", cmd.assemble());
+	ASSERT_EQ("SELECT * FROM table.tab", cmd.from_scheme("table", "tab").assemble());
 	ASSERT_TRUE(cmd.bind().empty());
-}
-
-TEST(CMDSelect, as)
-{
-	CMDSelect cmd(std::make_shared<connection_override>());
 	
-	
-	cmd.from("tab").as("hello");
-	
-	
-	ASSERT_EQ("SELECT * FROM tab AS hello", cmd.assemble());
+	ASSERT_EQ("SELECT * FROM table.tab AS aa", cmd.from_scheme("table", "tab", "aa").assemble());
 	ASSERT_TRUE(cmd.bind().empty());
 }
 
