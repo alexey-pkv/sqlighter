@@ -108,6 +108,7 @@ void CMDSelect::assemble(std::ostringstream& ss) const
 	}
 	
 	append_from(ss);
+	append_join(ss);
 	
 	if (!where_clause().is_empty_clause())
 	{
@@ -140,8 +141,9 @@ std::vector<BindValue> CMDSelect::bind() const
 	std::vector<BindValue> final = {};
 	
 	auto total =
-		m_columns.binds_size() + 
-		where_clause().binds_size() + 
+		m_columns.binds_size() +
+		join_bind_size() +
+		where_clause().binds_size() +
 		m_groupBy.binds_size() + 
 		m_having.binds_size() + 
 		order_by_clause().binds_size();
@@ -152,6 +154,7 @@ std::vector<BindValue> CMDSelect::bind() const
 	final.reserve(total);
 	
 	m_columns.append_to(final);
+	append_join_binds(final);
 	where_clause().append_to(final);
 	m_groupBy.append_to(final);
 	m_having.append_to(final);

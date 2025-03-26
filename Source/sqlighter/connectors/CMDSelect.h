@@ -7,6 +7,7 @@
 #include "base/connectors/ICMD.h"
 
 #include "connectors/Clause/ClauseFrom.h"
+#include "connectors/Clause/ClauseJoin.h"
 #include "connectors/Clause/ClauseWhere.h"
 #include "connectors/Clause/ClauseLimit.h"
 #include "connectors/Clause/ClauseOrderBy.h"
@@ -20,6 +21,7 @@ namespace sqlighter
 	
 	class CMDSelect :
 		public CMD,
+		public ClauseJoin<CMDSelect>,
 		public ClauseFrom<CMDSelect>,
 		public ClauseWhere<CMDSelect>,
 		public ClauseOrderBy<CMDSelect>,

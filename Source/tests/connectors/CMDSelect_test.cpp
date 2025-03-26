@@ -43,6 +43,7 @@ TEST(CMDSelect, constructor__copy)
 	
 	cmd
 		.from("hello")
+		.join_exp("JOIN ME", { "bind" })
 		.column("age")
 		.column("name")
 		.where("compare = ?", 1)
@@ -55,12 +56,16 @@ TEST(CMDSelect, constructor__copy)
 	
 	
 	ASSERT_EQ(cmd.assemble(), cmd2.assemble());
+	ASSERT_EQ(3, cmd2.bind().size());
 	ASSERT_EQ(cmd.bind().size(), cmd2.bind().size());
+	
 	ASSERT_EQ(cmd.bind()[0].get_type(), cmd2.bind()[0].get_type());
 	ASSERT_EQ(cmd.bind()[1].get_type(), cmd2.bind()[1].get_type());
+	ASSERT_EQ(cmd.bind()[2].get_type(), cmd2.bind()[2].get_type());
 	
-	ASSERT_EQ(cmd.bind()[0].get_value().i32, cmd2.bind()[0].get_value().i32);
-	ASSERT_EQ(cmd.bind()[1].get_str_value(), cmd2.bind()[1].get_str_value());
+	ASSERT_EQ(cmd.bind()[0].get_str_value(), cmd2.bind()[0].get_str_value());
+	ASSERT_EQ(cmd.bind()[1].get_value().i32, cmd2.bind()[1].get_value().i32);
+	ASSERT_EQ(cmd.bind()[2].get_str_value(), cmd2.bind()[2].get_str_value());
 }
 
 TEST(CMDSelect, constructor__move)
@@ -69,6 +74,7 @@ TEST(CMDSelect, constructor__move)
 	
 	cmd
 		.from("hello")
+		.join_exp("JOIN ME", { "bind" })
 		.column("age")
 		.column("name")
 		.where("compare = ?", 1)
@@ -85,13 +91,16 @@ TEST(CMDSelect, constructor__move)
 	
 	
 	ASSERT_EQ(query, cmd2.assemble());
+	ASSERT_EQ(3, binds2.size());
 	ASSERT_EQ(binds.size(), binds2.size());
-	ASSERT_EQ(2, binds2.size());
+	
 	ASSERT_EQ(binds[0].get_type(), binds2[0].get_type());
 	ASSERT_EQ(binds[1].get_type(), binds2[1].get_type());
+	ASSERT_EQ(binds[2].get_type(), binds2[2].get_type());
 	
-	ASSERT_EQ(binds[0].get_value().i32, binds2[0].get_value().i32);
-	ASSERT_EQ(binds[1].get_str_value(), binds2[1].get_str_value());
+	ASSERT_EQ(binds[0].get_str_value(), binds2[0].get_str_value());
+	ASSERT_EQ(binds[1].get_value().i32, binds2[1].get_value().i32);
+	ASSERT_EQ(binds[2].get_str_value(), binds2[2].get_str_value());
 }
 
 TEST(CMDSelect, sanity)
@@ -139,6 +148,136 @@ TEST(CMDSelect, from_scheme)
 	
 	ASSERT_EQ("SELECT * FROM table.tab AS aa", cmd.from_scheme("table", "tab", "aa").assemble());
 	ASSERT_TRUE(cmd.bind().empty());
+}
+
+
+TEST(CMDSelect, join_exp)
+{
+	CMDSelect cmd(std::make_shared<connection_override>());
+	
+	
+	cmd.from("table")
+		.join_exp("JOIN something AS b", { 1 , "va" })
+		.join_exp("JOIN abc AS d", {3 , "dd" });
+	
+	
+	auto binds = cmd.bind();
+	auto command = cmd.assemble();
+	
+	ASSERT_EQ("SELECT * FROM table JOIN something AS b JOIN abc AS d", command);
+	ASSERT_EQ(4, binds.size());
+	
+	ASSERT_EQ(1,	binds[0].get_value().i32);
+	ASSERT_EQ("va",	binds[1].get_str_value());
+	ASSERT_EQ(3,	binds[2].get_value().i32);
+	ASSERT_EQ("dd",	binds[3].get_str_value());
+}
+
+TEST(CMDSelect, join_exp__no_binds)
+{
+	CMDSelect cmd(std::make_shared<connection_override>());
+	
+	
+	cmd.from("table").join_exp("JOIN something AS b", {});
+	
+	
+	auto binds = cmd.bind();
+	auto command = cmd.assemble();
+	
+	ASSERT_EQ("SELECT * FROM table JOIN something AS b", command);
+	ASSERT_TRUE(binds.empty());
+}
+
+TEST(CMDSelect, join_exp__no_string)
+{
+	CMDSelect cmd(std::make_shared<connection_override>());
+	
+	
+	cmd.from("table").join_exp("", { 1 , "va" });
+	
+	
+	auto binds = cmd.bind();
+	auto command = cmd.assemble();
+	
+	ASSERT_EQ("SELECT * FROM table", command);
+	ASSERT_EQ(2, binds.size());
+	ASSERT_EQ(1, binds[0].get_value().i32);
+	ASSERT_EQ("va", binds[1].get_str_value());
+}
+
+TEST(CMDSelect, join__sanity)
+{
+	CMDSelect cmd(std::make_shared<connection_override>());
+	
+	
+	cmd.from("table")
+		.join("table_a", "ab", "a = b", { 1 })
+		.left_join("table_l", "lb", "l = b", { 2 })
+		.right_join("table_r", "rb", "r = b", { 3 });
+	
+	
+	auto binds = cmd.bind();
+	auto command = cmd.assemble();
+	
+	ASSERT_EQ(
+		"SELECT * FROM table"
+			" JOIN table_a AS ab ON a = b"
+			" LEFT JOIN table_l AS lb ON l = b"
+			" RIGHT JOIN table_r AS rb ON r = b",
+		command);
+	
+	ASSERT_EQ(3, binds.size());
+	ASSERT_EQ(1, binds[0].get_value().i32);
+	ASSERT_EQ(2, binds[1].get_value().i32);
+	ASSERT_EQ(3, binds[2].get_value().i32);
+}
+
+TEST(CMDSelect, join_statement__sanity)
+{
+	CMDSelect cmd(std::make_shared<connection_override>());
+	
+	
+	cmd.from("table")
+		.join_statement("ABC", "scm", "tbl", "as_a", "a = b", { 1 })
+		.join_statement("DEF", "scm2", "tbl2", "as_a2", "1 = 1", { 2 });
+	
+	
+	auto binds = cmd.bind();
+	auto command = cmd.assemble();
+	
+	ASSERT_EQ(
+		"SELECT * FROM table"
+			" ABC scm.tbl AS as_a ON a = b"
+			" DEF scm2.tbl2 AS as_a2 ON 1 = 1",
+		command);
+	
+	ASSERT_EQ(2, binds.size());
+	ASSERT_EQ(1, binds[0].get_value().i32);
+	ASSERT_EQ(2, binds[1].get_value().i32);
+}
+
+TEST(CMDSelect, join_statement__no_scheme)
+{
+	CMDSelect cmd(std::make_shared<connection_override>());
+	
+	
+	cmd.from("table").join_statement("ABC", "", "tbl", "as_a", "a = b", { 1 });
+	
+	
+	ASSERT_EQ("SELECT * FROM table ABC tbl AS as_a ON a = b", cmd.assemble());
+	ASSERT_EQ(1, cmd.bind()[0].get_value().i32);
+}
+
+TEST(CMDSelect, join_statement__no_condition)
+{
+	CMDSelect cmd(std::make_shared<connection_override>());
+	
+	
+	cmd.from("table").join_statement("ABC", "scm", "tbl", "as_a", "", { 1 });
+	
+	
+	ASSERT_EQ("SELECT * FROM table ABC scm.tbl AS as_a", cmd.assemble());
+	ASSERT_EQ(1, cmd.bind()[0].get_value().i32);
 }
 
 
