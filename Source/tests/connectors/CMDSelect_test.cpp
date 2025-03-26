@@ -732,14 +732,14 @@ TEST(CMDSelect, query_sanity)
 	SQLighter sql { setup_db("test_select.db") };
 	
 	sql.execute(
-		"CREATE TABLE ExampleTable (                     		"
-		"	ID				INTEGER PRIMARY KEY,         		"
-		"	Name			TEXT NOT NULL,     				    "
-		"	Age				INTEGER,            			    "
-		"	Balance			REAL,                  			 	"
-		"	IsActive		BOOLEAN DEFAULT 1, 			     	"
+		"CREATE TABLE ExampleTable (						"
+		"	ID				INTEGER PRIMARY KEY,				"
+		"	Name			TEXT NOT NULL,						"
+		"	Age				INTEGER,							"
+		"	Balance			REAL,								"
+		"	IsActive		BOOLEAN DEFAULT 1,					"
 		"	CreatedAt		DATETIME DEFAULT CURRENT_TIMESTAMP,	"
-		"	NullableField	BLOB	                 			"
+		"	NullableField	BLOB								"
 		")"
 	);
 	
@@ -1284,4 +1284,61 @@ TEST(CMDSelect, query_all)
 		ASSERT_EQ(0xAB,		data[1][4].get_blob()[0]);
 		ASSERT_EQ(0xCD,		data[1][4].get_blob()[1]);
 	}
+}
+
+TEST(CMDSelect, query_with_join)
+{
+	SQLighter sql { setup_db("test_select.db") };
+	
+	
+	sql.execute(
+		"CREATE TABLE ExampleTable (				"
+		"	Name			TEXT NOT NULL PRIMARY KEY,	"
+		"	Age				INTEGER,					"
+		"	Balance			REAL,						"
+		"	IsActive		BOOLEAN DEFAULT 1,			"
+		"	NullableField	BLOB						"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO ExampleTable (Name, Age, Balance, IsActive, NullableField) VALUES "
+		"	('Alice',	30,		2500.50,	1, NULL),   	"
+		"	('Bob',		NULL,	1500.00,	0, X'ABCD')		"
+	);
+	
+	sql.execute(
+		"CREATE TABLE ExtraData (		"
+		"	Name			TEXT NOT NULL,	"
+		"	BalanceChange	INTEGER			"
+		")"
+	);
+	
+	sql.execute(
+		"INSERT INTO ExtraData (Name, BalanceChange) VALUES "
+		"	('Alice',	30),	"
+		"	('Alice',	-25)	"
+	);
+	
+	
+	auto data = sql
+		.select()
+		.columns({ "et.Name", "ed.BalanceChange" })
+		.from("ExampleTable", "et")
+		.join("ExtraData", "ed", "et.Name = ed.Name", {})
+		.order_by("et.Name")
+		.order_by("ed.BalanceChange")
+		.query_all(1000);
+	
+	
+	ASSERT_EQ(2, data.size());
+	
+	ASSERT_EQ(2, data[0].size());
+	ASSERT_EQ(2, data[1].size());
+	
+	ASSERT_EQ("Alice",	data[0][0].get_str());
+	ASSERT_EQ(-25,		data[0][1].get<int32_t>());
+	
+	ASSERT_EQ("Alice",	data[1][0].get_str());
+	ASSERT_EQ(30,		data[1][1].get<int32_t>());
 }
