@@ -68,6 +68,29 @@ TEST(CMDSelect, constructor__copy)
 	ASSERT_EQ(cmd.bind()[2].get_str_value(), cmd2.bind()[2].get_str_value());
 }
 
+TEST(CMDSelect, assign__self)
+{
+	CMDSelect cmd(std::make_shared<connection_override>());
+	
+	cmd
+		.from("hello")
+		.join_exp("JOIN ME", { "bind" })
+		.column("age")
+		.column("name")
+		.where("compare = ?", 1)
+		.by_field("field", "value")
+		.limit_by(23)
+		.order_by("something");
+	
+	auto command = cmd.assemble();
+	
+	
+	cmd = cmd;
+	
+	
+	ASSERT_EQ(command, cmd.assemble());
+}
+
 TEST(CMDSelect, constructor__move)
 {
 	CMDSelect cmd(std::make_shared<connection_override>());
