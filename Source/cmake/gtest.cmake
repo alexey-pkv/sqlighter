@@ -17,9 +17,3 @@ FetchContent_MakeAvailable(googletest)
 
 
 set(GTEST_INCLUDE_DIR "${gtest_SOURCE_DIR}/include" CACHE PATH "Path to GTest include directory")
-
-
-
-
-
-

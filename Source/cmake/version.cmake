@@ -1,8 +1,5 @@
-set(SQLIGHTER_VERSION_MAJOR 0)
-set(SQLIGHTER_VERSION_MINOR 3)
-set(SQLIGHTER_VERSION_PATCH 0)
+message(STATUS "Building SQLighter version << ${SQLighter_VERSION} >>")
 
-set(SQLIGHTER_VERSION "${SQLIGHTER_VERSION_MAJOR}.${SQLIGHTER_VERSION_MINOR}.${SQLIGHTER_VERSION_PATCH}")
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/../sqlighter/sqlighter_version.h.in"
