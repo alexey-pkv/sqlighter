@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTORS_CLAUSE_CLAUSEORDERBY_H
+#define SQLIGHTER_CONNECTORS_CLAUSE_CLAUSEORDERBY_H
 
 
 #include <utility>
@@ -64,3 +65,6 @@ namespace sqlighter
 		inline self& order_by(std::string_view exp, std::initializer_list<BindValue> values)	{ return order_by(exp, std::vector<BindValue> { values }); };
 	};
 }
+
+
+#endif

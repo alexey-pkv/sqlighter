@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTORS_CLAUSE_CLAUSELIMIT_H
+#define SQLIGHTER_CONNECTORS_CLAUSE_CLAUSELIMIT_H
 
 
 #include <sstream>
@@ -69,3 +70,6 @@ namespace sqlighter
 		}
 	};
 }
+
+
+#endif

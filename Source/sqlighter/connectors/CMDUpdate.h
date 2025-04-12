@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTORS_CMDUPDATE_H
+#define SQLIGHTER_CONNECTORS_CMDUPDATE_H
 
 
 #include "base/connectors/ICMD.h"
@@ -48,3 +49,6 @@ namespace sqlighter
 		std::vector<BindValue> bind() const override;
 	};
 }
+
+
+#endif

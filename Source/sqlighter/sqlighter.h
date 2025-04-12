@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_SQLIGHTER_H
+#define SQLIGHTER_SQLIGHTER_H
 
 
 #include "sqlighter_version.h"
@@ -86,3 +87,6 @@ namespace sqlighter
 	std::string sqlite_lib_version();
 	std::string sqlighter_lib_version();
 }
+
+
+#endif

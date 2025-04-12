@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_EXCEPTIONS_SQLIGHTER_EXCEPTIONS_H
+#define SQLIGHTER_EXCEPTIONS_SQLIGHTER_EXCEPTIONS_H
 
 
 #include <memory>
@@ -71,3 +72,6 @@ namespace sqlighter
 		static SQLighterException no_column(int at, int count, std::string_view query);
 	};
 }
+
+
+#endif

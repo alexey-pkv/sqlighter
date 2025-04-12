@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CORE_STMT_H
+#define SQLIGHTER_CORE_STMT_H
 
 
 #include <string>
@@ -147,3 +148,5 @@ namespace sqlighter
 	};
 }
 
+
+#endif

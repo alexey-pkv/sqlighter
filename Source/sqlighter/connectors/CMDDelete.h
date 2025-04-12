@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTORS_CMDDELETE_H
+#define SQLIGHTER_CONNECTORS_CMDDELETE_H
 
 
 #include "base/connectors/ICMD.h"
@@ -39,3 +40,6 @@ namespace sqlighter
 		std::vector<BindValue> bind() const override;
 	};
 }
+
+
+#endif

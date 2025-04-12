@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CORE_DB_H
+#define SQLIGHTER_CORE_DB_H
 
 
 #include <string>
@@ -47,3 +48,6 @@ namespace sqlighter
 		[[nodiscard]] const char* error_message() const;
 	};
 }
+
+
+#endif

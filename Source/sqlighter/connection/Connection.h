@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTION_CONNECTION_H
+#define SQLIGHTER_CONNECTION_CONNECTION_H
 
 
 #include <memory>
@@ -37,3 +38,6 @@ namespace sqlighter
 		inline std::shared_ptr<DB> db() const { return m_db; };
 	};
 }
+
+
+#endif

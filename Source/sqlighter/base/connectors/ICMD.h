@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_BASE_CONNECTORS_ICMD_H
+#define SQLIGHTER_BASE_CONNECTORS_ICMD_H
 
 
 #include <string>
@@ -48,3 +49,6 @@ namespace sqlighter
 		Stmt execute() const override;
 	};
 }
+
+
+#endif

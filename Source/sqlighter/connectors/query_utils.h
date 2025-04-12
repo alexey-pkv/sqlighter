@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTORS_QUERY_UTILS_H
+#define SQLIGHTER_CONNECTORS_QUERY_UTILS_H
 
 
 #include <string>
@@ -33,3 +34,6 @@ namespace sqlighter
 		return s;
 	}
 }
+
+
+#endif

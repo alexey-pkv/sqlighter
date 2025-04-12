@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_BASE_CONNECTORS_CONNECTOR_UTILS_H
+#define SQLIGHTER_BASE_CONNECTORS_CONNECTOR_UTILS_H
 
 
 #include <string_view>
@@ -14,3 +15,4 @@
 		inline self& name(std::string_view exp, const std::vector<BindValue>& values)		{ return protected_name(exp, values); }
 
 
+#endif

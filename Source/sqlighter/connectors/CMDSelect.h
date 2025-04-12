@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTORS_CMDSELECT_H
+#define SQLIGHTER_CONNECTORS_CMDSELECT_H
 
 
 #include <memory>
@@ -99,3 +100,6 @@ namespace sqlighter
 		int64_t query_count() const;
 	};
 }
+
+
+#endif

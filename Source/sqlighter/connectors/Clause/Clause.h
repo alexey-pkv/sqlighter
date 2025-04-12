@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTORS_CLAUSE_CLAUSE_H
+#define SQLIGHTER_CONNECTORS_CLAUSE_CLAUSE_H
 
 
 #include <vector>
@@ -90,3 +91,6 @@ namespace sqlighter
 		return ss;
 	}
 }
+
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONSTS_COLUMNTYPE_H
+#define SQLIGHTER_CONSTS_COLUMNTYPE_H
 
 
 namespace sqlighter
@@ -9,3 +10,6 @@ namespace sqlighter
 		DESC	= 1
 	};
 }
+
+
+#endif

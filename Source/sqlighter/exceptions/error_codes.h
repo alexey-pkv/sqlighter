@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_EXCEPTIONS_ERROR_CODES_H
+#define SQLIGHTER_EXCEPTIONS_ERROR_CODES_H
 
 
 #define SQLIGHTER_OK 0
@@ -31,3 +32,6 @@
 
 
 #define SQLIGHTER_ERR_INVALID_ENUM				200		<< 16
+
+
+#endif

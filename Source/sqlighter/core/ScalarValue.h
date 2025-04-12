@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CORE_SCALARVALUE_H
+#define SQLIGHTER_CORE_SCALARVALUE_H
 
 
 #include <string>
@@ -88,3 +89,6 @@ namespace sqlighter
 	template<> inline bool ScalarValue::try_get(std::string& v) const	{ return try_get_str(v); }
 	template<> inline bool ScalarValue::try_get(blob_t& v) const		{ return try_get_blob(v); }
 }
+
+
+#endif

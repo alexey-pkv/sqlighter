@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_BASE_CONNECTION_ICONNECTION_H
+#define SQLIGHTER_BASE_CONNECTION_ICONNECTION_H
 
 
 #include <string>
@@ -42,3 +43,6 @@ namespace sqlighter
 	
 	
 }
+
+
+#endif

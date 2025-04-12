@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTORS_CMDINSERT_H
+#define SQLIGHTER_CONNECTORS_CMDINSERT_H
 
 
 #include "base/connectors/ICMD.h"
@@ -70,3 +71,5 @@ namespace sqlighter
 	};
 }
 
+
+#endif

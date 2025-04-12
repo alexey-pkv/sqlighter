@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTORS_CLAUSE_CLAUSETABLE_H
+#define SQLIGHTER_CONNECTORS_CLAUSE_CLAUSETABLE_H
 
 
 #include <string>
@@ -37,3 +38,6 @@ namespace sqlighter
 	
 	std::ostream& operator<<(std::ostream& ss, const ClauseTable& ct);
 }
+
+
+#endif

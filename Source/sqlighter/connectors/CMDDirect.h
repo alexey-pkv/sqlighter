@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SQLIGHTER_CONNECTORS_CMDDIRECT_H
+#define SQLIGHTER_CONNECTORS_CMDDIRECT_H
 
 
 #include <sstream>
@@ -54,3 +55,6 @@ namespace sqlighter
 		[[nodiscard]] std::vector<BindValue> bind() const override;
 	};
 }
+
+
+#endif
