@@ -19,7 +19,10 @@ else()
 endif()
 
 
-if (UNIX)
+if (APPLE)
+	add_library(sqlite3 SHARED ${sqlite3_SOURCE_DIR}/sqlite3.c)
+	target_link_options(sqlite3 PRIVATE "-undefined" "dynamic_lookup")
+elseif (UNIX)
 	add_library(sqlite3 SHARED ${sqlite3_SOURCE_DIR}/sqlite3.c)
 	target_link_libraries(sqlite3 PRIVATE dl)
 else () 

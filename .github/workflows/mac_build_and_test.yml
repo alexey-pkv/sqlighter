@@ -1,0 +1,58 @@
+name: MacOS - Build and Test
+  
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up CMake
+      uses: jwlawson/actions-setup-cmake@v1
+      with:
+        cmake-version: '3.30'
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgtest-dev sqlite3 libsqlite3-dev valgrind lcov
+    
+    - name: Check Versions
+      run: |
+        g++ --version
+        gcc --version
+        clang --version
+        valgrind --version
+        lcov --version
+        gcov --version
+
+    - name: Build project
+      run: |
+        cmake -S . -B build/debug
+        cmake --build build/debug --target sqlighter_tests -- -j10
+        
+    - name: Run unit tests
+      run: |
+        cmake --build build/debug --target test -- -j10
+        
+    - name: Checking for leaks with Valgrind
+      run: |
+        cmake --build build/debug --target leak_check -- -j10
+        
+    - name: Run cover tests
+      run: |
+        cmake -S . -B build/cover -DSQLIGHTER_BUILD_FOR_COVER=true
+        cmake --build build/cover --target cover -- -j10
+    
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./build/cover/sqlighter_coverage.info
+        verbose: true
