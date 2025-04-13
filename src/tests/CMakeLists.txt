@@ -34,7 +34,7 @@ message(STATUS "    Directory CMAKE_SOURCE_DIR  : ${CMAKE_SOURCE_DIR}")
 message(STATUS "    Directory SQLIGHTER_BIN     : ${SQLIGHTER_BIN}")
 
 target_include_directories(sqlighter_tests PRIVATE ${GTEST_INCLUDE_DIR})
-target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/Source/tests/test_core)
+target_include_directories(sqlighter_tests PRIVATE ${CMAKE_SOURCE_DIR}/src/tests/test_core)
 target_include_directories(sqlighter_tests PRIVATE ${SQLIGHTER_BIN})
 
 target_link_libraries(sqlighter_tests sqlighter)

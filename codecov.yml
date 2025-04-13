@@ -1,2 +1,2 @@
 ignore:
-  - "Source/tests"
+  - "src/tests"

@@ -37,11 +37,11 @@ message(STATUS "    Bin directory   : ${SQLIGHTER_BIN}")
 message(STATUS "    Output directory: ${SQLIGHTER_BIN_OUTPUT}")
 
 file(GLOB_RECURSE SQLIGHTER_SOURCE
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/sqlighter/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/sqlighter/*.cpp"
 )
 
 file(GLOB_RECURSE SQLIGHTER_HEADERS
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/sqlighter/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/sqlighter/*.h"
 )
 
 
@@ -49,9 +49,9 @@ file(GLOB_RECURSE SQLIGHTER_HEADERS
 ### Include Projects #######
 ############################
 
-add_subdirectory(Source/cmake)
-add_subdirectory(Source/sqlighter)
+add_subdirectory(src/cmake)
+add_subdirectory(src/sqlighter)
 
 if (CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
-	add_subdirectory(Source/tests)
+	add_subdirectory(src/tests)
 endif ()
