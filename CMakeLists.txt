@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.29)
 ### Project Settings	####
 ############################
 
-project(SQLighter VERSION 0.3.0)
+project(SQLighter VERSION 0.3.1)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
