@@ -1,27 +1,18 @@
 #include "connectors/CMDSelect.h"
 
 
-#include "core/Stmt.h"
 #include "base/connection/IConnection.h"
 
 #include "db_mock.h"
 #include "sqlighter.h"
 #include "exceptions/sqlighter_exceptions.h"
 
+#include "connection_override.h"
+
 #include <gtest/gtest.h>
 
 
 using namespace sqlighter;
-
-
-class connection_override : public IConnection
-{
-public:
-	Stmt execute(std::string_view query, const std::vector<BindValue>& values) override
-	{
-		return Stmt(nullptr);
-	}
-};
 
 
 TEST(CMDSelect, constructor__connection_is_null__exception_thrown)

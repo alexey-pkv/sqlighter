@@ -57,12 +57,15 @@ jobs:
         files: ./build/cover/sqlighter_coverage.info
         verbose: true
     
-    - name: Build Static Library
+    
+    - name: Static Library - Sanity Build and Test
       run: |
         cmake -S . -B build/static-lib -DSQLIGHTER_BUILD_STATIC_LIBS=true
-        cmake --build build/static-lib --target sqlighter -- -j10
-        cmake --build build/static-lib --target sqlighter_tests -- -j10
-     
-    - name: Run Static Library unit tests
+        cmake --build build/static-lib --target sqlighter_tests
+        valgrind --leak-check=full --track-origins=yes ./build/static-lib/bin/sqlighter_tests
+    
+    - name: Release - Sanity Build and Test
       run: |
-        cmake --build build/static-lib --target test -- -j10
+        cmake -S . -B build/release -DCMAKE_BUILD_TYPE=Release
+        cmake --build build/release --target sqlighter_tests 
+        valgrind --leak-check=full --track-origins=yes ./build/release/bin/sqlighter_tests

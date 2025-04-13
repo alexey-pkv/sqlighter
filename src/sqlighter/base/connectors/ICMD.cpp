@@ -1,6 +1,7 @@
 #include "ICMD.h"
 
 
+#include <iostream>
 #include <sstream>
 
 #include "exceptions/sqlighter_exceptions.h"
