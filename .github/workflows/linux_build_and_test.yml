@@ -36,7 +36,7 @@ jobs:
       run: |
         cmake -S . -B build/debug
         cmake --build build/debug --target sqlighter_tests -- -j10
-        
+    
     - name: Run unit tests
       run: |
         cmake --build build/debug --target test -- -j10
@@ -56,3 +56,13 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: ./build/cover/sqlighter_coverage.info
         verbose: true
+    
+    - name: Build Static Library
+      run: |
+        cmake -S . -B build/static-lib
+        cmake --build build/static-lib --target sqlighter -- -j10
+        cmake --build build/static-lib --target sqlighter_test -- -j10
+     
+    - name: Run Static Library unit tests
+      run: |
+        cmake --build build/static-lib --target test -- -j10
