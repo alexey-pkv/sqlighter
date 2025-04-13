@@ -22,7 +22,6 @@ set_target_properties(sqlighter PROPERTIES
 target_link_libraries(sqlighter sqlite3)
 
 message(STATUS "    Directory SQLITE3_SOURCE_DIR       : ${SQLITE3_SOURCE_DIR}")
-message(STATUS "    Directory SQLIGHTER_BIN            : ${SQLIGHTER_BIN}")
 message(STATUS "    Directory CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(sqlighter PUBLIC ${SQLITE3_SOURCE_DIR})
