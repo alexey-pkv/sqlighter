@@ -59,9 +59,9 @@ jobs:
     
     - name: Build Static Library
       run: |
-        cmake -S . -B build/static-lib
+        cmake -S . -B build/static-lib -DSQLIGHTER_BUILD_STATIC_LIBS=true
         cmake --build build/static-lib --target sqlighter -- -j10
-        cmake --build build/static-lib --target sqlighter_test -- -j10
+        cmake --build build/static-lib --target sqlighter_tests -- -j10
      
     - name: Run Static Library unit tests
       run: |
