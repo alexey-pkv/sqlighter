@@ -4,6 +4,7 @@
 
 #include <sstream>
 
+#include "core/BindValue.h"
 #include "base/connectors/ICMD.h"
 #include "base/connection/IConnection.h"
 
@@ -34,7 +35,10 @@ namespace sqlighter
 		
 		
 	public:
-		SQLIGHTER_INLINE_CLAUSE(append, do_append, CMDDirect);
+		inline CMDDirect& append(std::string_view exp)											{ return do_append(exp, {}); };			\
+		inline CMDDirect& append(std::string_view exp, BindValue value)							{ return do_append(exp, { value }); };		\
+		inline CMDDirect& append(std::string_view exp, std::initializer_list<BindValue> values)	{ return do_append(exp, { values }); };	\
+		inline CMDDirect& append(std::string_view exp, const std::vector<BindValue>& values)	{ return do_append(exp, values); }
 		
 		inline CMDDirect& append(std::initializer_list<BindValue> values) { return do_append({}, { values }); };
 		inline CMDDirect& operator<<(std::string_view exp) { do_append(exp, {}); return *this; }

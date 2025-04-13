@@ -54,9 +54,20 @@ namespace sqlighter
 	
 		
 	public:
-		SQLIGHTER_INLINE_CLAUSE(column_exp,	append_column_exp,	CMDSelect);
-		SQLIGHTER_INLINE_CLAUSE(group_by,	append_group_by,	CMDSelect);
-		SQLIGHTER_INLINE_CLAUSE(having,		append_having,		CMDSelect);
+		inline CMDSelect& column_exp(std::string_view exp)											{ return append_column_exp(exp, {}); };
+		inline CMDSelect& column_exp(std::string_view exp, BindValue value)							{ return append_column_exp(exp, { value }); };
+		inline CMDSelect& column_exp(std::string_view exp, std::initializer_list<BindValue> values)	{ return append_column_exp(exp, { values }); };
+		inline CMDSelect& column_exp(std::string_view exp, const std::vector<BindValue>& values)	{ return append_column_exp(exp, values); }
+		
+		inline CMDSelect& group_by(std::string_view exp)											{ return append_group_by(exp, {}); };
+		inline CMDSelect& group_by(std::string_view exp, BindValue value)							{ return append_group_by(exp, { value }); };
+		inline CMDSelect& group_by(std::string_view exp, std::initializer_list<BindValue> values)	{ return append_group_by(exp, { values }); };
+		inline CMDSelect& group_by(std::string_view exp, const std::vector<BindValue>& values)		{ return append_group_by(exp, values); }
+		
+		inline CMDSelect& having(std::string_view exp)											{ return append_having(exp, {}); };
+		inline CMDSelect& having(std::string_view exp, BindValue value)							{ return append_having(exp, { value }); };
+		inline CMDSelect& having(std::string_view exp, std::initializer_list<BindValue> values)	{ return append_having(exp, { values }); };
+		inline CMDSelect& having(std::string_view exp, const std::vector<BindValue>& values)	{ return append_having(exp, values); }
 	
 	
 	public:

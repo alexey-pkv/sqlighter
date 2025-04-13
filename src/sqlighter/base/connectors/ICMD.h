@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "core/Stmt.h"
-#include "connector_utils.h"
 #include "base/connection/IConnection.h"
 
 
