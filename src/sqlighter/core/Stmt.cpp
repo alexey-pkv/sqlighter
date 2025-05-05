@@ -11,7 +11,7 @@ using namespace sqlighter;
 
 Stmt::~Stmt()
 {
-	close();
+	// No need to explicitly call close() as the unique_ptr deleter will handle it
 }
 
 Stmt::Stmt(sqlite3_stmt* stmt) :
@@ -41,14 +41,14 @@ Stmt::Stmt(Stmt&& s) noexcept
 
 Stmt& Stmt::operator=(Stmt&& s) noexcept
 {
-	m_stmt			= s.m_stmt;
+	m_stmt			= std::move(s.m_stmt);
 	m_columns		= std::move(s.m_columns);
 	m_columnIndex	= std::move(s.m_columnIndex);
 	m_query			= std::move(s.m_query);
 	m_db			= std::move(s.m_db);
 	
 	m_lastCode = s.m_lastCode;
-	s.m_stmt = nullptr;
+	// No need to set s.m_stmt to nullptr - unique_ptr move already handles this
 	
 	return *this;
 }
@@ -56,18 +56,20 @@ Stmt& Stmt::operator=(Stmt&& s) noexcept
 
 sqlite3_stmt* Stmt::stmt()
 {
-	if (m_stmt == nullptr)
+	if (!m_stmt)
 		throw SQLighterException(SQLIGHTER_ERR_STMT_FINALIZED);
 	
-	return m_stmt;
+	return m_stmt.get();
 }
 
 const sqlite3_stmt* Stmt::stmt() const
 {
-	if (m_stmt == nullptr)
+	auto stmt = m_stmt.get();
+	
+	if (!stmt)
 		throw SQLighterException(SQLIGHTER_ERR_STMT_FINALIZED);
 	
-	return m_stmt;
+	return stmt;
 }
 
 ScalarValue Stmt::to_value(int at) const
@@ -102,10 +104,10 @@ ScalarValue Stmt::to_value(int at) const
 
 int Stmt::step()
 {
-	if (m_stmt == nullptr)
+	if (!m_stmt)
 		throw SQLighterException(SQLIGHTER_ERR_STMT_FINALIZED, "When calling step()").query(m_query);
 	
-	m_lastCode = sqlite3_step(m_stmt);
+	m_lastCode = sqlite3_step(m_stmt.get());
 	
 	if (m_lastCode != SQLITE_OK && 
 		m_lastCode != SQLITE_DONE && 
@@ -123,22 +125,14 @@ int Stmt::step()
 }
 
 
-int Stmt::close()
+void Stmt::close()
 {
-	if (m_stmt == nullptr)
-		return SQLITE_OK;
-	
-	auto res = sqlite3_finalize(m_stmt);
-	
-	m_stmt = nullptr;
-	// TODO: Fail on error
-	
-	return res;
+	m_stmt.clear();
 }
 
 void Stmt::require_open() const
 {
-	if (m_stmt == nullptr)
+	if (!m_stmt)
 	{
 		throw SQLighterException(SQLIGHTER_ERR_STMT_FINALIZED);
 	}
@@ -186,31 +180,31 @@ void Stmt::require_column_type(int at, int type) const
 int Stmt::column_int(int at) const
 {
 	require_column(at);
-	return sqlite3_column_int(m_stmt, at);
+	return sqlite3_column_int(m_stmt.get_cc(), at);
 }
 
 int64_t Stmt::column_int64(int at) const
 {
 	require_column(at);
-	return sqlite3_column_int64(m_stmt, at);
+	return sqlite3_column_int64(m_stmt.get_cc(), at);
 }
 
 bool Stmt::column_bool(int at) const
 {
 	require_column(at);
-	return sqlite3_column_int(m_stmt, at) != 0;
+	return sqlite3_column_int(m_stmt.get_cc(), at) != 0;
 }
 
 double Stmt::column_double(int at) const
 {
 	require_column(at);
-	return sqlite3_column_double(m_stmt, at);
+	return sqlite3_column_double(m_stmt.get_cc(), at);
 }
 
 std::string Stmt::column_string(int at) const
 {
 	require_column(at);
-	return reinterpret_cast<const char*>(sqlite3_column_text(m_stmt, at));
+	return reinterpret_cast<const char*>(sqlite3_column_text(m_stmt.get_cc(), at));
 }
 
 size_t Stmt::column_blob(int at, void** into) const
@@ -219,14 +213,14 @@ size_t Stmt::column_blob(int at, void** into) const
 	
 	*into = nullptr;
 	
-	const void* data = sqlite3_column_blob(m_stmt, at);
+	const void* data = sqlite3_column_blob(m_stmt.get_cc(), at);
 	
 	if (!data)
 	{
 		return 0;
 	}
 	
-	auto size = sqlite3_column_bytes(m_stmt, at);
+	auto size = sqlite3_column_bytes(m_stmt.get_cc(), at);
 	
 	*into = malloc(size);
 	
@@ -247,8 +241,10 @@ blob_t Stmt::column_blob(int at) const
 	
 	require_column_type(at, SQLITE_BLOB);
 		
-	const void* data = sqlite3_column_blob(m_stmt, at);
-	auto size = sqlite3_column_bytes(m_stmt, at);
+	auto p = m_stmt.get_cc();
+	
+	const void* data = sqlite3_column_blob(p, at);
+	auto size = sqlite3_column_bytes(p, at);
 	
 	if (!data || size <= 0)
 	{
@@ -383,13 +379,13 @@ std::vector<std::vector<ScalarValue>> Stmt::all(int failsafeLimit)
 int Stmt::column_type(int at) const
 {
 	require_column(at);
-	return sqlite3_column_type(m_stmt, at);
+	return sqlite3_column_type(m_stmt.get_cc(), at);
 }
 
 int Stmt::column_count() const
 {
 	require_open();
-	return sqlite3_column_count(m_stmt);
+	return sqlite3_column_count(m_stmt.get_cc());
 }
 
 const char* Stmt::column_name(int at) const
@@ -402,12 +398,12 @@ const char* Stmt::column_name(int at) const
 		
 		throw e;
 	}
-	else if (sqlite3_column_count(m_stmt) <= at)
+	else if (sqlite3_column_count(m_stmt.get_cc()) <= at)
 	{
 		throw SQLighterException::no_column(at, column_count(), m_query);
 	}
 		
-	return sqlite3_column_name(m_stmt, at);
+	return sqlite3_column_name(m_stmt.get_cc(), at);
 }
 
 const std::string& Stmt::column_name_str(int at) const

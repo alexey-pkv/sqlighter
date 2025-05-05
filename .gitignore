@@ -1,4 +1,6 @@
+# IDE and Tools
 .idea
+.claude/settings.local.json
 
 # Build resources
 build/*
@@ -9,3 +11,4 @@ build/*
 
 # Test resources
 src/tests/test_core/.db/*
+

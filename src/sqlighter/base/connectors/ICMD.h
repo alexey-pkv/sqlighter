@@ -27,6 +27,7 @@ namespace sqlighter
 		virtual Stmt execute() const = 0; // NOLINT(*-use-nodiscard)
 	};
 	
+	
 	class CMD : public ICMD
 	{
 	private:

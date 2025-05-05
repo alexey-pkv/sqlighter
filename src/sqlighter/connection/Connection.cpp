@@ -35,13 +35,15 @@ Stmt Connection::execute(std::string_view query, const std::vector<BindValue>& v
 		throw SQLighterException(SQLIGHTER_ERR_EMPTY_QUERY);
 	}
 	
+	sqlite3_stmt* stmt_ptr;
+	
 	m_db->open();
 	
 	auto res = sqlite3_prepare_v2(
 		m_db->db(),
 		query.data(),
 		-1, 
-		stmt.stmt_p(), 
+		&stmt_ptr, 
 		nullptr);
 	
 	if (res != SQLITE_OK)
@@ -53,6 +55,8 @@ Stmt Connection::execute(std::string_view query, const std::vector<BindValue>& v
 		
 		throw e;
 	}
+	
+	stmt.stmt_ref().set(stmt_ptr);
 	
 	for (auto i = 0; i < values.size(); i++)
 	{
