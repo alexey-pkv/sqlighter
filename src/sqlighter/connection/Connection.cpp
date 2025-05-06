@@ -28,8 +28,20 @@ Connection::Connection(const std::filesystem::path& db_path) :
 
 Stmt Connection::execute(std::string_view query, const std::vector<BindValue>& values)
 {
-	Stmt stmt { m_db, query };
+	Stmt stmt { prepare(query), m_db, query };
 	
+	for (auto i = 0; i < values.size(); i++)
+	{
+		values[i].bind(stmt.stmt(), i + 1);
+	}
+	
+	stmt.step();
+	
+	return stmt;
+}
+
+StmtRef Connection::prepare(std::string_view query)
+{
 	if (query.empty())
 	{
 		throw SQLighterException(SQLIGHTER_ERR_EMPTY_QUERY);
@@ -56,14 +68,5 @@ Stmt Connection::execute(std::string_view query, const std::vector<BindValue>& v
 		throw e;
 	}
 	
-	stmt.stmt_ref().set(stmt_ptr);
-	
-	for (auto i = 0; i < values.size(); i++)
-	{
-		values[i].bind(stmt.stmt(), i + 1);
-	}
-	
-	stmt.step();
-	
-	return stmt;
+	return StmtRef { stmt_ptr };
 }

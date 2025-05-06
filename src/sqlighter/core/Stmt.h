@@ -21,7 +21,7 @@ namespace sqlighter
 	class Stmt
 	{
 	private:
-		StmtRef m_stmt = {};
+		StmtRef m_stmt;
 		
 		mutable std::vector<std::string> 	m_columns		= {};
 		mutable std::map<std::string, int>	m_columnIndex	= {};
@@ -36,19 +36,20 @@ namespace sqlighter
 		
 		
 	public:
-		~Stmt();
+		~Stmt() = default;
 		
 		Stmt() = default;
 		explicit Stmt(sqlite3_stmt* stmt);
 		
 		Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db);
 		Stmt(std::shared_ptr<DB> db, std::string_view query);
-		
-		Stmt(const Stmt&) = delete;
-		Stmt& operator=(const Stmt&) = delete;
+		Stmt(StmtRef&& ref, std::shared_ptr<DB> db, std::string_view query);
 		
 		Stmt(Stmt&&) noexcept;
 		Stmt& operator=(Stmt&&) noexcept;
+		
+		Stmt(const Stmt&) = delete;
+		Stmt& operator=(const Stmt&) = delete;
 		
 		
 	public:

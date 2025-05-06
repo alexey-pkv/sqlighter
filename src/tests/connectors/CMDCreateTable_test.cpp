@@ -30,6 +30,15 @@ public:
 		
 		return Stmt(nullptr);
 	}
+	
+	StmtRef prepare(std::string_view query) override
+	{
+		IS_CALLED = true;
+		QUERY = query;
+		BIND = {};
+		
+		return StmtRef();
+	}
 };
 
 

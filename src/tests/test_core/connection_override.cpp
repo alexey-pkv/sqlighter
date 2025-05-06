@@ -17,3 +17,11 @@ Stmt connection_override::execute(std::string_view query, const std::vector<Bind
 	
 	return Stmt(nullptr);
 }
+
+StmtRef connection_override::prepare(std::string_view query)
+{
+	last_query = query;
+	last_bind = {};
+	
+	return StmtRef();
+}

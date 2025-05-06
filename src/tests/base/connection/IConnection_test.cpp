@@ -26,6 +26,14 @@ public:
 		
 		return Stmt();
 	}
+	
+	StmtRef prepare(std::string_view query) override
+	{
+		Called = true;
+		Query = query;
+		
+		return StmtRef();
+	}
 };
 
 class TestAbstractConnectionDecorator : public AbstractConnectionDecorator
@@ -38,6 +46,11 @@ public:
 	Stmt execute(std::string_view query, const std::vector<BindValue>& values) override
 	{
 		return Stmt();
+	}
+	
+	StmtRef prepare(std::string_view query) override
+	{
+		return StmtRef();
 	}
 	
 	Stmt call_execute_next(std::string_view query, const std::vector<BindValue>& values)

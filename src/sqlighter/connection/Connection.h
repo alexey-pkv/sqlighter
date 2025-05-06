@@ -32,6 +32,7 @@ namespace sqlighter
 		
 	public:
 		Stmt execute(std::string_view query, const std::vector<BindValue>& values) override;
+		StmtRef prepare(std::string_view query) override;
 		
 		
 	public:

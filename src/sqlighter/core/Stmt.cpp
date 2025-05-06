@@ -9,11 +9,6 @@
 using namespace sqlighter;
 
 
-Stmt::~Stmt()
-{
-	// No need to explicitly call close() as the unique_ptr deleter will handle it
-}
-
 Stmt::Stmt(sqlite3_stmt* stmt) :
 	m_stmt(stmt)
 {
@@ -28,11 +23,21 @@ Stmt::Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db) :
 }
 
 Stmt::Stmt(std::shared_ptr<DB> db, std::string_view query) : 
+	m_stmt(),
 	m_db(db ? std::move(db) : nullptr),
 	m_query(query)
 {
 	
 }
+
+Stmt::Stmt(StmtRef&& ref, std::shared_ptr<DB> db, std::string_view query) :
+	m_stmt(std::move(ref)),
+	m_db(db ? std::move(db) : nullptr),
+	m_query(query)
+{
+	
+}
+
 
 Stmt::Stmt(Stmt&& s) noexcept
 {
@@ -48,7 +53,6 @@ Stmt& Stmt::operator=(Stmt&& s) noexcept
 	m_db			= std::move(s.m_db);
 	
 	m_lastCode = s.m_lastCode;
-	// No need to set s.m_stmt to nullptr - unique_ptr move already handles this
 	
 	return *this;
 }

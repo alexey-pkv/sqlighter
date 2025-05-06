@@ -6,6 +6,8 @@
 #include <vector>
 #include <memory>
 
+#include "core/StmtRef.h"
+
 
 namespace sqlighter
 {
@@ -21,6 +23,7 @@ namespace sqlighter
 		
 	public:
 		virtual Stmt execute(std::string_view query, const std::vector<BindValue>& values) = 0;
+		virtual StmtRef prepare(std::string_view query) = 0;
 	};
 	
 	
