@@ -2,7 +2,7 @@
 #define SQLIGHTER_CONNECTORS_CMDINSERT_H
 
 
-#include "base/connectors/ICMD.h"
+#include "base/connectors/CMD.h"
 #include "connectors/Clause/ClauseTable.h"
 #include "connectors/Clause/ClauseSet.h"
 

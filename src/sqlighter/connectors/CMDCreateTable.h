@@ -2,7 +2,7 @@
 #define SQLIGHTER_CONNECTORS_CMDCREATETABLE_H
 
 
-#include "base/connectors/ICMD.h"
+#include "base/connectors/CMD.h"
 #include "base/connection/IConnection.h"
 
 
@@ -49,7 +49,7 @@ namespace sqlighter
 		inline void create() const { execute().require_done(); }
 		
 		
-	public: // ICMD
+	public: // CMD
 		void assemble(std::ostringstream& ss) const override;
 		[[nodiscard]] std::string assemble() const override;
 		[[nodiscard]] std::vector<BindValue> bind() const override;

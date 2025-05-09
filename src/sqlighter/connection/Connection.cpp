@@ -28,19 +28,24 @@ Connection::Connection(const std::filesystem::path& db_path) :
 
 Stmt Connection::execute(std::string_view query, const std::vector<BindValue>& values)
 {
-	Stmt stmt { prepare(query), m_db, query };
+	Stmt stmt = prepare(query);
 	
+	execute_prepared(stmt, values);
+	
+	return stmt;
+}
+
+void Connection::execute_prepared(Stmt& stmt, const std::vector<BindValue>& values)
+{
 	for (auto i = 0; i < values.size(); i++)
 	{
 		values[i].bind(stmt.stmt(), i + 1);
 	}
 	
 	stmt.step();
-	
-	return stmt;
 }
 
-StmtRef Connection::prepare(std::string_view query)
+Stmt Connection::prepare(std::string_view query)
 {
 	if (query.empty())
 	{
@@ -68,5 +73,5 @@ StmtRef Connection::prepare(std::string_view query)
 		throw e;
 	}
 	
-	return StmtRef { stmt_ptr };
+	return Stmt(stmt_ptr, m_db, query);
 }

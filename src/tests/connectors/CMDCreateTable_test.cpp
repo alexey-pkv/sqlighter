@@ -31,13 +31,20 @@ public:
 		return Stmt(nullptr);
 	}
 	
-	StmtRef prepare(std::string_view query) override
+	Stmt prepare(std::string_view query) override
 	{
 		IS_CALLED = true;
 		QUERY = query;
 		BIND = {};
 		
-		return StmtRef();
+		return Stmt();
+	}
+	
+	void execute_prepared(Stmt& stmt, const std::vector<BindValue>& values) override
+	{
+		IS_CALLED = true;
+		QUERY = stmt.query();
+		BIND = values;
 	}
 };
 

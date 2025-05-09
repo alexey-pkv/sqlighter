@@ -2,7 +2,7 @@
 #define SQLIGHTER_CONNECTORS_CMDUPDATE_H
 
 
-#include "base/connectors/ICMD.h"
+#include "base/connectors/CMD.h"
 
 #include "connectors/Clause/ClauseSet.h"
 #include "connectors/Clause/ClauseTable.h"

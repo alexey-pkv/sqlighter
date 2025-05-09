@@ -27,12 +27,19 @@ public:
 		return Stmt();
 	}
 	
-	StmtRef prepare(std::string_view query) override
+	Stmt prepare(std::string_view query) override
 	{
 		Called = true;
 		Query = query;
 		
-		return StmtRef();
+		return Stmt();
+	}
+	
+	void execute_prepared(Stmt& stmt, const std::vector<BindValue>& values) override
+	{
+		Called = true;
+		Query = stmt.query();
+		Binds = values;
 	}
 };
 
@@ -48,9 +55,14 @@ public:
 		return Stmt();
 	}
 	
-	StmtRef prepare(std::string_view query) override
+	Stmt prepare(std::string_view query) override
 	{
-		return StmtRef();
+		return Stmt();
+	}
+	
+	void execute_prepared(Stmt& stmt, const std::vector<BindValue>& values) override
+	{
+		
 	}
 	
 	Stmt call_execute_next(std::string_view query, const std::vector<BindValue>& values)

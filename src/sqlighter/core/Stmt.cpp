@@ -22,6 +22,14 @@ Stmt::Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db) :
 	
 }
 
+Stmt::Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db, std::string_view query) : 
+	m_stmt(stmt),
+	m_db(db ? std::move(db) : nullptr),
+	m_query(query)
+{
+	
+}
+
 Stmt::Stmt(std::shared_ptr<DB> db, std::string_view query) : 
 	m_stmt(),
 	m_db(db ? std::move(db) : nullptr),

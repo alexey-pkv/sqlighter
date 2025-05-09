@@ -42,6 +42,7 @@ namespace sqlighter
 		explicit Stmt(sqlite3_stmt* stmt);
 		
 		Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db);
+		Stmt(sqlite3_stmt* stmt, std::shared_ptr<DB> db, std::string_view query);
 		Stmt(std::shared_ptr<DB> db, std::string_view query);
 		Stmt(StmtRef&& ref, std::shared_ptr<DB> db, std::string_view query);
 		
@@ -66,6 +67,7 @@ namespace sqlighter
 		inline bool is_closed() const	{ return !m_stmt; }
 		
 		inline const std::string& query() const { return m_query; }
+		inline Stmt weak() const { return Stmt(m_stmt.weak(), m_db, m_query); }
 		
 		
 	public:

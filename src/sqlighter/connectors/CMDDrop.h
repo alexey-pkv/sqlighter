@@ -2,7 +2,7 @@
 #define SQLIGHTER_CONNECTORS_CMDDROP_H
 
 
-#include "base/connectors/ICMD.h"
+#include "base/connectors/CMD.h"
 #include "base/connection/IConnection.h"
 
 

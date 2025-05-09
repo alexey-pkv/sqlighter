@@ -19,6 +19,7 @@
 #define SQLIGHTER_ERR_MULT_COLUMNS				16		<< 16
 #define SQLIGHTER_ERR_MULT_ROWS					17		<< 16
 #define SQLIGHTER_ERR_ROWS_OVERFLOW				18		<< 16
+#define SQLIGHTER_ERR_RESET						19		<< 16
 
 #define SQLIGHTER_ERR_BIND						50		<< 16
 #define SQLIGHTER_ERR_VALUE						51		<< 16

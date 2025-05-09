@@ -5,7 +5,7 @@
 #include <memory>
 #include <sstream>
 
-#include "base/connectors/ICMD.h"
+#include "base/connectors/CMD.h"
 
 #include "connectors/Clause/ClauseFrom.h"
 #include "connectors/Clause/ClauseJoin.h"

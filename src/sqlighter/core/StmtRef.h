@@ -2,7 +2,7 @@
 #define SQLIGHTER_STMTREF_H
 
 
-#include "unique_stmt_ptr.h"
+#include "stmt_ptr.h"
 
 
 namespace sqlighter
@@ -10,8 +10,8 @@ namespace sqlighter
 	class StmtRef
 	{
 	private:
-		unique_stmt_ptr				m_unique	{ nullptr };
-		std::weak_ptr<sqlite3_stmt>	m_weak		{};	
+		weak_stmt_ptr 	m_weak	{ };
+		shared_stmt_ptr	m_stmt	{nullptr };
 		
 		
 	public:
@@ -24,19 +24,21 @@ namespace sqlighter
 		StmtRef(const StmtRef&) = delete;
 		StmtRef& operator=(const StmtRef&) = delete;
 		
+		explicit StmtRef(weak_stmt_ptr weak);
+		explicit StmtRef(shared_stmt_ptr m_stmt);
 		explicit StmtRef(sqlite3_stmt* value);
 		
 		
 	public:
 		sqlite3_stmt* get();
 		const sqlite3_stmt* get() const noexcept;
-		void set(sqlite3_stmt* value);
-		void set(std::shared_ptr<sqlite3_stmt> value);
+		
 		void clear();
 		
 		
 	public:
 		inline sqlite3_stmt* get_cc() const noexcept { return const_cast<sqlite3_stmt*>(get()); }
+		inline StmtRef weak() const noexcept { return StmtRef(m_stmt ? weak_stmt_ptr(m_stmt) : m_weak); }
 		
 		
 	public:

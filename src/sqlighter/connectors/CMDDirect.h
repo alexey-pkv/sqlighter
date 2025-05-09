@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include "core/BindValue.h"
-#include "base/connectors/ICMD.h"
+#include "base/connectors/CMD.h"
 #include "base/connection/IConnection.h"
 
 
